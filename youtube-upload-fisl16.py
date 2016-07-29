@@ -2,11 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-This script tries to find the videos under the directories like:
-    41c/20160714/sala41c-high-201607161401.ogv
-if video isn't there, it won't try to process and move to the next one.
-If if it is available, it will upload to Youtube using the information
-gathered onto site and move to directory "done" after finished.
+This script gets all schedule from FISL16, tries to find the video online,
+download it and upload onto Youtube..
 """
 
 import simplejson as json
@@ -22,7 +19,7 @@ logging.captureWarnings('InsecurePlatformWarning')
 ROOMS = xrange(1,13)
 DAYS = [ "08", "09", "10", "11" ]
 SERVER = "http://schedule.fisl16.softwarelivre.org/api"
-SECRET = "/home/ehellou/pytube-client_secret.json"
+SECRET = "/home/helio/pytube-client_secret.json"
 """
 Rooms
 http://schedule.fisl16.softwarelivre.org/api/rooms/1/slots/of-day/2015-07-08
@@ -107,7 +104,7 @@ def build_listing():
                 full = j2["resource"]["full"]
                 #print full
                 #print ""
-                print """Title: %s
+                text =  """Title: %s
 Author(s): %s
 Description: %s
 Video: %s
@@ -115,6 +112,7 @@ Tags: %s
 Timestamp: %s
 
 """ % (title, authors, full, video, tags, timestamp)
+                print text.encode("utf-8")
                 #return
                 videoname = os.path.basename(video)
                 print "Video=%s" % video

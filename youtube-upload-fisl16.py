@@ -10,21 +10,22 @@ import simplejson as json
 import requests
 import re
 import os
-#import shutil
+import sys
 from time import sleep
 import logging
 logging.captureWarnings('InsecurePlatformWarning')
 
-
+DRYRUN = False
 ROOMS = xrange(1,13)
 DAYS = [ "08", "09", "10", "11" ]
-SERVER = "http://schedule.fisl16.softwarelivre.org/api"
+SERVER = "http://schedule.fisl16.softwarelivre.org/api16"
 SECRET = "/home/helio/pytube-client_secret.json"
 """
 Rooms
 http://schedule.fisl16.softwarelivre.org/api/rooms/1/slots/of-day/2015-07-08
+http://schedule.fisl16.softwarelivre.org/api16/rooms/1/slots/of-day/2015-07-11
 Talks
-http://schedule.fisl16.softwarelivre.org/api/talks/299
+http://schedule.fisl16.softwarelivre.org/api16/talks/299
 """
 
 def build_url(room, day):
@@ -40,17 +41,23 @@ def youtube(title, descr, author, tags, video):
     descr = re.sub("\"", "\\\"", descr)
     title = re.sub("\"", "\\\"", title)
     cmd = "youtube-upload " + \
-        "--title=\"%s\" " % title + \
-        "--description=\"%s\" " % descr + \
+        u"--title=\"%s\" " % title + \
+        u"--description=\"%s\" " % descr + \
         "--client-secrets=%s " % SECRET + \
-        "--tags=\"%s\" " % tags + \
+        u"--tags=\"%s\" " % tags + \
         "%s" % video
     print cmd
-    os.system(cmd.encode("utf-8"))
+    if not DRYRUN:
+        os.system(cmd)
 
 def wget(video):
+    print "Running wget"
     cmd = "wget %s" % video
-    os.system(cmd)
+    if not DRYRUN:
+        os.system(cmd)
+    else:
+        print "Saving fake video file"
+        touch(video)
 
 def processed(video):
     videoname = os.path.basename(video)
@@ -63,7 +70,29 @@ def processed(video):
     fd.flush()
     fd.close()
 
+def touch(filename):
+    filename = re.sub(".*/", "", filename)
+    fd = open(filename, "w")
+    fd.flush()
+    fd.close()
+    print "File %s created" % filename
+
+def info():
+    print "Getting help..."
+    print "Usage: %s [dry-run]" % sys.argv[0]
+    print "\tdry-run: it doesn't download real video, neither tries to " + \
+        "upload to youtube"
+
 def build_listing():
+    global DRYRUN
+
+    if re.search("help", sys.argv[-1]):
+        info()
+        sys.exit(0)
+    if sys.argv[-1] == "dry-run":
+        print "Running in dry-run mode"
+        DRYRUN = True
+
     if not os.path.exists("done"):
         os.mkdir("done")
     for room in ROOMS:
@@ -104,7 +133,7 @@ def build_listing():
                 full = j2["resource"]["full"]
                 #print full
                 #print ""
-                text =  """Title: %s
+                text =  u"""Title: %s
 Author(s): %s
 Description: %s
 Video: %s

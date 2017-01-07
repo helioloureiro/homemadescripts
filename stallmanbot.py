@@ -9,6 +9,7 @@ import re
 import time
 import requests
 import BeautifulSoup as bp
+import shutil
 
 CONFIG = ".twitterc"
 DEBUG = True
@@ -171,6 +172,7 @@ def Photo(cmd):
 def UnixLoadOn(cmd):
     debug("Unix Load On")
     msg = None
+    curdir = os.curdir()
     if re.search("unixloadon", cmd.text):
         debug("O que é Unix Load On")
         url = "https://helioloureiro.github.io/canalunixloadon/"
@@ -187,12 +189,19 @@ def UnixLoadOn(cmd):
             msg += "\n"
         
     elif re.search("^/pauta", cmd.text):
+        os.chdir(PAUTAS)
+        os.system("git pull --rebase --no-commit")
         pautas = os.listdir(PAUTAS)
         last_pauta = sorted(pautas)[-1]
         if not re.search("^20", last_pauta):
             last_pauta = sorted(pautas)[-2]
         msg = open("%s/%s" % (PAUTAS, last_pauta)).read()
+    elif re.search("^/addpauta", cmd.text):
+        os.chdir(PAUTAS)
+        os.system("git pull --rebase --no-commit")
 
+        msg = "work in progress"
+    os.chdir(curdir)
     if not msg:
         return
     try:
@@ -229,6 +238,118 @@ def Distros(cmd):
 
     bot.send_message(cmd.chat.id, "Ainda não fiz...  Mas já está no backlog.")
 
+@bot.message_handler(commands=["xkcd", "dilbert", "vidadeprogramador", "tirinhas", "strips", "vidadesuporte" ])
+def Comics(cmd):
+    def GetContent(url):
+        req = requests.get(url)
+        if req.status_code == 200:
+            return req.text
+        return None
+
+    def GetImgUrl(pattern, text, step=0):
+        """
+        pattern = string to find
+        text = html retrieved from site
+        step = if in the same line or next (+1, +2, etc)
+        """
+        buf = text.split("\n")
+        i = 0
+        url_img = None
+        for i in range(len(buf)):
+            line = buf[i]
+            if re.search(pattern, line):
+                url_img = buf[i+step]
+                break
+
+        if not url_img:
+            return None
+
+        url = None
+        if re.search("<img ", url_img):
+            params = url_img.split()
+            for p in params:
+                if re.search("src=", p):
+                    tmp_img = p.split("=")[-1]
+                    tmp_img = re.sub("\"", "", tmp_img)
+                    url = re.sub("^\/\/", "http://", tmp_img)
+                    break
+        return tmp_img
+    def GetImg(url):
+        req = requests.get(url, stream=True)
+        filename = os.path.basename(url)
+        if not re.search("\.gif|\.jpg|\.png", filename):
+            filename = "%s.gif" % filename
+        img = "/tmp/%s" % filename
+        with open(img, 'wb') as out_file:
+            shutil.copyfileobj(req.raw, out_file)
+        return img
+
+    debug(cmd.text)
+    img = None
+    if re.search("/xkcd", cmd.text):
+        url = "http://xkcd.com"
+        req = requests.get(url)
+        body = req.text
+        buf = body.split("\n")
+        i = 0
+        url_img = None
+        for i in range(len(buf)):
+            line = buf[i]
+            if re.search("<div id=\"comic\">", line):
+                url_img = buf[i+1]
+                break
+        tmp_img = None
+        if re.search("<img ", url_img):
+            params = url_img.split()
+            for p in params:
+                if re.search("src=", p):
+                    tmp_img = p.split("=")[-1]
+                    tmp_img = re.sub("\"", "", tmp_img)
+                    tmp_img = re.sub("^\/\/", "http://", tmp_img)
+                    break
+        if tmp_img:
+            debug("Tmp img: %s" % tmp_img)
+            req = requests.get(tmp_img, stream=True)
+            filename = os.path.basename(tmp_img)
+            img = "/tmp/%s" % filename
+            with open(img, 'wb') as out_file:
+                shutil.copyfileobj(req.raw, out_file)
+    
+    elif re.search("/dilbert", cmd.text):
+        url = "http://www.dilbert.com"
+        html = GetContent(url)
+        img_link = GetImgUrl("img class=\"img-responsive img-comic\"", html)
+        debug("%s: %s" % (cmd.text, img_link))
+        img = GetImg(img_link)
+    elif re.search("/vidadeprogramador", cmd.text):
+        url = "http://vidadeprogramador.com.br"
+        html = GetContent(url)
+        img_link = GetImgUrl("div class=\"tirinha\"", html)
+        debug("%s: %s" % (cmd.text, img_link))
+        img = GetImg(img_link)
+    elif re.search("/vidadesuporte", cmd.text):
+        url = "http://vidadesuporte.com.br"
+        html = GetContent(url)
+        img_link = GetImgUrl(" 100vw, 600px", html)
+        debug("%s: %s" % (cmd.text, img_link))
+        img = GetImg(img_link)
+    elif re.search("tirinhas|strips", cmd.text):
+        bot.send_message(cmd.chat.id, "No momento somente tem: /dilbert, /xkcd, /vidadeprogramador, /vidadesuporte")
+        return
+
+    if img:
+        try:
+            img_fd = open(img, 'rb')
+            bot.send_photo(cmd.chat.id, img_fd)
+        except Exception as e:
+            bot.send_message(cmd.chat.id, "Ooopsss... deu merda! %s" % e)
+        os.unlink(img)
+    else:
+        bot.send_message(cmd.chat.id, "É... foi não...")
+
+            
+            
+  
 try:
     debug("Polling...")
     bot.polling()

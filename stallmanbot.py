@@ -57,18 +57,25 @@ bot = telebot.TeleBot(key)
 def HelloWorld(cmd):
     debug(cmd.text)
     try:
-        bot.reply_to(cmd, "GNU world")
-    except:
-        bot.reply_to(cmd, "Deu merda...")
+        bot.send_message(cmd.chat.id, "GNU world")
+    except Exception as e:
+        try:
+            bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
+        except Exception as z:
+            print z
+    debug("tchau")
         
 @bot.message_handler(commands=["ultrafofo", "ultrafofos"])
 def UltraFofo(cmd):
     debug(cmd.text)
     try:
-        bot.reply_to(cmd, "#UltraFofos é o grupo super fofis de defensores de software livre." + \
+        bot.send_message(cmd.chat.id, "#UltraFofos é o grupo super fofis de defensores de software livre." + \
             "Veja mais em: https://www.youtube.com/watch?v=eIRk38d32vA")
-    except:
-        bot.reply_to(cmd, "Deu merda...")
+    except Exception as e:
+        try:
+            bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
+        except Exception as z:
+            printz
         
 @bot.message_handler(commands=["reload"])
 def Reload(cmd):
@@ -80,8 +87,11 @@ def Reload(cmd):
         bot.reply_to(cmd, "Reloading...")
         python = sys.executable
         os.execl(python, python, *sys.argv)
-    except:
-        bot.reply_to(cmd, "Deu merda...")
+    except Exception as e:
+        try:
+            bot.reply_to(cmd, "Deu merda... %s" % e)
+        except Exception as z:
+            print z
 
 @bot.message_handler(commands=["uname", "uptime", "date"])
 def SysCmd(cmd):
@@ -92,20 +102,27 @@ def SysCmd(cmd):
         resp = os.popen(sanitize[1:]).read()
         debug("Response: %s" % resp)
         bot.reply_to(cmd, "%s" % resp)
-    except:
-        bot.reply_to(cmd, "Deu merda...")
+    except Exception as e:
+        try:
+            bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
+        except Exception as z:
+            print z
+    debug("done here")
 
 @bot.message_handler(commands=["reboot", "shutdown", "sudo", "su"])
 def Requer(cmd):
     debug(cmd.text)
-    if re.search("sudo rm -rf /", cmd.text):
-        vd = open("%s/sudo_rm_rf.gif" % IMGDIR, "rb")
-        bot.send_photo(cmd.chat.id, vd)
-        return
     try:
+        if re.search("sudo rm -rf /", cmd.text):
+            vd = open("%s/sudo_rm_rf.gif" % IMGDIR, "rb")
+            bot.send_photo(cmd.chat.id, vd)
+            return
         bot.reply_to(cmd, "Ah lá... achando que é réquer.")
-    except:
-        bot.reply_to(cmd, "Deu merda...")
+    except Exception as e:
+        try:
+            bot.reply_to(cmd, "Deu merda... %s" % e)
+        except Exception as z:
+            print z
 
 @bot.message_handler(commands=["man", "info"])
 def ManPages(cmd):
@@ -121,16 +138,23 @@ def ManPages(cmd):
         for i in range(0, len(buf), 10):
             output = "\n".join(buf[i:i+10])
             bot.reply_to(cmd, "%s" % output)
-    except:
-        bot.reply_to(cmd, "Deu merda...")
+    except Exception as e:
+        try:
+            bot.reply_to(cmd, "Deu merda... %s" % e)
+        except Exception as z:
+            print z
+
 
 @bot.message_handler(commands=["help", "ajuda"])
 def Help(cmd):
     debug(cmd.text)
     try:
         bot.reply_to(cmd, "Precisa de ajuda?  Procure o CVV. http://www.cvv.org.br")
-    except:
-        bot.reply_to(cmd, "Deu merda...")
+    except Exception as e:
+        try:
+            bot.reply_to(cmd, "Deu merda... %s" % e)
+        except Exception as z:
+            print z
         
 @bot.message_handler(commands=["fortune", "fortunes", "sorte"])
 def Fortune(cmd):
@@ -172,38 +196,47 @@ def Photo(cmd):
 def UnixLoadOn(cmd):
     debug("Unix Load On")
     msg = None
-    curdir = os.curdir()
-    if re.search("unixloadon", cmd.text):
-        debug("O que é Unix Load On")
-        url = "https://helioloureiro.github.io/canalunixloadon/"
-        www = requests.get(url)
-        msg = www.text
-        msg = msg.encode("utf-8")
-        debug(msg)
-        soup = bp.BeautifulSoup(msg)
-        msg = ""
-        for section in soup.findAll("section"):
-            buf = section.getText(separator='\n')
-            debug(buf)
-            msg += buf
-            msg += "\n"
-        
-    elif re.search("^/pauta", cmd.text):
-        os.chdir(PAUTAS)
-        os.system("git pull --rebase --no-commit")
-        pautas = os.listdir(PAUTAS)
-        last_pauta = sorted(pautas)[-1]
-        if not re.search("^20", last_pauta):
-            last_pauta = sorted(pautas)[-2]
-        msg = open("%s/%s" % (PAUTAS, last_pauta)).read()
-    elif re.search("^/addpauta", cmd.text):
-        os.chdir(PAUTAS)
-        os.system("git pull --rebase --no-commit")
+    curdir = os.curdir
+    try:
+        if re.search("unixloadon", cmd.text):
+            debug("O que é Unix Load On")
+            url = "https://helioloureiro.github.io/canalunixloadon/"
+            www = requests.get(url)
+            msg = www.text
+            msg = msg.encode("utf-8")
+            debug(msg)
+            soup = bp.BeautifulSoup(msg)
+            msg = ""
+            for section in soup.findAll("section"):
+                buf = section.getText(separator='\n')
+                debug(buf)
+                msg += buf
+                msg += "\n"
+            
+        elif re.search("^/pauta", cmd.text):
+            debug("Lendo pautas")
+            os.chdir(PAUTAS)
+            os.system("git pull --rebase --no-commit")
+            pautas = os.listdir(PAUTAS)
+            last_pauta = sorted(pautas)[-1]
+            if not re.search("^20", last_pauta):
+                last_pauta = sorted(pautas)[-2]
+            msg = open("%s/%s" % (PAUTAS, last_pauta)).read()
+            #msg = "work in progress"
+        elif re.search("^/addpauta", cmd.text):
+            os.chdir(PAUTAS)
+            os.system("git pull --rebase --no-commit")
+            msg = "work in progress"
+    except Exception as e:
+        try:
+            bot.reply_to(cmd, "Deu merda: %s" % e)
+        except Exception as z:
+            print z
 
-        msg = "work in progress"
     os.chdir(curdir)
     if not msg:
         return
+
     try:
         bot.send_message(cmd.chat.id, msg)
     except Exception as e:
@@ -238,7 +271,7 @@ def Distros(cmd):
 
     bot.send_message(cmd.chat.id, "Ainda não fiz...  Mas já está no backlog.")
 
-@bot.message_handler(commands=["xkcd", "dilbert", "vidadeprogramador", "tirinhas", "strips", "vidadesuporte" ])
+@bot.message_handler(commands=["xkcd", "dilbert", "vidadeprogramador", "tirinhas", "strips", "vidadesuporte", "angulodevista" ])
 def Comics(cmd):
     def GetContent(url):
         req = requests.get(url)
@@ -331,6 +364,13 @@ def Comics(cmd):
         url = "http://vidadesuporte.com.br"
         html = GetContent(url)
         img_link = GetImgUrl(" 100vw, 600px", html)
+        debug("%s: %s" % (cmd.text, img_link))
+        img = GetImg(img_link)
+    elif re.search("/angulodevista", cmd.text):
+        # curl -s --user-agent "Mozilla/5.0" http://angulodevista.com/ | grep "div class=\"field field-name-field-image"
+        url = "http://angulodevista.com/"
+        html = GetContent(url)
+        img_link = GetImgUrl("div class=\"field field-name-field-image", html)
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
     elif re.search("tirinhas|strips", cmd.text):

@@ -89,12 +89,16 @@ def Reload(cmd):
         if os.path.exists(SCRIPTHOME):
             os.chdir(SCRIPTHOME)
             oscmd = "git pull -f"
+            debug(oscmd)
             os.system(oscmd)
             botname = "stallmanbot.py"
+            debug(oscmd)
             oscmd = "diff %s %s/bin/%s" % (botname, HOME, botname)
             res = os.system(oscmd)
             if res:
+                debug("Updating bot...")
                 shutil.copy(botname, "%s/bin/%s" % (HOME, botname))
+                bot.reply_to(cmd, "Bot version updated.")
         python = sys.executable
         os.execl(python, python, *sys.argv)
     except Exception as e:

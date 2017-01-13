@@ -111,6 +111,7 @@ def Reload(cmd):
     debug(cmd.text)
     if not cmd.from_user.username == 'HelioLoureiro':
         bot.reply_to(cmd, "Só patrão pode isso.")
+        return
     try:
         debug(cmd)
         bot.reply_to(cmd, "Reloading...")

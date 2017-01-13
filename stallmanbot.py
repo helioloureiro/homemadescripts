@@ -348,8 +348,10 @@ def Comics(cmd):
         if req.status_code == 200:
             text = req.text
             proto = url.split("//")[0]
+            debug("GetContent: proto=%s" % proto)
             domain = url.split("//")[1]
             domain = re.sub("/.*", "", domain)
+            debug("GetContent: domain=%s" % domain)
             domain = "%s//%s" % (proto, domain)
             text = re.sub("src=//", "src=%s/" % domain, text)
             text = re.sub("src=\"//", "src=\"%s/" % domain, text)

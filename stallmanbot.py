@@ -374,7 +374,8 @@ def Comics(cmd):
                     tmp_img = re.sub("\"", "", tmp_img)
                     url = re.sub("^\/\/", "http://", tmp_img)
                     break
-        return tmp_img
+        return url
+
     def GetImg(url):
         req = requests.get(url, stream=True)
         filename = os.path.basename(url)
@@ -448,7 +449,7 @@ def Comics(cmd):
         url = "http://rms.sexy"
         bot.send_message(cmd.chat.id, "Diretamente de %s" % url)
         html = GetContent(url)
-        img_link = GetImgUrl("img class=\"stallman\"", html)
+        img_link = GetImgUrl("img class=\"stallman\"  src=\"/img/", html)
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
 

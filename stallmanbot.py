@@ -13,6 +13,26 @@ import shutil
 import random
 import pickle
 
+"""
+Super ultra bot.
+
+Message to sendo to @BotFather about its usage.
+
+oi - Hummm... então tá.
+ultrafofos - Quem são, o que são e como vivem.
+photo - Maravilhos nudes livres.  Sério.
+rtfm - O que todo mundo já devia saber.
+ditro <dua distro> - Uma fofurinha sobre sua distro favorita.  Ou não.
+xkcd - Sua dose diária de humor ácido do xkcd.
+dilbert - Sua dose diária de humor corporativo.
+vidadeprogramador - Sua dose diária de Alonzo.
+vidadesuporte - Sua dose diária de chamados no helpdesk.
+angulodevista - Sua dose diária de vida.  Infelizmente.
+fofometro - Quão fofo você é?  Tente.
+fofondex - Ranking de fofura.
+
+"""
+
 CONFIG = ".twitterc"
 DEBUG = True
 def debug(msg):

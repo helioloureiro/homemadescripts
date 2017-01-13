@@ -231,10 +231,24 @@ def RTFM(cmd):
     except Exception as e:
         bot.reply_to(cmd, "apt-get deu BSOD... %s" % e)
 
+@bot.message_handler(commands=["apt"])
+def RTFM(cmd):
+    try:
+        bot.reply_to(cmd, "Primo hipster do apt-get.")
+    except:
+        bot.reply_to(cmd, "Deu merda...")
+
 @bot.message_handler(commands=["aptitude"])
 def RTFM(cmd):
     try:
         bot.reply_to(cmd, "Palavra africana para: Eu não sei corrigir dependências.")
+    except:
+        bot.reply_to(cmd, "Deu merda...")
+
+@bot.message_handler(commands=["nano"])
+def RTFM(cmd):
+    try:
+        bot.reply_to(cmd, "Palavra africana para: Eu não sei usar o VI/VIM.")
     except:
         bot.reply_to(cmd, "Deu merda...")
 

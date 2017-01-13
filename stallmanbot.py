@@ -487,9 +487,13 @@ def FofoMetrics(cmd):
 
     if re.search("/fofondex", cmd.text):
         msg = u"Ranking the #UltraFofos:\n"
+        ranking = {}
         for u in fofondex.keys():
+            ranking[u] = ofondex[u]['foforate']
+        for u in sorted(ranking, key=ranking.get):
             pct = fofondex[u]['foforate']
             msg += u"%s: %d%s\n" % (u, pct, '%')
+        del ranking
         try:
             debug(u'%s' % msg)
             bot.send_message(cmd.chat.id, u'%s' % msg)

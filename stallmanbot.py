@@ -357,7 +357,7 @@ def Comics(cmd):
             text = re.sub("src=\"//", "src=\"%s/" % domain, text)
             text = re.sub("src=/", "src=%s/" % domain, text)
             text = re.sub("src=\"/", "src=\"%s/" % domain, text)
-            return req.text
+            return text
         return None
 
     def GetImgUrl(pattern, text, step=0):

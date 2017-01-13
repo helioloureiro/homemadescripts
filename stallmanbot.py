@@ -10,6 +10,8 @@ import time
 import requests
 import BeautifulSoup as bp
 import shutil
+import random
+import pickle
 
 CONFIG = ".twitterc"
 DEBUG = True
@@ -25,6 +27,7 @@ PIDFILE = "%s/.stallmanbot.pid" % HOME
 PAUTAS = "%s/canalunixloadon/pautas" % HOME
 IMGDIR = "%s/Pictures" % HOME
 SCRIPTHOME = "%s/homemadescripts" % HOME
+FOFODB = "%s/fofondex.db" % HOME
 
 if os.path.exists(PIDFILE):
     try:
@@ -401,9 +404,60 @@ def Comics(cmd):
     else:
         bot.send_message(cmd.chat.id, "É... foi não...")
 
+@bot.message_handler(commands=["fofometro", "fofondex"])
+def FofoMetrics(cmd):
+    user = cmd.from_user.username
+    try:
+        fofondex = pickle.load( open( FOFODB, "rb" ) )
+    except IOError:
+        fofondex = {}
 
+    """"
+    Data struct:
+        'username': {
+            'timestamp' : dateinseconds,
+            'foforate' : pctg
+            }
+    """
 
+    def RunTheDice():
+        return random.randint(0,100)
 
+    def TimeDelta(user):
+        if fofondex.has_key(user):
+            timestamp = fofondex[user]['timestamp']
+            now = time.time()
+            return now - int(timestamp)
+        else:
+            return 0
+
+    def GetPctg(user):
+        if fofondex.has_key(user):
+            pctg = fofondex[user]['foforate']
+        else:
+            pctg = RunTheDice()
+            fofondex[user] = {
+                'timestamp' : time.time(),
+                'foforate' : pctg
+                }
+            pickle.dump( fofondex, open( FOFODB, "wb" ) )
+        return int(pctg)
+
+    if cmd.text == "/fofometro":
+        if TimeDelta(user) < 24 * 60 * 60:
+            pctg = GetPctg(user)
+        else:
+            pctg = RunTheDice()
+            fofondex[user] = {
+                'timestamp' : time.time(),
+                'foforate' : pctg
+                }
+            pickle.dump( fofondex, open( FOFODB, "wb" ) )
+        try:
+            bot.send_message(cmd.chat.id, "Hoje %s tem %d%% de ultrafofura mas aquele %d%% de blob binário no kernel." %
+                (user, pctg, 100 - pctg))
+        except Exception as e:
+            bot.send_message("Deu ruim... %s" % e)
 try:
     debug("Polling...")
     bot.polling()

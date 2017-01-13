@@ -456,8 +456,8 @@ def FofoMetrics(cmd):
         try:
             msg = "Hoje %s tem %d%s de ultrafofura mas " % (user, pctg, '%')
             msg += "aquele %d%s de blob binário no kernel." % (100 - pctg, '%',)
-            debug(msg)
-            bot.send_message(cmd.chat.id, msg)
+            debug(u'%s' % msg)
+            bot.send_message(cmd.chat.id, u'%s' % msg)
         except Exception as e:
             bot.send_message(cmd.chat.id, "Deu ruim... %s" % e)
         return

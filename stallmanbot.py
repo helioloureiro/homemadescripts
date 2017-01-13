@@ -489,7 +489,7 @@ def FofoMetrics(cmd):
         msg = u"Ranking the #UltraFofos:\n"
         ranking = {}
         for u in fofondex.keys():
-            ranking[u] = ofondex[u]['foforate']
+            ranking[u] = fofondex[u]['foforate']
         for u in sorted(ranking, key=ranking.get):
             pct = fofondex[u]['foforate']
             msg += u"%s: %d%s\n" % (u, pct, '%')

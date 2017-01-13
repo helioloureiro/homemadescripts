@@ -461,6 +461,17 @@ def FofoMetrics(cmd):
         except Exception as e:
             bot.send_message(cmd.chat.id, "Deu ruim... %s" % e)
         return
+
+    if re.search("/fofometro", cmd.text):
+        msg = u""
+        for u in fofondex.keys():
+            pct = fofondex[u]['foforate']
+            msg += u"%s: %d%s\n" % (u, pct, '%')
+        try:
+            debug(u'%s' % msg)
+            bot.send_message(cmd.chat.id, u'%s' % msg)
+        except Exception as e:
+            bot.send_message(cmd.chat.id, "Deu ruim... %s" % e)
 try:
     debug("Polling...")
     bot.polling()

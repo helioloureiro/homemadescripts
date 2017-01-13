@@ -224,7 +224,7 @@ def RTFM(cmd):
         while counter:
             counter -= 1
             time.sleep(random.randint(0,10))
-            moo = "m" + random.randint(0,10) * "o"
+            moo = "mo" + random.randint(0,10) * "o"
             bot.send_message(cmd.chat.id, moo)
     except Exception as e:
         bot.reply_to(cmd, "apt-get deu BSOD... %s" % e)

@@ -353,10 +353,11 @@ def Comics(cmd):
             domain = re.sub("/.*", "", domain)
             debug("GetContent: domain=%s" % domain)
             domain = "%s//%s" % (proto, domain)
-            text = re.sub("src=//", "src=%s/" % domain, text)
-            text = re.sub("src=\"//", "src=\"%s/" % domain, text)
-            text = re.sub("src=/", "src=%s/" % domain, text)
-            text = re.sub("src=\"/", "src=\"%s/" % domain, text)
+            text = re.sub(" src=//", " src=%s/" % domain, text)
+            text = re.sub(" src=\"//", " src=\"%s/" % domain, text)
+            text = re.sub(" src=/", " src=%s/" % domain, text)
+            text = re.sub(" src=\"/", " src=\"%s/" % domain, text)
+            debug("GetContent: Full Text\n%s" % text)
             return text
         return None
 

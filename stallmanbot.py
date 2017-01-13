@@ -210,6 +210,20 @@ def RTFM(cmd):
     except:
         bot.reply_to(cmd, "Deu merda...")
 
+@bot.message_handler(commands=["apt-get"])
+def RTFM(cmd):
+    try:
+        bot.reply_to(cmd, "Esse bot tem poderes de super vaca.")
+    except:
+        bot.reply_to(cmd, "Deu merda...")
+
+@bot.message_handler(commands=["aptitude"])
+def RTFM(cmd):
+    try:
+        bot.reply_to(cmd, "Palavra africana para: Eu não sei corrigir dependências.")
+    except:
+        bot.reply_to(cmd, "Deu merda...")
+
 @bot.message_handler(commands=["photo"])
 def Photo(cmd):
     debug("Photo")
@@ -505,3 +519,4 @@ try:
 except Exception as e:
     print e
     os.unlink(PIDFILE)
+

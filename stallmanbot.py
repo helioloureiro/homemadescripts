@@ -33,6 +33,8 @@ fofondex - Ranking de fofura.
 fortune - A sorte do dia.  Ou não.
 date - A data atual.
 uptime - Somente os fortes entenderão.
+mandanudes - Pura sensualidade.
+nudes - Sensualidade dum jeito mais rápido.
 
 """
 
@@ -357,7 +359,7 @@ def Comics(cmd):
             text = re.sub(" src=\"//", " src=\"%s/" % domain, text)
             text = re.sub(" src=/", " src=%s/" % domain, text)
             text = re.sub(" src=\"/", " src=\"%s/" % domain, text)
-            debug("GetContent: Full Text\n%s" % text)
+            #debug("GetContent: Full Text\n%s" % text)
             return text
         return None
 

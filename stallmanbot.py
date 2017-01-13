@@ -19,11 +19,12 @@ def debug(msg):
             print u"%s" % msg
         except Exception as e:
             print "DEBUG ERROR:", e
-        
+
 HOME = os.environ.get('HOME')
 PIDFILE = "%s/.stallmanbot.pid" % HOME
 PAUTAS = "%s/canalunixloadon/pautas" % HOME
 IMGDIR = "%s/Pictures" % HOME
+SCRIPTHOME = "%s/homemadescripts" % HOME
 
 if os.path.exists(PIDFILE):
     try:
@@ -52,7 +53,7 @@ debug("Key acquired.")
 
 debug("Starting bot for FreeSpeech")
 bot = telebot.TeleBot(key)
-    
+
 @bot.message_handler(commands=["oi"])
 def HelloWorld(cmd):
     debug(cmd.text)
@@ -64,7 +65,7 @@ def HelloWorld(cmd):
         except Exception as z:
             print z
     debug("tchau")
-        
+
 @bot.message_handler(commands=["ultrafofo", "ultrafofos"])
 def UltraFofo(cmd):
     debug(cmd.text)
@@ -76,7 +77,7 @@ def UltraFofo(cmd):
             bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
         except Exception as z:
             printz
-        
+
 @bot.message_handler(commands=["reload"])
 def Reload(cmd):
     debug(cmd.text)
@@ -85,6 +86,12 @@ def Reload(cmd):
     try:
         debug(cmd)
         bot.reply_to(cmd, "Reloading...")
+        if os.path.exists(SCRIPTHOME):
+            os.chdir(SCRIPTHOME)
+            gitcmd = "git pull -f"
+            os.system(gitcmd)
+            botname = "stallmanbot.py"
+            shutil.copy(botname, "%s/bin/%s" % (HOME, botname))
         python = sys.executable
         os.execl(python, python, *sys.argv)
     except Exception as e:
@@ -155,7 +162,7 @@ def Help(cmd):
             bot.reply_to(cmd, "Deu merda... %s" % e)
         except Exception as z:
             print z
-        
+
 @bot.message_handler(commands=["fortune", "fortunes", "sorte"])
 def Fortune(cmd):
     try:
@@ -212,7 +219,7 @@ def UnixLoadOn(cmd):
                 debug(buf)
                 msg += buf
                 msg += "\n"
-            
+
         elif re.search("^/pauta", cmd.text):
             debug("Lendo pautas")
             os.chdir(PAUTAS)
@@ -347,7 +354,7 @@ def Comics(cmd):
             img = "/tmp/%s" % filename
             with open(img, 'wb') as out_file:
                 shutil.copyfileobj(req.raw, out_file)
-    
+
     elif re.search("/dilbert", cmd.text):
         url = "http://www.dilbert.com"
         html = GetContent(url)
@@ -387,9 +394,9 @@ def Comics(cmd):
     else:
         bot.send_message(cmd.chat.id, "É... foi não...")
 
-            
-            
-  
+
+
+
 try:
     debug("Polling...")
     bot.polling()

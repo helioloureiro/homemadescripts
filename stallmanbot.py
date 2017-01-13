@@ -454,7 +454,7 @@ def Comics(cmd):
         url = "https://rms.sexy"
         bot.send_message(cmd.chat.id, "Diretamente de %s" % url)
         html = GetContent(url)
-        img_link = GetImgUrl("img class=\"stallman\"  src=\"/img/", html)
+        img_link = GetImgUrl("img class=\"stallman\" src=\"/img/", html)
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
 

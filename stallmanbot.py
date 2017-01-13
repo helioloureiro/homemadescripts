@@ -443,7 +443,7 @@ def FofoMetrics(cmd):
             pickle.dump( fofondex, open( FOFODB, "wb" ) )
         return int(pctg)
 
-    if cmd.text == "/fofometro":
+    if re.search("/fofometro", cmd.text):
         if TimeDelta(user) < 24 * 60 * 60:
             pctg = GetPctg(user)
         else:

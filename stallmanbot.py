@@ -214,6 +214,12 @@ def RTFM(cmd):
 def RTFM(cmd):
     try:
         bot.reply_to(cmd, "Esse bot tem poderes de super vaca.")
+        counter = random.randint(0,10)
+        while counter:
+            counter -= 1
+            time.sleep(random.randint(0,10))
+            moo = "m" + random.randint(0,10) * "o"
+            bot.reply_to(cmd, moo)
     except:
         bot.reply_to(cmd, "Deu merda...")
 

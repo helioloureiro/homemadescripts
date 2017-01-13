@@ -337,7 +337,9 @@ def Distros(cmd):
 
     bot.send_message(cmd.chat.id, "Ainda não fiz...  Mas já está no backlog.")
 
-@bot.message_handler(commands=["xkcd", "dilbert", "vidadeprogramador", "tirinhas", "strips", "vidadesuporte", "angulodevista" ])
+@bot.message_handler(commands=["xkcd", "dilbert", "vidadeprogramador",
+    "tirinhas", "strips", "vidadesuporte", "angulodevista",
+    "mandanudes", "nudes"])
 def Comics(cmd):
     def GetContent(url):
         req = requests.get(url)
@@ -442,6 +444,13 @@ def Comics(cmd):
     elif re.search("tirinhas|strips", cmd.text):
         bot.send_message(cmd.chat.id, "No momento somente tem: /dilbert, /xkcd, /vidadeprogramador, /vidadesuporte")
         return
+    elif re.search("nudes", cmd.text):
+        url = "http://rms.sexy"
+        bot.send_message(cmd.chat.id, "Diretamente de %s" % url)
+        html = GetContent(url)
+        img_link = GetImgUrl("img class=\"stallman\"", html)
+        debug("%s: %s" % (cmd.text, img_link))
+        img = GetImg(img_link)
 
     if img:
         try:

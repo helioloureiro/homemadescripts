@@ -122,9 +122,16 @@ def Reload(cmd):
             oscmd = "diff -q %s %s/bin/%s" % (botname, HOME, botname)
             res = os.system(oscmd)
             if res:
+                # new version detected
+                res = os.system("%s %s" % (sys.executable, sys.argv[0]) )
+                if res != 0:
+                    debug("Versão bugada")
+                    bot.send_message(cmd.chat.id, "Python crashed.  Vou carregar saporra não.  Vai que...")
+                return
                 debug("Updating bot...")
                 shutil.copy(botname, "%s/bin/%s" % (HOME, botname))
-                bot.reply_to(cmd, "Bot version updated.")
+                bot.send_message(cmd.chat.id, "Bot version updated.")
+        # check first
         python = sys.executable
         os.execl(python, python, *sys.argv)
     except Exception as e:

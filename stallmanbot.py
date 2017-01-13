@@ -147,6 +147,7 @@ def SysCmd(cmd):
     debug("Running: %s" % cmd.text)
     sanitize = re.sub(";.*", "", cmd.text)
     sanitize = re.sub("|.*", "", sanitize)
+    sanitize = re.sub("@.*", "", sanitize)
     try:
         resp = os.popen(sanitize[1:]).read()
         debug("Response: %s" % resp)

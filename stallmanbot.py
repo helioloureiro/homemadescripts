@@ -469,11 +469,12 @@ def Comics(cmd):
         return
     elif re.search("nudes", cmd.text):
         url = "https://rms.sexy"
-        bot.send_message(cmd.chat.id, "Diretamente de %s" % url)
+        bot.send_message(cmd.chat.id, "Péra... já estou tirando a roupa e ligando a webcam...")
         html = GetContent(url)
         img_link = GetImgUrl("<a href=\"/\">", html)
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
+        bot.send_message(cmd.chat.id, "Diretamente de %s" % url)
 
     if img:
         try:

@@ -363,6 +363,7 @@ def Comics(cmd):
                 break
 
         if not url_img:
+            debug("GetImgUrl: no images links found")
             return None
 
         url = None
@@ -375,9 +376,12 @@ def Comics(cmd):
                     url = re.sub("^\/\/", "http://", tmp_img)
                     url = re.sub("^\/", "http://", url)
                     break
+        debug("GetImgUrl: %s" % url)
         return url
 
     def GetImg(url):
+        if not url:
+            return
         req = requests.get(url, stream=True)
         filename = os.path.basename(url)
         if not re.search("\.gif|\.jpg|\.png", filename):

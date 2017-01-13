@@ -127,7 +127,7 @@ def Reload(cmd):
                 if res != 0:
                     debug("Versão bugada")
                     bot.send_message(cmd.chat.id, "Python crashed.  Vou carregar saporra não.  Vai que...")
-                return
+                    return
                 debug("Updating bot...")
                 shutil.copy(botname, "%s/bin/%s" % (HOME, botname))
                 bot.send_message(cmd.chat.id, "Bot version updated.")

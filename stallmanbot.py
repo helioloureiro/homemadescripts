@@ -451,7 +451,7 @@ def Comics(cmd):
         bot.send_message(cmd.chat.id, "No momento somente tem: /dilbert, /xkcd, /vidadeprogramador, /vidadesuporte")
         return
     elif re.search("nudes", cmd.text):
-        url = "http://rms.sexy"
+        url = "https://rms.sexy"
         bot.send_message(cmd.chat.id, "Diretamente de %s" % url)
         html = GetContent(url)
         img_link = GetImgUrl("img class=\"stallman\"  src=\"/img/", html)

@@ -373,6 +373,7 @@ def Comics(cmd):
                     tmp_img = p.split("=")[-1]
                     tmp_img = re.sub("\"", "", tmp_img)
                     url = re.sub("^\/\/", "http://", tmp_img)
+                    url = re.sub("^\/", "http://", url)
                     break
         return url
 

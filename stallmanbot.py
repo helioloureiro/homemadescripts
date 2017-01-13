@@ -463,7 +463,7 @@ def FofoMetrics(cmd):
         return
 
     if re.search("/fofondex", cmd.text):
-        msg = u""
+        msg = u"Ranking the #UltraFofos:\n"
         for u in fofondex.keys():
             pct = fofondex[u]['foforate']
             msg += u"%s: %d%s\n" % (u, pct, '%')

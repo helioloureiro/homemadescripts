@@ -96,7 +96,7 @@ def Reload(cmd):
             os.system(oscmd)
             botname = "stallmanbot.py"
             debug(oscmd)
-            oscmd = "diff %s %s/bin/%s" % (botname, HOME, botname)
+            oscmd = "diff -q %s %s/bin/%s" % (botname, HOME, botname)
             res = os.system(oscmd)
             if res:
                 debug("Updating bot...")

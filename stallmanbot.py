@@ -22,7 +22,7 @@ oi - Hummm... então tá.
 ultrafofos - Quem são, o que são e como vivem.
 photo - Maravilhos nudes livres.  Sério.
 rtfm - O que todo mundo já devia saber.
-ditro <dua distro> - Uma fofurinha sobre sua distro favorita.  Ou não.
+distro - Use: distro <suadistro>. Uma fofurinha sobre sua distro favorita.  Ou não.
 xkcd - Sua dose diária de humor ácido do xkcd.
 dilbert - Sua dose diária de humor corporativo.
 vidadeprogramador - Sua dose diária de Alonzo.
@@ -30,6 +30,9 @@ vidadesuporte - Sua dose diária de chamados no helpdesk.
 angulodevista - Sua dose diária de vida.  Infelizmente.
 fofometro - Quão fofo você é?  Tente.
 fofondex - Ranking de fofura.
+fortune - A sorte do dia.  Ou não.
+date - A data atual.
+uptime - Somente os fortes entenderão.
 
 """
 
@@ -77,7 +80,7 @@ debug("Key acquired.")
 debug("Starting bot for FreeSpeech")
 bot = telebot.TeleBot(key)
 
-@bot.message_handler(commands=["oi"])
+@bot.message_handler(commands=["oi", "hello", "helloworld"])
 def HelloWorld(cmd):
     debug(cmd.text)
     try:

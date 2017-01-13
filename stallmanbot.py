@@ -342,8 +342,19 @@ def Distros(cmd):
     "mandanudes", "nudes"])
 def Comics(cmd):
     def GetContent(url):
+        if not url:
+            return
         req = requests.get(url)
         if req.status_code == 200:
+            text = req.text
+            proto = url.split("//")[0]
+            domain = url.split("//")[1]
+            domain = re.sub("/.*", "", domain)
+            domain = "%s//%s" % (proto, domain)
+            text = re.sub("src=//", "src=%s/" % domain, text)
+            text = re.sub("src=\"//", "src=\"%s/" % domain, text)
+            text = re.sub("src=/", "src=%s/" % domain, text)
+            text = re.sub("src=\"/", "src=\"%s/" % domain, text)
             return req.text
         return None
 

@@ -454,10 +454,13 @@ def FofoMetrics(cmd):
                 }
             pickle.dump( fofondex, open( FOFODB, "wb" ) )
         try:
-            bot.send_message(cmd.chat.id, "Hoje %s tem %d%% de ultrafofura mas aquele %d%% de blob binário no kernel." %
-                (user, pctg, 100 - pctg))
+            msg = "Hoje %s tem %d%s de ultrafofura mas " % (user, pctg, '%')
+            msg += "aquele %d%s de blob binário no kernel." % (100 - pctg, '%',)
+            debug msg
+            bot.send_message(cmd.chat.id, msg)
         except Exception as e:
             bot.send_message(cmd.chat.id, "Deu ruim... %s" % e)
+        return
 try:
     debug("Polling...")
     bot.polling()

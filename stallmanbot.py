@@ -80,7 +80,7 @@ debug("Key acquired.")
 debug("Starting bot for FreeSpeech")
 bot = telebot.TeleBot(key)
 
-@bot.message_handler(commands=["oi", "hello", "helloworld")
+@bot.message_handler(commands=["oi", "hello", "helloworld"])
 def HelloWorld(cmd):
     debug(cmd.text)
     try:
@@ -220,8 +220,8 @@ def RTFM(cmd):
             time.sleep(random.randint(0,10))
             moo = "m" + random.randint(0,10) * "o"
             bot.send_message(cmd.chat.id, moo)
-    except:
-        bot.reply_to(cmd, "Deu merda...")
+    except Exception as e:
+        bot.reply_to(cmd, "apt-get deu BSOD... %s" % e)
 
 @bot.message_handler(commands=["aptitude"])
 def RTFM(cmd):

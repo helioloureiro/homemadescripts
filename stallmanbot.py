@@ -462,7 +462,7 @@ def FofoMetrics(cmd):
             bot.send_message(cmd.chat.id, "Deu ruim... %s" % e)
         return
 
-    if re.search("/fofometro", cmd.text):
+    if re.search("/fofondex", cmd.text):
         msg = u""
         for u in fofondex.keys():
             pct = fofondex[u]['foforate']

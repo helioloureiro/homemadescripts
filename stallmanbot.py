@@ -232,24 +232,10 @@ def RTFM(cmd):
     except Exception as e:
         bot.reply_to(cmd, "apt-get deu BSOD... %s" % e)
 
-@bot.message_handler(commands=["apt"])
-def RTFM(cmd):
-    try:
-        bot.reply_to(cmd, "Primo hipster do apt-get.")
-    except:
-        bot.reply_to(cmd, "Deu merda...")
-
 @bot.message_handler(commands=["aptitude"])
 def RTFM(cmd):
     try:
         bot.reply_to(cmd, "Palavra africana para: Eu não sei corrigir dependências.")
-    except:
-        bot.reply_to(cmd, "Deu merda...")
-
-@bot.message_handler(commands=["nano"])
-def RTFM(cmd):
-    try:
-        bot.reply_to(cmd, "Palavra africana para: Eu não sei usar o VI/VIM.")
     except:
         bot.reply_to(cmd, "Deu merda...")
 
@@ -558,10 +544,19 @@ def FofoMetrics(cmd):
         return
 
     if re.search("/fofondex", cmd.text):
-        msg = u"Ranking the #UltraFofos:\n"
+        msg = u"Ranking Dollyinho de #UltraFofos:\n"
         ranking = {}
+        isUpdated = False
         for u in fofondex.keys():
+            delta = TimeDelta(u)
+            if delta > 24 * 60 * 60:
+                # remove old data
+                isUpdated = True
+                del fofondex[u]
+                continue
             ranking[u] = fofondex[u]['foforate']
+        if isUpdated:
+            pickle.dump( fofondex, open( FOFODB, "wb" ) )
         for u in sorted(ranking, key=ranking.get, reverse=True):
             pct = fofondex[u]['foforate']
             msg += u"%s: %d%s\n" % (u, pct, '%')

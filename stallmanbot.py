@@ -182,9 +182,8 @@ def ManPages(cmd):
         resp = os.popen("man %s" % page).read()
         debug("Response: %s" % resp)
         buf = resp.split("\n")
-        for i in range(0, 10):
-            output = "\n".join(buf[i])
-            bot.reply_to(cmd, "%s" % output)
+        output = "\n".join(buf[0:10])
+        bot.reply_to(cmd, "%s" % output)
     except Exception as e:
         try:
             bot.reply_to(cmd, "Deu merda... %s" % e)

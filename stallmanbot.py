@@ -318,7 +318,8 @@ def Distros(cmd):
     msg = None
     distro = cmd.text
     distro = distro.lower()
-    distro = re.sub(".*distro ", "", distro)
+    #distro = re.sub(".*distro ", "", distro)
+    distro = distro.split()[-1]
     if distro:
         debug("Distro: %s" % distro)
         if os.path.exists("%s/%s.jpg" % (IMGDIR, distro)):
@@ -570,7 +571,7 @@ def FofoMetrics(cmd):
             bot.send_message(cmd.chat.id, "Deu ruim... %s" % e)
 @bot.message_handler(commands=["motivationals","motivational"])
 def Motivational(cmd):
-  
+
     MOTIVATIONALDIR = "%s/motivational" % (os.environ.get('HOME'))
     if(os.path.exists(MOTIVATIONALDIR) == False):
        os.system('cd && git clone https://github.com/jeanlandim/motivational')

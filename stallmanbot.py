@@ -620,7 +620,7 @@ def DuckDuckGo(cmd):
     debug("Question=%s" % question)
     req = requests.get("https://duckduckgo.com/html/?q=%s" % question)
     answer = None
-    for line in req.text:
+    for line in req.text.split("\n"):
         if re.search("result__snippet", line):
             answer = line
             break

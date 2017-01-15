@@ -617,6 +617,7 @@ def DuckDuckGo(cmd):
     if len(q) == 1:
         return
     question = "+".join(q[1:])
+    debug("Question=%s" % question)
     req = requests.get("https://duckduckgo.com/html/?q=%s" % question)
     answer = None
     for line in req.text:
@@ -625,6 +626,7 @@ def DuckDuckGo(cmd):
             break
     if not answer:
         bot.reply_to(cmd, "Não tenho a menor idéia.  Tem de perguntar no google.")
+        return
     try:
        bot.reply_to(cmd, answer)
     except Exception as e:

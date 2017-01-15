@@ -578,9 +578,9 @@ def Motivational(cmd):
 
     photos = os.listdir(MOTIVATIONALDIR)
     motivational = None
-    while not (re.search("jpg|png|gif", motivational)):
+    while not re.search("(jpg|png|gif)", motivational):
         motivational = random.choice(photos)
-    debug("Motivational picture: %s" % motivational)
+        debug("Motivational picture: %s" % motivational)
     try:
        ph = open("%s/%s" % (MOTIVATIONALDIR, motivational), 'rb')
        bot.send_photo(cmd.chat.id, ph)

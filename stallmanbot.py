@@ -622,7 +622,11 @@ def DuckDuckGo(cmd):
     answer = None
     html = bp.BeautifulSoup(req.text)
     responses = html.findAll("div", id="zero_click_abstract")
-    answer = responses[0].text
+    try:
+        answer = responses[0].text
+    except Exception as e:
+        print e # get internal
+        pass
     if not answer:
         bot.reply_to(cmd, "Não tenho a menor idéia.  Tem de perguntar no google.")
         return
@@ -638,5 +642,6 @@ while True:
         bot.polling()
     except Exception as e:
         print e
-        os.unlink(PIDFILE)
+
+os.unlink(PIDFILE)
 

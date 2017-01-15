@@ -610,6 +610,27 @@ def Motivational(cmd):
     except Exception as e:
        bot.reply_to(cmd, "Deu merda: %s" % e)
 
+@bot.message_handler(commands=["oquee", "oqueé"])
+def DuckDuckGo(cmd):
+    debug(cmd.text)
+    q = cmd.text.split()
+    if len(q) == 1:
+        return
+    question = "+".join(q[1:])
+    req = requests.get("https://duckduckgo.com/html/?q=%s" % question)
+    answer = None
+    for line in req.text:
+        if re.search("result__snippet", line):
+            answer = line
+            break
+    if not answer:
+        bot.reply_to(cmd, "Não tenho a menor idéia.  Tem de perguntar no google.")
+    try:
+       bot.reply_to(cmd, answer)
+    except Exception as e:
+       bot.reply_to(cmd, "Deu merda: %s" % e)
+
+
 while True:
     try:
         debug("Polling...")

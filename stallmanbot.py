@@ -610,11 +610,11 @@ def Motivational(cmd):
     except Exception as e:
        bot.reply_to(cmd, "Deu merda: %s" % e)
 
-
-try:
-    debug("Polling...")
-    bot.polling()
-except Exception as e:
-    print e
-    os.unlink(PIDFILE)
+while True:
+    try:
+        debug("Polling...")
+        bot.polling()
+    except Exception as e:
+        print e
+        os.unlink(PIDFILE)
 

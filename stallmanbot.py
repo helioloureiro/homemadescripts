@@ -620,10 +620,9 @@ def DuckDuckGo(cmd):
     debug("Question=%s" % question)
     req = requests.get("https://duckduckgo.com/html/?q=%s" % question)
     answer = None
-    for line in req.text.split("\n"):
-        if re.search("result__snippet", line):
-            answer = line
-            break
+    html = bp.BeautifulSoup(req.text)
+    responses = html.findAll("div", id="zero_click_abstract")
+    answer = responses[0].text
     if not answer:
         bot.reply_to(cmd, "Não tenho a menor idéia.  Tem de perguntar no google.")
         return

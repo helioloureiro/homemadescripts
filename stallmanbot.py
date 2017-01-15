@@ -318,7 +318,7 @@ def Distros(cmd):
     msg = None
     distro = cmd.text
     distro = distro.lower()
-    distro = re.sub(".*distro ", "", distro)
+    distro  = distro.split()[-1] # last arg
     if distro:
         debug("Distro: %s" % distro)
         if os.path.exists("%s/%s.jpg" % (IMGDIR, distro)):
@@ -330,11 +330,6 @@ def Distros(cmd):
             bot.send_photo(cmd.chat.id, img)
             bot.send_message(cmd.chat.id, "Distro não encontrada.  Agradecemos a compreensão (e use outra).")
             return
-    if re.search("/ubuntu", cmd.text) or re.search("distro ubuntu", cmd.text):
-        debug("ubuntu")
-        img = open("%s/ubuntu.jpg" % IMGDIR, "rb")
-        bot.send_photo(cmd.chat.id, img)
-        return
     elif cmd.text == "/distros":
         bot.send_message(cmd.chat.id, "Distros: ubuntu e debian")
         return
@@ -568,15 +563,17 @@ def FofoMetrics(cmd):
             bot.send_message(cmd.chat.id, u'%s' % msg)
         except Exception as e:
             bot.send_message(cmd.chat.id, "Deu ruim... %s" % e)
-@bot.message_handler(commands=["motivationals","motivational"])
+@bot.message_handler(commands=["motivationals","motivational", "motivacional"])
 def Motivational(cmd):
-  
+
     MOTIVATIONALDIR = "%s/motivational" % (os.environ.get('HOME'))
     if(os.path.exists(MOTIVATIONALDIR) == False):
        os.system('cd && git clone https://github.com/jeanlandim/motivational')
 
     photos = os.listdir(MOTIVATIONALDIR)
-    motivational = random.choice(photos)
+    motivacional = None
+    while not re.search("jpg|gif|png", motivacional):
+        motivational = random.choice(photos)
     try:
        ph = open("%s/%s" % (MOTIVATIONALDIR, motivational), 'rb')
        bot.send_photo(cmd.chat.id, ph)

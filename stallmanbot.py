@@ -569,15 +569,16 @@ def FofoMetrics(cmd):
             bot.send_message(cmd.chat.id, u'%s' % msg)
         except Exception as e:
             bot.send_message(cmd.chat.id, "Deu ruim... %s" % e)
-@bot.message_handler(commands=["motivationals","motivational"])
+@bot.message_handler(commands=["motivationals", "motivational", "motivacional" ])
 def Motivational(cmd):
-
+    debug(cmd.text)
     MOTIVATIONALDIR = "%s/motivational" % (os.environ.get('HOME'))
     if(os.path.exists(MOTIVATIONALDIR) == False):
        os.system('cd && git clone https://github.com/jeanlandim/motivational')
 
     photos = os.listdir(MOTIVATIONALDIR)
     motivational = random.choice(photos)
+    debug("Motivational picture: %s" % motivational)
     try:
        ph = open("%s/%s" % (MOTIVATIONALDIR, motivational), 'rb')
        bot.send_photo(cmd.chat.id, ph)

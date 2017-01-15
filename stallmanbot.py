@@ -79,6 +79,29 @@ cfg.read(configuration)
 key = cfg.get("TELEGRAM", "STALLBOT")
 debug("Key acquired.")
 
+def StartUp():
+    if os.path.exists(SCRIPTHOME):
+        os.chdir(SCRIPTHOME)
+        oscmd = "git pull -f"
+        debug(oscmd)
+        os.system(oscmd)
+        botname = "stallmanbot.py"
+        debug(oscmd)
+        oscmd = "diff -q %s %s/bin/%s" % (botname, HOME, botname)
+        res = os.system(oscmd)
+        if res:
+            # new version detected
+            res = os.system("%s %s" % (sys.executable, sys.argv[0]) )
+            if res != 0:
+                debug("Versão bugada")
+                sys.exit(1)
+            debug("Updating bot...")
+            shutil.copy(botname, "%s/bin/%s" % (HOME, botname))
+            debug("Bot version updated.")
+    # check first
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
+
 debug("Starting bot for FreeSpeech")
 bot = telebot.TeleBot(key)
 

@@ -577,7 +577,7 @@ def Motivational(cmd):
        os.system('cd && git clone https://github.com/jeanlandim/motivational')
 
     photos = os.listdir(MOTIVATIONALDIR)
-    motivational = None
+    motivational = ""
     while not re.search("(jpg|png|gif)", motivational):
         motivational = random.choice(photos)
         debug("Motivational picture: %s" % motivational)

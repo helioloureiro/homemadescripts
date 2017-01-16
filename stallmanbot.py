@@ -35,6 +35,8 @@ date - A data atual.
 uptime - Somente os fortes entenderão.
 mandanudes - Pura sensualidade.
 nudes - Sensualidade dum jeito mais rápido.
+emacs - Religião é coisa séria.  Principalmente a parte do vinho e pecado.
+motivational - Pra melhorar *aquela* segunda-feira.
 
 """
 

@@ -635,6 +635,27 @@ def DuckDuckGo(cmd):
     except Exception as e:
        bot.reply_to(cmd, "Deu merda: %s" % e)
 
+@bot.message_handler(commands=["emacs"])
+def Emacs(cmd):
+    debug(cmd.text)
+    pray = """
+Linux nosso que estais no PC
+Bem compilado seja o vosso Kernel
+Venha a nós o vosso código
+Seja feita a vossa tarball
+Assim em casa como no trabalho
+O bit nosso de cada dia seja escovado
+Apagai com rm -rf
+Para nunca mais recuperar o que foi perdido
+E não nos deixeis errar a compilação
+E livrai a todos da M$
+
+Amém.
+"""
+    try:
+       bot.send_message(cmd.chat.id, pray)
+    except Exception as e:
+       bot.reply_to(cmd, "Um exu-tranca-sistema derrubou tudo aqui: %s" % e)
 
 while True:
     try:

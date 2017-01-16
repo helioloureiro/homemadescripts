@@ -233,8 +233,12 @@ def Help(cmd):
 
 @bot.message_handler(commands=["fortune", "fortunes", "sorte"])
 def Fortune(cmd):
+    fortune = os.popen("/usr/games/fortune").read()
+    # avoid big answers
+    while (len(fortune) > 200):
+        fortune = os.popen("/usr/games/fortune").read()
     try:
-        bot.reply_to(cmd, "%s" % os.popen("/usr/games/fortune").read())
+        bot.reply_to(cmd, "%s" % fortune)
     except:
         bot.reply_to(cmd, "Deu merda...")
 

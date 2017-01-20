@@ -562,7 +562,7 @@ def FofoMetrics(cmd):
         if TimeDelta(user) < 24 * 60 * 60:
             pctg = GetPctg(user)
         elif cmd.from_user.username == 'HelioLoureiro' and re.search("arrumasaporra", cmd.text):
-            bot.send_message(cmd.chat.id, "Perdão patrão... Estava aqui compilando o emacs e me distraí.  Deixa eu fazer de novo.")
+            bot.send_message(cmd.chat.id, u"Perdão patrão... Estava aqui compilando o emacs e me distraí.  Deixa eu fazer de novo.")
             pctg = RunTheDice(100)
             fofondex[user] = {
                 'timestamp' : time.time(),

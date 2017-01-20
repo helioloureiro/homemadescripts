@@ -12,6 +12,7 @@ import BeautifulSoup as bp
 import shutil
 import random
 import pickle
+from datetime import date
 
 """
 Super ultra bot.
@@ -266,6 +267,29 @@ def RTFM(cmd):
 def RTFM(cmd):
     try:
         bot.reply_to(cmd, "Palavra africana para: Eu não sei corrigir dependências.")
+    except:
+        bot.reply_to(cmd, "Deu merda...")
+
+@bot.message_handler(commands=["dia"])
+def RTFM(cmd):
+    try:
+        hoje = date.today()
+        semana = hoje.weekday()
+        
+        if semana == 0:
+            bot.reply_to(cmd, "Segunda-Feira sempre tem alguem assim: https://www.youtube.com/watch?v=rp34FE01Q3M")
+        elif semana == 1:
+            bot.reply_to(cmd, "Terça Feira")
+        elif semana == 2:
+            bot.reply_to(cmd, "Quarta Feira")
+        elif semana == 3:
+            bot.reply_to(cmd, "Quinta Feira")
+        elif semana == 4:
+            bot.reply_to(cmd, "Sexta-Feira é o dia da Maldade: https://www.youtube.com/watch?v=qys5ObMiKDo")
+        elif semana == 5:
+            bot.reply_to(cmd, "https://www.youtube.com/watch?v=rX2Bw-mwnOM")
+        elif semana == 6:
+            bot.reply_to(cmd, "Domingo é dia de compilar um kernel")
     except:
         bot.reply_to(cmd, "Deu merda...")
 

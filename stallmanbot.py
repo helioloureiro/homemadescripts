@@ -533,7 +533,9 @@ def FofoMetrics(cmd):
             }
     """
 
-    def RunTheDice():
+    def RunTheDice(n=None):
+        if n:
+            return n
         return random.randint(0,100)
 
     def TimeDelta(user):
@@ -558,7 +560,15 @@ def FofoMetrics(cmd):
 
     if re.search("/fofometro", cmd.text):
         if TimeDelta(user) < 24 * 60 * 60:
-            pctg = GetPctg(user)
+            pctg = GetPctg()
+        if cmd.from_user.username == 'HelioLoureiro' and re.search("arrumasaporra", cmd.text):
+            bot.send_message(cmd.chat.id, "Perdão patrão... Estava aqui compilando o emacs e me distraí.  Deixa eu fazer de novo.")
+            pctg = RunTheDice(100)
+            fofondex[user] = {
+                'timestamp' : time.time(),
+                'foforate' : pctg
+                }
+            pickle.dump( fofondex, open( FOFODB, "wb" ) )
         else:
             pctg = RunTheDice()
             fofondex[user] = {
@@ -598,6 +608,7 @@ def FofoMetrics(cmd):
             bot.send_message(cmd.chat.id, u'%s' % msg)
         except Exception as e:
             bot.send_message(cmd.chat.id, "Deu ruim... %s" % e)
+
 @bot.message_handler(commands=["motivationals", "motivational", "motivacional" ])
 def Motivational(cmd):
     debug(cmd.text)

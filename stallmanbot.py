@@ -569,16 +569,19 @@ def FofoMetrics(cmd):
                 }
             pickle.dump( fofondex, open( FOFODB, "wb" ) )
 
-        if cmd.from_user.username == 'HelioLoureiro' and \
-            re.search("arrumasaporra", cmd.text):
-            bot.send_message(cmd.chat.id, u"Perdão patrão... Estava aqui " + \
-                u"compilando o emacs e me distraí.  Deixa eu fazer de novo.")
-            pctg = RunTheDice(100)
-            fofondex[user] = {
-                'timestamp' : time.time(),
-                'foforate' : pctg
-                }
-            pickle.dump( fofondex, open( FOFODB, "wb" ) )
+        if re.search("arrumasaporra", cmd.text):
+            if cmd.from_user.username == 'HelioLoureiro':
+                bot.send_message(cmd.chat.id, u"Perdão patrão... Estava aqui " + \
+                    u"compilando o emacs e me distraí.  Deixa eu fazer de novo.")
+                pctg = RunTheDice(100)
+                fofondex[user] = {
+                    'timestamp' : time.time(),
+                    'foforate' : pctg
+                    }
+                pickle.dump( fofondex, open( FOFODB, "wb" ) )
+            else:
+                bot.send_message(cmd.chat.id, u"Quem você pensa que é pra " + \
+                    u"falar comigo dessa maneira?  Sabe quem eu sou???")
         try:
             msg = u"Hoje %s tem %d%s de ultrafofura mas " % (user, pctg, '%')
             msg += u"aquele %d%s de blob binário no kernel." % (100 - pctg, '%',)

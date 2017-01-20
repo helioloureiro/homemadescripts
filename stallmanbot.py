@@ -560,8 +560,8 @@ def FofoMetrics(cmd):
 
     if re.search("/fofometro", cmd.text):
         if TimeDelta(user) < 24 * 60 * 60:
-            pctg = GetPctg()
-        if cmd.from_user.username == 'HelioLoureiro' and re.search("arrumasaporra", cmd.text):
+            pctg = GetPctg(user)
+        elif cmd.from_user.username == 'HelioLoureiro' and re.search("arrumasaporra", cmd.text):
             bot.send_message(cmd.chat.id, "Perdão patrão... Estava aqui compilando o emacs e me distraí.  Deixa eu fazer de novo.")
             pctg = RunTheDice(100)
             fofondex[user] = {

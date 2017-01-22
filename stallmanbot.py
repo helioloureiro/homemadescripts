@@ -252,7 +252,8 @@ def RTFM(cmd):
 
 @bot.message_handler(commands=["apt-get", "aptitude", "apt"])
 def AptCmds(session):
-    if re.search("apt-get", session.chat.text):
+    debug(session.text)
+    if re.search("apt-get", session.text):
         try:
             bot.reply_to(session, "Esse bot tem poderes de super vaca.")
             counter = random.randint(0,10)
@@ -264,7 +265,7 @@ def AptCmds(session):
         except Exception as e:
             bot.reply_to(session, "apt-get deu BSOD... %s" % e)
         return
-    elif re.search("aptitude", session.chat.text):
+    elif re.search("aptitude", session.text):
         try:
             bot.reply_to(session,
                 "Palavra africana para: Eu não sei corrigir dependências.")

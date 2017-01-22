@@ -83,6 +83,7 @@ key = cfg.get("TELEGRAM", "STALLBOT")
 debug("Key acquired.")
 
 def StartUp():
+    debug("Startup")
     if os.path.exists(SCRIPTHOME):
         os.chdir(SCRIPTHOME)
         oscmd = "git pull -f"
@@ -101,9 +102,10 @@ def StartUp():
             debug("Updating bot...")
             shutil.copy(botname, "%s/bin/%s" % (HOME, botname))
             debug("Bot version updated.")
-    # check first
-    python = sys.executable
-    os.execl(python, python, *sys.argv)
+            # check first
+            debug("Calling restart")
+            python = sys.executable
+            os.execl(python, python, *sys.argv)
 
 debug("Starting bot for FreeSpeech")
 bot = telebot.TeleBot(key)

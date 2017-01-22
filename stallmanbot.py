@@ -274,8 +274,9 @@ def AptCmds(session):
         return
     elif re.search("apt", session.text):
         try:
-            bot.reply_to(session,
-                u"Palavra hipster para: Eu gosto de ver tudo colorido.")
+            #bot.reply_to(session,
+            #    u"Palavra hipster para: Eu gosto de ver tudo colorido.")
+            print "apt"
         except:
             bot.reply_to(session, "Deu merda...")
         return

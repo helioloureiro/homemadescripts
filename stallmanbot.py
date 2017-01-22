@@ -716,6 +716,7 @@ Amém.
        bot.reply_to(cmd, "Um exu-tranca-sistema derrubou tudo aqui: %s" % e)
 
 while True:
+    StartUp()
     try:
         debug("Polling...")
         bot.polling()

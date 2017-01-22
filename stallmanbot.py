@@ -273,17 +273,21 @@ def AptCmds(session):
             bot.reply_to(session, "Deu merda...")
         return
     elif re.search("apt", session.text):
+        debug("On apt")
         try:
-            #bot.reply_to(session,
-            #    u"Palavra hipster para: Eu gosto de ver tudo colorido.")
-            print "apt"
-        except:
-            bot.reply_to(session, "Deu merda...")
+            debug("Post on session")
+            bot.reply_to(session,
+                u"Palavra hipster para: Eu gosto de ver tudo colorido.")
+        except Exception as e:
+            debug(e)
+            bot.reply_to(session, "Deu merda... %s" % e)
         return
+    debug("Asking about it on apt loop.")
     bot.reply_to(session, u"Quê?")
 
 @bot.message_handler(commands=["dia", "bomdia"])
 def Dia(cmd):
+    debug(cmd.text)
     try:
         hoje = date.today()
         semana = hoje.weekday()

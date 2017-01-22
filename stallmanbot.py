@@ -727,6 +727,7 @@ while True:
         bot.polling()
     except Exception as e:
         print e
+        debug(e)
 
 os.unlink(PIDFILE)
 

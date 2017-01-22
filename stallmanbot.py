@@ -722,6 +722,12 @@ Amém.
     except Exception as e:
        bot.reply_to(cmd, "Um exu-tranca-sistema derrubou tudo aqui: %s" % e)
 
+
+@bot.message_handler(commands=[".*"])
+def WhatEver(session):
+    debug(session.text)
+    bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")
+
 while True:
     StartUp()
     try:

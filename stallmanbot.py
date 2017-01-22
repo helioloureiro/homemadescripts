@@ -723,7 +723,7 @@ Amém.
        bot.reply_to(cmd, "Um exu-tranca-sistema derrubou tudo aqui: %s" % e)
 
 
-@bot.message_handler(commands=[".*"])
+@bot.message_handler(func=lambda m: True)
 def WhatEver(session):
     debug(session.text)
     bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")

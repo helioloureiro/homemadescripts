@@ -250,46 +250,56 @@ def RTFM(cmd):
     except:
         bot.reply_to(cmd, "Deu merda...")
 
-@bot.message_handler(commands=["apt-get"])
-def RTFM(cmd):
-    try:
-        bot.reply_to(cmd, "Esse bot tem poderes de super vaca.")
-        counter = random.randint(0,10)
-        while counter:
-            counter -= 1
-            time.sleep(random.randint(0,10))
-            moo = "mo" + random.randint(0,10) * "o"
-            bot.send_message(cmd.chat.id, moo)
-    except Exception as e:
-        bot.reply_to(cmd, "apt-get deu BSOD... %s" % e)
+@bot.message_handler(commands=["apt-get", "aptitude", "apt"])
+def AptCmds(session):
+    if re.search("apt-get", session.chat.text):
+        try:
+            bot.reply_to(session, "Esse bot tem poderes de super vaca.")
+            counter = random.randint(0,10)
+            while counter:
+                counter -= 1
+                time.sleep(random.randint(0,10))
+                moo = "moo" + random.randint(0,10) * "o"
+                bot.send_message(session.chat.id, moo)
+        except Exception as e:
+            bot.reply_to(session, "apt-get deu BSOD... %s" % e)
+        return
+    elif re.search("aptitude", session.chat.text):
+        try:
+            bot.reply_to(session,
+                "Palavra africana para: Eu não sei corrigir dependências.")
+        except:
+            bot.reply_to(session, "Deu merda...")
+        return
+    elif re.search("apt", session.chat.text):
+        try:
+            bot.reply_to(session,
+                u"Palavra hipster para: Eu gosto de ver tudo colorido.")
+        except:
+            bot.reply_to(session, "Deu merda...")
+        return
+    bot.reply_to(session, u"Quê?")
 
-@bot.message_handler(commands=["aptitude"])
-def RTFM(cmd):
-    try:
-        bot.reply_to(cmd, "Palavra africana para: Eu não sei corrigir dependências.")
-    except:
-        bot.reply_to(cmd, "Deu merda...")
-
-@bot.message_handler(commands=["dia"])
-def RTFM(cmd):
+@bot.message_handler(commands=["dia", "bomdia"])
+def Dia(cmd):
     try:
         hoje = date.today()
         semana = hoje.weekday()
-        
+
         if semana == 0:
-            bot.reply_to(cmd, "Segunda-Feira sempre tem alguem assim: https://www.youtube.com/watch?v=rp34FE01Q3M")
+            bot.reply_to(cmd, u"Segunda-Feira sempre tem alguem assim: https://www.youtube.com/watch?v=rp34FE01Q3M")
         elif semana == 1:
-            bot.reply_to(cmd, "Terça Feira")
+            bot.reply_to(cmd, u"Terça Feira")
         elif semana == 2:
-            bot.reply_to(cmd, "Quarta Feira")
+            bot.reply_to(cmd, u"Quarta Feira")
         elif semana == 3:
-            bot.reply_to(cmd, "Quinta Feira")
+            bot.reply_to(cmd, u"Quinta Feira")
         elif semana == 4:
-            bot.reply_to(cmd, "Sexta-Feira é o dia da Maldade: https://www.youtube.com/watch?v=qys5ObMiKDo")
+            bot.reply_to(cmd, u"Sexta-Feira é o dia da Maldade: https://www.youtube.com/watch?v=qys5ObMiKDo")
         elif semana == 5:
-            bot.reply_to(cmd, "https://www.youtube.com/watch?v=rX2Bw-mwnOM")
+            bot.reply_to(cmd, u"https://www.youtube.com/watch?v=rX2Bw-mwnOM")
         elif semana == 6:
-            bot.reply_to(cmd, "Domingo é dia de compilar um kernel")
+            bot.reply_to(cmd, u"Domingo é dia de compilar um kernel")
     except:
         bot.reply_to(cmd, "Deu merda...")
 

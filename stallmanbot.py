@@ -80,6 +80,7 @@ if not os.path.exists(configuration):
     sys.exit(1)
 cfg.read(configuration)
 key = cfg.get("TELEGRAM", "STALLBOT")
+botadm = cfg.get("TELEGRAM", "STALLBOTADM")
 debug("Key acquired.")
 
 def StartUp():
@@ -137,7 +138,7 @@ def UltraFofo(cmd):
 @bot.message_handler(commands=["reload"])
 def Reload(cmd):
     debug(cmd.text)
-    if not cmd.from_user.username == 'HelioLoureiro':
+    if not cmd.from_user.username == botadm:
         bot.reply_to(cmd, "Só patrão pode isso.")
         return
     try:
@@ -612,7 +613,7 @@ def FofoMetrics(cmd):
             pickle.dump( fofondex, open( FOFODB, "wb" ) )
 
         if re.search("arrumasaporra", cmd.text):
-            if cmd.from_user.username == 'HelioLoureiro':
+            if cmd.from_user.username == botadm:
                 bot.send_message(cmd.chat.id, u"Perdão patrão... Estava aqui " + \
                     u"compilando o emacs e me distraí.  Deixa eu fazer de novo.")
                 pctg = RunTheDice(100)

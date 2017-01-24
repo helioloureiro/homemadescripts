@@ -1,0 +1,13 @@
+# just an example of .twitterc
+[TWITTER]
+CONS_KEY = abacdadfadasdf
+CONS_SEC = babadafasfasdfasdfasdfasdfasdfsadfsdfasfsaddf
+ACC_KEY = 123123008-adfasdfsadfasfdasdfasfdasdfsadfsafddf
+ACC_SEC = adfadfasdfasdfasfasdfasdfsasadsdfsfdssafsfdsafs
+
+[FORECAST.IO]
+KEY = 097098706976978698756876798760
+LOCATION = 59.4029,17.9436
+
+[TELEGRAM]
+STALLBOT = key-aadfaba-adfasdfadfafaa

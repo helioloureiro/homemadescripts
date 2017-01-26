@@ -725,7 +725,7 @@ Amém.
 @bot.message_handler(commands=["mimimi"])
 def Mimimizer(session):
     debug(session.text)
-    param = sesstion.text.split()
+    param = session.text.split()
     if len(param) <= 1:
         return
     resp = " ".join(param[1:])

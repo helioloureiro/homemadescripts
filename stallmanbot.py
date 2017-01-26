@@ -731,6 +731,8 @@ def Mimimizer(session):
     resp = " ".join(param[1:])
     resp = re.sub("a|e|o|u", "i", resp)
     resp = re.sub("A|E|O|U", "I", resp)
+    resp = re.sub(u"á|é|ó|ú", u"í", resp)
+    resp = re.sub(u"Á|É|Ó|Ú", u"Í", resp)
     bot.reply_to(session, u"%s" % resp)
     # Falta implementar quem...
 

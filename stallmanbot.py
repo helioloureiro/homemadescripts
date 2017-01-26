@@ -298,7 +298,7 @@ def Dia(cmd):
         if semana == 0:
             bot.reply_to(cmd, u"Segunda-Feira sempre tem alguem assim: https://www.youtube.com/watch?v=rp34FE01Q3M")
         elif semana == 1:
-            bot.reply_to(cmd, u"Terça Feira")
+            bot.reply_to(cmd, u"Terça Feira: https://www.youtube.com/watch?v=V7eR6wtjcxA")
         elif semana == 2:
             bot.reply_to(cmd, u"Quarta Feira")
         elif semana == 3:

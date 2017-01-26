@@ -722,11 +722,22 @@ Amém.
     except Exception as e:
        bot.reply_to(cmd, "Um exu-tranca-sistema derrubou tudo aqui: %s" % e)
 
+@bot.message_handler(commands=["ban"])
+def Ban(session):
+    debug(session.text)
+    bot.reply_to(session, u"Deixa que eu pego ele na hora da saída.")
+    # Falta implementar quem...
 
 @bot.message_handler(func=lambda m: True)
 def WhatEver(session):
     debug(session.text)
-    bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")
+    if re.search("kkkkkk", session.text):
+        bot.reply_to(session, u"Hilário.")
+        return
+    elif re.search("hahahaha", session.text):
+        bot.reply_to(session, u"Hilário.")
+        return
+    #bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")
 
 while True:
     StartUp()

@@ -179,6 +179,7 @@ def SysCmd(cmd):
     sanitize = re.sub("@.*", "", sanitize)
     try:
         resp = os.popen(sanitize[1:]).read()
+        resp = re.sub("GNU", "OSI", resp)
         debug("Response: %s" % resp)
         bot.reply_to(cmd, "%s" % resp)
     except Exception as e:

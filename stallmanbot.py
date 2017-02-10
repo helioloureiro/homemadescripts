@@ -652,9 +652,11 @@ def FofoMetrics(cmd):
             ranking[u] = fofondex[u]['foforate']
         if isUpdated:
             pickle.dump( fofondex, open( FOFODB, "wb" ) )
+        i = 1
         for u in sorted(ranking, key=ranking.get, reverse=True):
             pct = fofondex[u]['foforate']
-            msg += u"%s: %d%s\n" % (u, pct, '%')
+            msg += u"%d) %s: %d%s\n" % (i, u, pct, '%')
+            i += 1
         del ranking
         try:
             debug(u'%s' % msg)

@@ -38,6 +38,8 @@ mandanudes - Pura sensualidade.
 nudes - Sensualidade dum jeito mais rápido.
 emacs - Religião é coisa séria.  Principalmente a parte do vinho e pecado.
 motivational - Pra melhorar *aquela* segunda-feira.
+dia - Pra saber em qual dia da semana estamos.  Ou não.
+blob - Quem não precisa de firmware pra funcionar?
 
 """
 
@@ -114,7 +116,7 @@ bot = telebot.TeleBot(key)
 def HelloWorld(cmd):
     debug(cmd.text)
     try:
-        bot.send_message(cmd.chat.id, "GNU world")
+        bot.send_message(cmd.chat.id, "OSI world")
     except Exception as e:
         try:
             bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
@@ -250,6 +252,7 @@ def Fortune(cmd):
 def RTFM(cmd):
     try:
         bot.reply_to(cmd, "Read The F*cking Manual.  Ou leia o Guia Foca GNU/Linux.")
+        bot.reply_to(cmd, "http://www.guiafoca.org/")
     except:
         bot.reply_to(cmd, "Deu merda...")
 
@@ -736,6 +739,26 @@ def Mimimizer(session):
     resp = re.sub(u"Á|É|Ó|Ú", u"Í", resp)
     bot.reply_to(session, u"%s" % resp)
     # Falta implementar quem...
+
+@bot.message_handler(commands=["blob"])
+def Mimimizer(session):
+    debug(session.text)
+    msg = u"""
+Blob nosso que estais no kernel
+codificado seja o vosso nome.
+Venha a nós o vosso driver.
+Seja feita integração com vontade,
+assim no kernel como no shell.
+O patch nosso de cada dia nos dai hoje.
+Perdoai os nossos scripts,
+assim com nós perdoamos a quem é ultrafofo.
+Não nos deixei cair de uptime.
+Mas livrai-nos do FUDA,
+
+Amuleke!
+"""
+    bot.reply_to(session, u"%s" % msg)
+
 
 @bot.message_handler(commands=["ban"])
 def Ban(session):

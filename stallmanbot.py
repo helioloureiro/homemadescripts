@@ -583,6 +583,7 @@ def FofoMetrics(cmd):
     def RunTheDice(n=None):
         if n:
             return n
+        random.seed(os.urandom(random.randint(0,1000)))
         return random.randint(0,100)
 
     def TimeDelta(user):

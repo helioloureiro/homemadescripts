@@ -770,13 +770,13 @@ def Ban(session):
 @bot.message_handler(func=lambda m: True)
 def WhatEver(session):
     debug(session.text)
-    if re.search("kkkkkk", session.text):
+    if re.search(u"kkkkkk", session.text):
         bot.reply_to(session, u"Hilário.")
         return
-    elif re.search("hahahaha", session.text):
+    elif re.search(u"hahahaha", session.text):
         bot.reply_to(session, u"Hilário.")
         return
-    elif re.search("bom dia", session.text.lower()):
+    elif re.search(u"bom dia", session.text.lower()):
         self.Dia(session)
         return
     #bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")

@@ -323,12 +323,12 @@ def Photo(cmd):
     month = time.strftime("%m", time.localtime())
     SAVEDIR = "%s/weather/%s/%s" % (os.environ.get('HOME'), year, month)
     if not os.path.exists(SAVEDIR):
-        debug("Sem fotos")
-        bot.reply_to(cmd, "Sem fotos no momento.")
+        debug(u"Sem fotos")
+        bot.reply_to(cmd, u"Sem fotos no momento.")
         return
     photos = os.listdir(SAVEDIR)
     last_photo = sorted(photos)[-1]
-    debug("Última foto: %s" % last_photo)
+    debug(u"Última foto: %s" % last_photo)
     tagname = os.path.basename(last_photo)
     try:
         bot.reply_to(cmd, "Última foto: %s" % tagname)
@@ -775,6 +775,9 @@ def WhatEver(session):
         return
     elif re.search("hahahaha", session.text):
         bot.reply_to(session, u"Hilário.")
+        return
+    elif re.search("bom dia", session.text.lower()):
+        self.Dia(session)
         return
     #bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")
 

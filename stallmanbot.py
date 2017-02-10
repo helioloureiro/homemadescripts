@@ -40,6 +40,7 @@ emacs - Religião é coisa séria.  Principalmente a parte do vinho e pecado.
 motivational - Pra melhorar *aquela* segunda-feira.
 dia - Pra saber em qual dia da semana estamos.  Ou não.
 blob - Quem não precisa de firmware pra funcionar?
+mimimi - Mande: /mimimi frase.
 
 """
 

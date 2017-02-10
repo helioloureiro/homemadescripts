@@ -777,7 +777,7 @@ def WhatEver(session):
         bot.reply_to(session, u"Hilário.")
         return
     elif re.search(u"bom dia", session.text.lower()):
-        self.Dia(session)
+        Dia(session)
         return
     #bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")
 

@@ -299,6 +299,12 @@ def Dia(cmd):
         hoje = date.today()
         semana = hoje.weekday()
 
+        if re.search("bom", cmd.text):
+            bot.reply_to(cmd,
+            u"""Bom dia pra todos vocês que usam blobs, e pra quem usa GNU também.
+
+O nome do sistema operacional é OSI/Linux e os blobs nos representam.""")
+
         if semana == 0:
             bot.reply_to(cmd, u"Segunda-Feira sempre tem alguem assim: https://www.youtube.com/watch?v=rp34FE01Q3M")
         elif semana == 1:

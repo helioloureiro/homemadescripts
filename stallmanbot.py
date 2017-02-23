@@ -83,6 +83,7 @@ if not os.path.exists(configuration):
     sys.exit(1)
 cfg.read(configuration)
 key = cfg.get("TELEGRAM", "STALLBOT")
+botadm = cfg.get("TELEGRAM", "STALLBOTADM")
 debug("Key acquired.")
 
 def StartUp():
@@ -140,7 +141,7 @@ def UltraFofo(cmd):
 @bot.message_handler(commands=["reload"])
 def Reload(cmd):
     debug(cmd.text)
-    if not cmd.from_user.username == 'HelioLoureiro':
+    if not cmd.from_user.username == botadm:
         bot.reply_to(cmd, "Só patrão pode isso.")
         return
     try:
@@ -308,7 +309,7 @@ O nome do sistema operacional é OSI/Linux e os blobs nos representam.""")
         if semana == 0:
             bot.reply_to(cmd, u"Segunda-Feira sempre tem alguem assim: https://www.youtube.com/watch?v=rp34FE01Q3M")
         elif semana == 1:
-            bot.reply_to(cmd, u"Terça Feira")
+            bot.reply_to(cmd, u"Terça Feira: https://www.youtube.com/watch?v=V7eR6wtjcxA")
         elif semana == 2:
             bot.reply_to(cmd, u"Quarta Feira")
         elif semana == 3:
@@ -624,7 +625,7 @@ def FofoMetrics(cmd):
             pickle.dump( fofondex, open( FOFODB, "wb" ) )
 
         if re.search("arrumasaporra", cmd.text):
-            if cmd.from_user.username == 'HelioLoureiro':
+            if cmd.from_user.username == botadm:
                 bot.send_message(cmd.chat.id, u"Perdão patrão... Estava aqui " + \
                     u"compilando o emacs e me distraí.  Deixa eu fazer de novo.")
                 pctg = RunTheDice(100)

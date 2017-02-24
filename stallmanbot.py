@@ -29,6 +29,7 @@ dilbert - Sua dose diária de humor corporativo.
 vidadeprogramador - Sua dose diária de Alonzo.
 vidadesuporte - Sua dose diária de chamados no helpdesk.
 angulodevista - Sua dose diária de vida.  Infelizmente.
+tirinhadorex - Tirinhas meio emo.
 fofometro - Quão fofo você é?  Tente.
 fofondex - Ranking de fofura.
 fortune - A sorte do dia.  Ou não.
@@ -475,7 +476,8 @@ def Comics(cmd):
             params = url_img.split()
             for p in params:
                 if re.search("src=", p):
-                    tmp_img = p.split("=")[-1]
+                    #tmp_img = p.split("=")[-1]
+                    tmp_img = re.sub("^src=", "", p)
                     tmp_img = re.sub("\"", "", tmp_img)
                     url = re.sub("^\/\/", "http://", tmp_img)
                     url = re.sub("^\/", "http://", url)

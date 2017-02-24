@@ -41,7 +41,8 @@ motivational - Pra melhorar *aquela* segunda-feira.
 dia - Pra saber em qual dia da semana estamos.  Ou não.
 blob - Quem não precisa de firmware pra funcionar?
 mimimi - Mande: /mimimi frase.
-
+bomdia - Assim que se começa um dia de verdade.
+fontes - Pra ter livre acesso ao conteúdo.
 """
 
 CONFIG = ".twitterc"
@@ -776,6 +777,14 @@ def Ban(session):
     debug(session.text)
     bot.reply_to(session, u"Deixa que eu pego ele na hora da saída.")
     # Falta implementar quem...
+
+@bot.message_handler(commands=["fonte", "fontes", "src", "source"])
+def Source(session):
+    debug(session.text)
+    bot.reply_to(session, u"""Estou aqui com 100% de acesso ao conteúdo em:
+
+https://github.com/helioloureiro/homemadescripts/blob/master/stallmanbot.py
+""")
 
 @bot.message_handler(func=lambda m: True)
 def WhatEver(session):

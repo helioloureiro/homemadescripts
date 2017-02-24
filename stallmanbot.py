@@ -14,11 +14,10 @@ import pickle
 from datetime import date
 import telebot
 
+# Message to send to @BotFather about its usage.
 Commands_Listing = """
 
-Super ultra bot.
-
-Message to sendo to @BotFather about its usage.
+== Super ultra bot.==
 
 oi - Hummm... então tá.
 ultrafofos - Quem são, o que são e como vivem.

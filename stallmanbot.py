@@ -654,9 +654,13 @@ def FofoMetrics(cmd):
         return int(pctg)
 
     if re.search("/resetfofos", cmd.text):
-        bot.send_message(cmd.chat.id, u"Limpando o fundum que está por aqui." \
-            + u"  Vou até jogar creolina.")
-        pickle.dump({},open( FOFODB, "wb" ) )
+        if user_name == botadm:
+            bot.send_message(cmd.chat.id, u"Limpando o fundum que está por aqui." \
+                + u"  Vou até jogar creolina.")
+            pickle.dump({},open( FOFODB, "wb" ) )
+        else:
+            bot.send_message(cmd.chat.id, u"Vai aprender a sair do VI "\
+            + "antes de querer vir aqui me dar ordem.")
         return
 
     if re.search("/fofometro", cmd.text):

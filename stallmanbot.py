@@ -428,8 +428,9 @@ def Distros(cmd):
 
 @bot.message_handler(commands=["xkcd", "dilbert", "vidadeprogramador",
     "tirinhas", "strips", "vidadesuporte", "angulodevista",
-    "mandanudes", "nudes"])
+    "mandanudes", "nudes", "tirinhadorex"])
 def Comics(cmd):
+    debug(cmd.text)
     def GetContent(url):
         if not url:
             return
@@ -548,6 +549,13 @@ def Comics(cmd):
         url = "http://angulodevista.com/"
         html = GetContent(url)
         img_link = GetImgUrl("div class=\"field field-name-field-image", html)
+        debug("%s: %s" % (cmd.text, img_link))
+        img = GetImg(img_link)
+    elif re.search("/tirinhadorex", cmd.text):
+        # curl http://tirinhasdorex.com/ | grep "<p><img class=\"aligncenter size-full wp-image-"
+        url = "http://tirinhasdorex.com/"
+        html = GetContent(url)
+        img_link = GetImgUrl("<p><img class=\"aligncenter size-full wp-image-", html)
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
     elif re.search("tirinhas|strips", cmd.text):

@@ -1,7 +1,6 @@
 #! /usr/bin/python -u
 # -*- coding: utf-8 -*-
 
-import telebot
 import os
 import sys
 import ConfigParser
@@ -13,6 +12,7 @@ import shutil
 import random
 import pickle
 from datetime import date
+import telebot
 
 """
 Super ultra bot.
@@ -571,18 +571,51 @@ def Comics(cmd):
         os.unlink(img)
     else:
         bot.send_message(cmd.chat.id, "É... foi não...")
-
-@bot.message_handler(commands=["fofometro", "fofondex"])
+"""
+{'delete_chat_photo': None, 'migrate_to_chat_id': None, 'text': u'/reload',
+'sticker': None, 'pinned_message': None, 'forward_from_chat': None,
+'migrate_from_chat_id': None, 'video': None, 'left_chat_member': None,
+'chat': {'username': u'ultraOSI', 'first_name': None, 'last_name': None,
+'title': u'UltraOSI - Free Software e Opensource sem FUDA e com blobs :)',
+'all_members_are_administrators': None,
+'type': u'supergroup',
+'id': -1001109390847L},
+'group_chat_created': None,
+'new_chat_photo': None,
+'forward_date': None,
+'entities': [<telebot.types.MessageEntity instance at 0x74833c60>],
+'supergroup_chat_created': None, 'photo': None, 'document': None,
+'forward_from': None, 'location': None, 'edit_date': None,
+'content_type': 'text',
+'from_user': {'username': u'HelioLoureiro',
+'first_name': u'[Helio@blobeiro.eng.br]>',
+'last_name': None, 'id': 64457589},
+'date': 1487941240,
+'new_chat_member': None, 'voice': None, 'reply_to_message': None,
+'venue': None, 'message_id': 11569, 'caption': None, 'contact': None,
+'channel_chat_created': None, 'audio': None, 'new_chat_title': None}
+"""
+@bot.message_handler(commands=["fofometro", "fofondex", "resetfofos"])
 def FofoMetrics(cmd):
-    user = cmd.from_user.username
+    user_name = cmd.from_user.username
+    user_id = cmd.from_user.id
+    user_1stname = cmd.from_user.first_name
+
+    user = user_name  # backward compatibility
+    if not user_name:  # got None
+        user_name = "Anonimo da Internet (%s)" % user_id
+    if not user_1stname:
+        user_1stname = user_name
     try:
-        fofondex = pickle.load( open( FOFODB, "rb" ) )
+        fofondex = pickle.load( open( FOFODB, "rb" ))
     except IOError:
         fofondex = {}
 
     """"
     Data struct:
-        'username': {
+        user_id: {
+            'user_1stname' : FirstName,
+            'user_name' Username,
             'timestamp' : dateinseconds,
             'foforate' : pctg
             }
@@ -594,52 +627,63 @@ def FofoMetrics(cmd):
         random.seed(os.urandom(random.randint(0,1000)))
         return random.randint(0,100)
 
-    def TimeDelta(user):
-        if fofondex.has_key(user):
-            timestamp = fofondex[user]['timestamp']
+    def TimeDelta(user_id):
+        if fofondex.has_key(user_id):
+            timestamp = fofondex[user_id]['timestamp']
             now = time.time()
             return now - int(timestamp)
         else:
             return 0
-
-    def GetPctg(user):
-        if fofondex.has_key(user):
-            pctg = fofondex[user]['foforate']
-        else:
+    def InitializeUser(pctg=None):
+        if not pctg:
             pctg = RunTheDice()
-            fofondex[user] = {
+        return {
                 'timestamp' : time.time(),
-                'foforate' : pctg
-                }
+                'foforate' : pctg,
+                'user_name' : user_name,
+                'user_1stname' : user_1stname
+        }
+    def GetPctg(user_id):
+        if fofondex.has_key(user_id):
+            pctg = fofondex[user_id]['foforate']
+        else:
+            # initialize user
+            pctg = RunTheDice()
+            fofondex[user_id] = InitializeUser()
             pickle.dump( fofondex, open( FOFODB, "wb" ) )
         return int(pctg)
 
+    if re.search("/resetfofos", cmd.text):
+        bot.send_message(cmd.chat.id, u"Limpando o fundum que está por aqui." \
+            + u"  Vou até jogar creolina.")
+        pickle.dump({},open( FOFODB, "wb" ) )
+        return
+
     if re.search("/fofometro", cmd.text):
-        if TimeDelta(user) < 24 * 60 * 60:
-            pctg = GetPctg(user)
+        if TimeDelta(user_id) < 24 * 60 * 60:
+            pctg = GetPctg(user_id)
         else:
             pctg = RunTheDice()
-            fofondex[user] = {
-                'timestamp' : time.time(),
-                'foforate' : pctg
-                }
+            fofondex[user_id] = InitializeUser()
             pickle.dump( fofondex, open( FOFODB, "wb" ) )
 
         if re.search("arrumasaporra", cmd.text):
-            if cmd.from_user.username == botadm:
+            if user_name == botadm:
                 bot.send_message(cmd.chat.id, u"Perdão patrão... Estava aqui " + \
                     u"compilando o emacs e me distraí.  Deixa eu fazer de novo.")
                 pctg = RunTheDice(100)
-                fofondex[user] = {
-                    'timestamp' : time.time(),
-                    'foforate' : pctg
-                    }
+                fofondex[user_id] = InitializeUser(pctg=pctg)
                 pickle.dump( fofondex, open( FOFODB, "wb" ) )
             else:
                 bot.send_message(cmd.chat.id, u"Quem você pensa que é pra " + \
                     u"falar comigo dessa maneira?  Sabe quem eu sou???")
+                bot.send_message(cmd.chat.id, u"Vou verificar de novo, " + \
+                    u"mas só dessa vez.")
+                pctg = RunTheDice()
+                fofondex[user_id] = InitializeUser(pctg=pctg)
+                pickle.dump( fofondex, open( FOFODB, "wb" ) )
         try:
-            msg = u"Hoje %s tem %d%s de ultrafofura mas " % (user, pctg, '%')
+            msg = u"Hoje %s tem %d%s de ultrafofura mas " % (user_name, pctg, '%')
             msg += u"aquele %d%s de blob binário no kernel." % (100 - pctg, '%',)
             debug(u'%s' % msg)
             bot.send_message(cmd.chat.id, u'%s' % msg)
@@ -664,7 +708,8 @@ def FofoMetrics(cmd):
         i = 1
         for u in sorted(ranking, key=ranking.get, reverse=True):
             pct = fofondex[u]['foforate']
-            msg += u"%d) %s: %d%s\n" % (i, u, pct, '%')
+            u_name = fofondex[u]['user_name']
+            msg += u"%d) %s: %d%s\n" % (i, u_name, pct, '%')
             i += 1
         del ranking
         try:

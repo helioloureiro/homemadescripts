@@ -52,7 +52,7 @@ def debug(msg):
         try:
             print u"%s" % msg
         except Exception as e:
-            print "DEBUG ERROR:", e
+            print u"DEBUG ERROR: %s" % e
 
 HOME = os.environ.get('HOME')
 PIDFILE = "%s/.stallmanbot.pid" % HOME

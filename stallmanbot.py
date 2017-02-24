@@ -14,7 +14,8 @@ import pickle
 from datetime import date
 import telebot
 
-"""
+Commands_Listing = """
+
 Super ultra bot.
 
 Message to sendo to @BotFather about its usage.
@@ -234,10 +235,11 @@ def ManPages(cmd):
 def Help(cmd):
     debug(cmd.text)
     try:
-        bot.reply_to(cmd, "Precisa de ajuda?  Procure o CVV. http://www.cvv.org.br")
+        bot.reply_to(cmd, u"Precisa de ajuda?  Procure o CVV. http://www.cvv.org.br")
+        bot.send_message(cmd.chat.id, Commands_Listing)
     except Exception as e:
         try:
-            bot.reply_to(cmd, "Deu merda... %s" % e)
+            bot.reply_to(cmd, u"Deu merda... %s" % e)
         except Exception as z:
             print z
 

@@ -768,7 +768,6 @@ def FofoMetrics(cmd):
             DataWrite()
 
         if re.search("arrumasaporra", cmd.text):
-            DataRead()
             if user_name == botadm:
                 bot.send_message(cmd.chat.id, u"Perdão patrão... Estava aqui " + \
                     u"compilando o emacs e me distraí.  Deixa eu fazer de novo.")
@@ -792,7 +791,6 @@ def FofoMetrics(cmd):
         return
 
     if re.search("/fofondex", cmd.text):
-        DataRead()
         if len(fofondex.keys()) == 0:
             msg = u"Ninguém ainda teve coragem de tentar esse UltraFofo."
             bot.send_message(cmd.chat.id, u'%s' % msg)
@@ -809,7 +807,7 @@ def FofoMetrics(cmd):
                 continue
             ranking[u] = fofondex[u]['foforate']
         if isUpdated:
-            pickle.dump( fofondex, open( FOFODB, "wb" ) )
+            DataWrite()
         i = 1
         for u in sorted(ranking, key=ranking.get, reverse=True):
             pct = fofondex[u]['foforate']

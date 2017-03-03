@@ -698,6 +698,7 @@ def FofoMetrics(cmd):
         global fofondex
         debug("DataReset")
         fofondex = {}
+        DataWrite()
 
     def RunTheDice(n=None):
         debug("RunTheDice")

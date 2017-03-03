@@ -740,6 +740,8 @@ def FofoMetrics(cmd):
 
     if re.search("/fofometro", cmd.text):
         fofondex = DataRead()
+        if not fofondex.has_key(user_id):
+            InitializeUser()
         if TimeDelta(user_id) < 24 * 60 * 60:
             pctg = GetPctg(user_id)
         else:

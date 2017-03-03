@@ -659,7 +659,6 @@ def FofoMetrics(cmd):
         while simple_lock:
             time.sleep(random.random())
         simple_lock = True
-        fofondex = None
         try:
             fofondex = pickle.load(open(FOFODB, "rb"))
         except IOError:

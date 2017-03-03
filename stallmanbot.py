@@ -697,8 +697,10 @@ def FofoMetrics(cmd):
     def DataReset():
         global fofondex
         debug("DataReset")
+        debug("Before: %s" % fofondex)
         fofondex = {}
         DataWrite()
+        debug("After: %s" % fofondex)
 
     def RunTheDice(n=None):
         debug("RunTheDice")

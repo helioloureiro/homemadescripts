@@ -680,7 +680,7 @@ def FofoMetrics(cmd):
         current_time = time.time()
         # just save data if time > 5 minutes to preserve disk
         if (current_time - start_time < 5 * 60):
-            debug("Skipping write.")
+            debug("Skipping write (timer < 5 minutes).")
             return
         else:
             start_time = current_time
@@ -689,8 +689,11 @@ def FofoMetrics(cmd):
         simple_lock = True
         try:
             if not fofondex:
+                debug(" * DataWrite: removing database from disk.")
                 os.unlink(FOFODB)
             else:
+                debug(" * DataWrite: pickle.dump()")
+                debug(" * DataWrite: data saved => %s" % fofondex)
                 pickle.dump(fofondex, open(FOFODB, "wb"))
         except IOError:
             debug("Failed to save DB")

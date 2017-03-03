@@ -767,6 +767,7 @@ def FofoMetrics(cmd):
             pctg = RunTheDice()
             fofondex[user_id] = InitializeUser()
             DataWrite()
+        debug(" * Fofondex top: %s" % fofondex)
 
         if re.search("arrumasaporra", cmd.text):
             if user_name == botadm:
@@ -782,6 +783,7 @@ def FofoMetrics(cmd):
                 pctg = RunTheDice()
                 fofondex[user_id] = InitializeUser(pctg=pctg)
         try:
+            debug(" * Fofondex before publishing: %s" % fofondex)
             msg = u"Hoje %s tem %d%s de ultrafofura mas " % (user_name, pctg, '%')
             msg += u"aquele %d%s de blob binário no kernel." % (100 - pctg, '%',)
             debug(u'%s' % msg)

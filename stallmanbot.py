@@ -630,7 +630,7 @@ start_time = time.time()
 
 @bot.message_handler(commands=["fofometro", "fofondex", "resetfofos"])
 def FofoMetrics(cmd):
-    debug(cmd.txt)
+    debug(cmd.text)
     global fofondex, start_time
     user_name = cmd.from_user.username
     user_id = cmd.from_user.id

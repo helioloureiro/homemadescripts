@@ -646,20 +646,27 @@ def FofoMetrics(cmd):
         while simple_lock:
             time.sleep(random.random())
         simple_lock = True
+        fofondex = None
         try:
             fofondex = pickle.load(open(FOFODB, "rb"))
         except IOError:
-            fofondex = {}
+            debug("Error reading FOFODB")
+            pass
         simple_lock = False
+        if not fofondex:
+            fofondex = {}
         return fofondex
 
-    def DataWrite(dict_information):
+    def DataWrite(dict_information=None):
         while simple_lock:
             time.sleep(random.random())
         simple_lock = True
         try:
-            pickle.dump(dict_information, open(FOFODB, "wb"))
+            if dict_information == None:
+                os.unlink(FOFODB)
+            #pickle.dump(dict_information, open(FOFODB, "wb"))
         except IOError:
+            debug("Failed to save DB")
             pass
             # yap... we lost it...
         simple_lock = False
@@ -701,7 +708,7 @@ def FofoMetrics(cmd):
         if user_name == botadm:
             bot.send_message(cmd.chat.id, u"Limpando o fundum que está por aqui." \
                 + u"  Vou até jogar creolina.")
-            DataWrite({})
+            DataWrite()
         else:
             bot.send_message(cmd.chat.id, u"Vai aprender a sair do VI "\
             + "antes de querer vir aqui me dar ordem.")

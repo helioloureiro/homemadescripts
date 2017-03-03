@@ -739,7 +739,6 @@ def FofoMetrics(cmd):
                     u"compilando o emacs e me distraí.  Deixa eu fazer de novo.")
                 pctg = RunTheDice(100)
                 fofondex[user_id] = InitializeUser(pctg=pctg)
-                DataWrite(fofondex)
             else:
                 bot.send_message(cmd.chat.id, u"Quem você pensa que é pra " + \
                     u"falar comigo dessa maneira?  Sabe quem eu sou???")
@@ -747,11 +746,11 @@ def FofoMetrics(cmd):
                     u"mas só dessa vez.")
                 pctg = RunTheDice()
                 fofondex[user_id] = InitializeUser(pctg=pctg)
-                DataWrite(fofondex)
         try:
             msg = u"Hoje %s tem %d%s de ultrafofura mas " % (user_name, pctg, '%')
             msg += u"aquele %d%s de blob binário no kernel." % (100 - pctg, '%',)
             debug(u'%s' % msg)
+            DataWrite(fofondex)
             bot.send_message(cmd.chat.id, u'%s' % msg)
         except Exception as e:
             bot.send_message(cmd.chat.id, "Deu ruim... %s" % e)

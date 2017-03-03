@@ -630,6 +630,7 @@ start_time = time.time()
 
 @bot.message_handler(commands=["fofometro", "fofondex", "resetfofos"])
 def FofoMetrics(cmd):
+    debug(cmd.txt)
     global fofondex, start_time
     user_name = cmd.from_user.username
     user_id = cmd.from_user.id
@@ -652,6 +653,9 @@ def FofoMetrics(cmd):
     def DataRead():
         debug("DataRead")
         global simple_lock, fofondex
+        # if data, skip to read since it is updated via memory
+        if fofondex:
+            return
         while simple_lock:
             time.sleep(random.random())
         simple_lock = True

@@ -6,12 +6,12 @@ import sys
 import ConfigParser
 import re
 import time
-import requests
-import BeautifulSoup as bp
 import shutil
 import random
 import pickle
 from datetime import date
+import requests
+import BeautifulSoup as bp
 import telebot
 
 # Message to send to @BotFather about its usage.
@@ -61,6 +61,7 @@ PAUTAS = "%s/canalunixloadon/pautas" % HOME
 IMGDIR = "%s/Pictures" % HOME
 SCRIPTHOME = "%s/homemadescripts" % HOME
 FOFODB = "%s/fofondex.db" % HOME
+simple_lock = False # very simple lock way
 
 if os.path.exists(PIDFILE):
     try:
@@ -101,7 +102,7 @@ def StartUp():
         res = os.system(oscmd)
         if res:
             # new version detected
-            res = os.system("%s %s" % (sys.executable, sys.argv[0]) )
+            res = os.system("%s %s" % (sys.executable, sys.argv[0]))
             if res != 0:
                 debug("Versão bugada")
                 sys.exit(1)
@@ -132,7 +133,8 @@ def HelloWorld(cmd):
 def UltraFofo(cmd):
     debug(cmd.text)
     try:
-        bot.send_message(cmd.chat.id, "#UltraFofos é o grupo super fofis de defensores de software livre." + \
+        bot.send_message(cmd.chat.id,
+            "#UltraFofos é o grupo super fofis de defensores de software livre." + \
             "Veja mais em: https://www.youtube.com/watch?v=eIRk38d32vA")
     except Exception as e:
         try:
@@ -160,7 +162,7 @@ def Reload(cmd):
             res = os.system(oscmd)
             if res:
                 # new version detected
-                res = os.system("%s %s" % (sys.executable, sys.argv[0]) )
+                res = os.system("%s %s" % (sys.executable, sys.argv[0]))
                 if res != 0:
                     debug("Versão bugada")
                     bot.send_message(cmd.chat.id, "Python crashed.  Vou carregar saporra não.  Vai que...")
@@ -608,6 +610,7 @@ def Comics(cmd):
 """
 @bot.message_handler(commands=["fofometro", "fofondex", "resetfofos"])
 def FofoMetrics(cmd):
+    global simple_lock
     user_name = cmd.from_user.username
     user_id = cmd.from_user.id
     user_1stname = cmd.from_user.first_name
@@ -617,11 +620,6 @@ def FofoMetrics(cmd):
         user_name = "Anonimo da Internet (%s)" % user_id
     if not user_1stname:
         user_1stname = user_name
-    try:
-        fofondex = pickle.load( open( FOFODB, "rb" ))
-    except IOError:
-        fofondex = {}
-
     """"
     Data struct:
         user_id: {
@@ -631,6 +629,28 @@ def FofoMetrics(cmd):
             'foforate' : pctg
             }
     """
+    def DataRead():
+        global simple_lock
+        while simple_lock:
+            time.sleep(random.random())
+        simple_lock = True
+        try:
+            fofondex = pickle.load(open(FOFODB, "rb"))
+        except IOError:
+            fofondex = {}
+        simple_lock = False
+        return fofondex
+
+    def DataWrite(dict_information):
+        while simple_lock:
+            time.sleep(random.random())
+        simple_lock = True
+        try:
+            pickle.dump(dict_information, open(FOFODB, "wb"))
+        except IOError:
+            pass
+            # yap... we lost it...
+        simple_lock = False
 
     def RunTheDice(n=None):
         if n:
@@ -655,40 +675,43 @@ def FofoMetrics(cmd):
                 'user_1stname' : user_1stname
         }
     def GetPctg(user_id):
+        fofondex = DataRead()
         if fofondex.has_key(user_id):
             pctg = fofondex[user_id]['foforate']
         else:
             # initialize user
             pctg = RunTheDice()
             fofondex[user_id] = InitializeUser()
-            pickle.dump( fofondex, open( FOFODB, "wb" ) )
+            DataWrite(fofondex)
         return int(pctg)
 
     if re.search("/resetfofos", cmd.text):
         if user_name == botadm:
             bot.send_message(cmd.chat.id, u"Limpando o fundum que está por aqui." \
                 + u"  Vou até jogar creolina.")
-            pickle.dump({},open( FOFODB, "wb" ) )
+            DataWrite({})
         else:
             bot.send_message(cmd.chat.id, u"Vai aprender a sair do VI "\
             + "antes de querer vir aqui me dar ordem.")
         return
 
     if re.search("/fofometro", cmd.text):
+        fofondex = DataRead()
         if TimeDelta(user_id) < 24 * 60 * 60:
             pctg = GetPctg(user_id)
         else:
             pctg = RunTheDice()
             fofondex[user_id] = InitializeUser()
-            pickle.dump( fofondex, open( FOFODB, "wb" ) )
+            DataWrite(fofondex)
 
         if re.search("arrumasaporra", cmd.text):
+            fofondex = DataRead()
             if user_name == botadm:
                 bot.send_message(cmd.chat.id, u"Perdão patrão... Estava aqui " + \
                     u"compilando o emacs e me distraí.  Deixa eu fazer de novo.")
                 pctg = RunTheDice(100)
                 fofondex[user_id] = InitializeUser(pctg=pctg)
-                pickle.dump( fofondex, open( FOFODB, "wb" ) )
+                DataWrite(fofondex)
             else:
                 bot.send_message(cmd.chat.id, u"Quem você pensa que é pra " + \
                     u"falar comigo dessa maneira?  Sabe quem eu sou???")
@@ -696,7 +719,7 @@ def FofoMetrics(cmd):
                     u"mas só dessa vez.")
                 pctg = RunTheDice()
                 fofondex[user_id] = InitializeUser(pctg=pctg)
-                pickle.dump( fofondex, open( FOFODB, "wb" ) )
+                DataWrite(fofondex)
         try:
             msg = u"Hoje %s tem %d%s de ultrafofura mas " % (user_name, pctg, '%')
             msg += u"aquele %d%s de blob binário no kernel." % (100 - pctg, '%',)
@@ -707,6 +730,7 @@ def FofoMetrics(cmd):
         return
 
     if re.search("/fofondex", cmd.text):
+        fofondex = DataRead()
         msg = u"Ranking Dollyinho de #UltraFofos:\n"
         ranking = {}
         isUpdated = False
@@ -738,7 +762,7 @@ def Motivational(cmd):
     debug(cmd.text)
     MOTIVATIONALDIR = "%s/motivational" % (os.environ.get('HOME'))
     if(os.path.exists(MOTIVATIONALDIR) == False):
-       os.system('cd && git clone https://github.com/jeanlandim/motivational')
+        os.system('cd && git clone https://github.com/jeanlandim/motivational')
 
     photos = os.listdir(MOTIVATIONALDIR)
     motivational = ""
@@ -746,10 +770,10 @@ def Motivational(cmd):
         motivational = random.choice(photos)
         debug("Motivational picture: %s" % motivational)
     try:
-       ph = open("%s/%s" % (MOTIVATIONALDIR, motivational), 'rb')
-       bot.send_photo(cmd.chat.id, ph)
+        ph = open("%s/%s" % (MOTIVATIONALDIR, motivational), 'rb')
+        bot.send_photo(cmd.chat.id, ph)
     except Exception as e:
-       bot.reply_to(cmd, "Deu merda: %s" % e)
+        bot.reply_to(cmd, "Deu merda: %s" % e)
 
 @bot.message_handler(commands=["oquee", "oqueé"])
 def DuckDuckGo(cmd):
@@ -772,9 +796,9 @@ def DuckDuckGo(cmd):
         bot.reply_to(cmd, "Não tenho a menor idéia.  Tem de perguntar no google.")
         return
     try:
-       bot.reply_to(cmd, answer)
+        bot.reply_to(cmd, answer)
     except Exception as e:
-       bot.reply_to(cmd, "Deu merda: %s" % e)
+        bot.reply_to(cmd, "Deu merda: %s" % e)
 
 @bot.message_handler(commands=["emacs"])
 def Emacs(cmd):
@@ -794,9 +818,9 @@ E livrai a todos da M$
 Amém.
 """
     try:
-       bot.send_message(cmd.chat.id, pray)
+        bot.send_message(cmd.chat.id, pray)
     except Exception as e:
-       bot.reply_to(cmd, "Um exu-tranca-sistema derrubou tudo aqui: %s" % e)
+        bot.reply_to(cmd, "Um exu-tranca-sistema derrubou tudo aqui: %s" % e)
 
 @bot.message_handler(commands=["mimimi"])
 def Mimimizer(session):

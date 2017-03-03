@@ -85,8 +85,13 @@ if not os.path.exists(configuration):
     print "Failed to find configuration file %s" % configuration
     sys.exit(1)
 cfg.read(configuration)
-key = cfg.get("TELEGRAM", "STALLBOT")
-botadm = cfg.get("TELEGRAM", "STALLBOTADM")
+try:
+    key = cfg.get("TELEGRAM", "STALLBOT")
+    botadm = cfg.get("TELEGRAM", "STALLBOTADM")
+except ConfigParser.NoSectionError:
+    print "No TELEGRAM session found to retrieve settings."
+    print "Check your configuration file."
+    sys.exit(1)
 debug("Key acquired.")
 
 def StartUp():

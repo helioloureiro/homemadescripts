@@ -782,6 +782,8 @@ def FofoMetrics(cmd):
                     u"mas só dessa vez.")
                 pctg = RunTheDice()
                 fofondex[user_id] = InitializeUser(pctg=pctg)
+
+        pctg = fofondex[user_id]['foforate']
         try:
             debug(" * Fofondex before publishing: %s" % fofondex)
             msg = u"Hoje %s tem %d%s de ultrafofura mas " % (user_name, pctg, '%')

@@ -696,15 +696,18 @@ def FofoMetrics(cmd):
 
     def DataReset():
         global fofondex
+        debug("DataReset")
         fofondex = {}
 
     def RunTheDice(n=None):
+        debug("RunTheDice")
         if n:
             return n
         random.seed(os.urandom(random.randint(0,1000)))
         return random.randint(0,100)
 
     def TimeDelta(user_id):
+        debug("TimeDelta")
         if fofondex.has_key(user_id):
             timestamp = fofondex[user_id]['timestamp']
             now = time.time()
@@ -712,6 +715,7 @@ def FofoMetrics(cmd):
         else:
             return 0
     def InitializeUser(pctg=None):
+        debug("InitializeUser")
         if not pctg:
             pctg = RunTheDice()
         return {
@@ -721,6 +725,7 @@ def FofoMetrics(cmd):
                 'user_1stname' : user_1stname
         }
     def GetPctg(user_id):
+        debug("GetPctg")
         DataRead()
         if fofondex.has_key(user_id):
             pctg = fofondex[user_id]['foforate']

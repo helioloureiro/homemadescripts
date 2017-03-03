@@ -627,7 +627,6 @@ def Comics(cmd):
 """
 @bot.message_handler(commands=["fofometro", "fofondex", "resetfofos"])
 def FofoMetrics(cmd):
-    global simple_lock
     user_name = cmd.from_user.username
     user_id = cmd.from_user.id
     user_1stname = cmd.from_user.first_name
@@ -663,6 +662,7 @@ def FofoMetrics(cmd):
         return fofondex
 
     def DataWrite(dict_information=None):
+        global simple_lock
         while simple_lock:
             time.sleep(random.random())
         simple_lock = True

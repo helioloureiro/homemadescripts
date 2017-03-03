@@ -679,7 +679,7 @@ def FofoMetrics(cmd):
         global simple_lock, fofondex, start_time
         current_time = time.time()
         # just save data if time > 5 minutes to preserve disk
-        if (current_time - start_time < 5 * 60):
+        if (current_time - start_time < 0.5 * 60):
             debug("Skipping write (timer < 5 minutes).")
             return
         else:

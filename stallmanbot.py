@@ -633,7 +633,7 @@ start_time = time.time()
 def FofoMetrics(cmd):
     debug(cmd.text)
     global fofondex, start_time
-    debug("Fofondex on call: %s" % fofondex)
+    #debug("Fofondex on call: %s" % fofondex)
     user_name = cmd.from_user.username
     user_id = cmd.from_user.id
     user_1stname = cmd.from_user.first_name
@@ -657,8 +657,8 @@ def FofoMetrics(cmd):
         global simple_lock, fofondex
         # if data, skip to read since it is updated via memory
         if len(fofondex.keys()) > 0:
-            debug(" * It has data, so don't need to read.")
-            debug(" * Fofondex here: %s" % fofondex)
+            #debug(" * It has data, so don't need to read.")
+            #debug(" * Fofondex here: %s" % fofondex)
             return
         while simple_lock:
             time.sleep(random.random())
@@ -670,18 +670,18 @@ def FofoMetrics(cmd):
             pass
         simple_lock = False
         if not fofondex:
-            debug("Using empty fofondex.")
+            #debug("Using empty fofondex.")
             fofondex = {}
-        debug(" * DataRead.fofondex: %s" % fofondex)
+        #debug(" * DataRead.fofondex: %s" % fofondex)
 
     def DataWrite():
         debug("DataWrite")
         global simple_lock, fofondex, start_time
         current_time = time.time()
-        debug(" * Fofondex here: %s" % fofondex)
+        #debug(" * Fofondex here: %s" % fofondex)
         # just save data if time > 5 minutes to preserve disk
-        if (current_time - start_time < 0.5 * 60):
-            debug("Skipping write (timer < 5 minutes).")
+        if (current_time - start_time < 5 * 60):
+            #debug("Skipping write (timer < 5 minutes).")
             return
         else:
             start_time = current_time
@@ -690,11 +690,11 @@ def FofoMetrics(cmd):
         simple_lock = True
         try:
             if not fofondex:
-                debug(" * DataWrite: removing database from disk.")
+                #debug(" * DataWrite: removing database from disk.")
                 os.unlink(FOFODB)
             else:
-                debug(" * DataWrite: pickle.dump()")
-                debug(" * DataWrite: data saved => %s" % fofondex)
+                #debug(" * DataWrite: pickle.dump()")
+                #debug(" * DataWrite: data saved => %s" % fofondex)
                 pickle.dump(fofondex, open(FOFODB, "wb"))
         except IOError:
             debug("Failed to save DB")
@@ -705,10 +705,10 @@ def FofoMetrics(cmd):
     def DataReset():
         global fofondex
         debug("DataReset")
-        debug("Before: %s" % fofondex)
+        #debug("Before: %s" % fofondex)
         fofondex = {}
         DataWrite()
-        debug("After: %s" % fofondex)
+        #debug("After: %s" % fofondex)
 
     def RunTheDice(n=None):
         debug("RunTheDice")
@@ -767,7 +767,7 @@ def FofoMetrics(cmd):
             pctg = RunTheDice()
             fofondex[user_id] = InitializeUser()
             DataWrite()
-        debug(" * Fofondex top: %s" % fofondex)
+        #debug(" * Fofondex top: %s" % fofondex)
 
         if re.search("arrumasaporra", cmd.text):
             if user_name == botadm:
@@ -785,7 +785,7 @@ def FofoMetrics(cmd):
 
         pctg = fofondex[user_id]['foforate']
         try:
-            debug(" * Fofondex before publishing: %s" % fofondex)
+            #debug(" * Fofondex before publishing: %s" % fofondex)
             msg = u"Hoje %s tem %d%s de ultrafofura mas " % (user_name, pctg, '%')
             msg += u"aquele %d%s de blob binário no kernel." % (100 - pctg, '%',)
             debug(u'%s' % msg)

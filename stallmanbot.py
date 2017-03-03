@@ -669,9 +669,8 @@ def FofoMetrics(cmd):
         if not fofondex:
             debug("Using empty fofondex.")
             fofondex = {}
-        return fofondex
 
-    def DataWrite(dict_information=None):
+    def DataWrite():
         debug("DataWrite")
         global simple_lock, fofondex, start_time
         current_time = time.time()
@@ -685,15 +684,19 @@ def FofoMetrics(cmd):
             time.sleep(random.random())
         simple_lock = True
         try:
-            if dict_information == None:
+            if not fofondex:
                 os.unlink(FOFODB)
             else:
-                pickle.dump(dict_information, open(FOFODB, "wb"))
+                pickle.dump(fofondex, open(FOFODB, "wb"))
         except IOError:
             debug("Failed to save DB")
             pass
             # yap... we lost it...
         simple_lock = False
+
+    def DataReset():
+        global fofondex
+        fofondex = {}
 
     def RunTheDice(n=None):
         if n:
@@ -718,28 +721,28 @@ def FofoMetrics(cmd):
                 'user_1stname' : user_1stname
         }
     def GetPctg(user_id):
-        fofondex = DataRead()
+        DataRead()
         if fofondex.has_key(user_id):
             pctg = fofondex[user_id]['foforate']
         else:
             # initialize user
             pctg = RunTheDice()
             fofondex[user_id] = InitializeUser()
-            DataWrite(fofondex)
+            DataWrite()
         return int(pctg)
 
     if re.search("/resetfofos", cmd.text):
         if user_name == botadm:
             bot.send_message(cmd.chat.id, u"Limpando o fundum que está por aqui." \
                 + u"  Vou até jogar creolina.")
-            DataWrite()
+            DataReset()
         else:
             bot.send_message(cmd.chat.id, u"Vai aprender a sair do VI "\
             + "antes de querer vir aqui me dar ordem.")
         return
 
     if re.search("/fofometro", cmd.text):
-        fofondex = DataRead()
+        DataRead()
         if not fofondex.has_key(user_id):
             InitializeUser()
         if TimeDelta(user_id) < 24 * 60 * 60:
@@ -747,7 +750,7 @@ def FofoMetrics(cmd):
         else:
             pctg = RunTheDice()
             fofondex[user_id] = InitializeUser()
-            DataWrite(fofondex)
+            DataWrite()
 
         if re.search("arrumasaporra", cmd.text):
             fofondex = DataRead()
@@ -767,7 +770,7 @@ def FofoMetrics(cmd):
             msg = u"Hoje %s tem %d%s de ultrafofura mas " % (user_name, pctg, '%')
             msg += u"aquele %d%s de blob binário no kernel." % (100 - pctg, '%',)
             debug(u'%s' % msg)
-            DataWrite(fofondex)
+            DataWrite()
             bot.send_message(cmd.chat.id, u'%s' % msg)
         except Exception as e:
             bot.send_message(cmd.chat.id, "Deu ruim... %s" % e)

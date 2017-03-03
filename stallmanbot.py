@@ -646,6 +646,7 @@ def FofoMetrics(cmd):
             }
     """
     def DataRead():
+        debug("DataRead")
         global simple_lock
         while simple_lock:
             time.sleep(random.random())
@@ -663,6 +664,7 @@ def FofoMetrics(cmd):
         return fofondex
 
     def DataWrite(dict_information=None):
+        debug("DataWrite")
         global simple_lock
         while simple_lock:
             time.sleep(random.random())

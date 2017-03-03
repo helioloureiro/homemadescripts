@@ -657,8 +657,8 @@ def FofoMetrics(cmd):
         global simple_lock, fofondex
         # if data, skip to read since it is updated via memory
         if len(fofondex.keys()) > 0:
-            debug("It has data, so don't need to read.")
-            debug("Fofondex here: %s" % fofondex)
+            debug(" * It has data, so don't need to read.")
+            debug(" * Fofondex here: %s" % fofondex)
             return
         while simple_lock:
             time.sleep(random.random())
@@ -678,6 +678,7 @@ def FofoMetrics(cmd):
         debug("DataWrite")
         global simple_lock, fofondex, start_time
         current_time = time.time()
+        debug(" * Fofondex here: %s" % fofondex)
         # just save data if time > 5 minutes to preserve disk
         if (current_time - start_time < 0.5 * 60):
             debug("Skipping write (timer < 5 minutes).")

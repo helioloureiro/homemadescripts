@@ -625,8 +625,12 @@ def Comics(cmd):
 'venue': None, 'message_id': 11569, 'caption': None, 'contact': None,
 'channel_chat_created': None, 'audio': None, 'new_chat_title': None}
 """
+fofondex = {}
+start_time = time.time()
+
 @bot.message_handler(commands=["fofometro", "fofondex", "resetfofos"])
 def FofoMetrics(cmd):
+    global fofondex, start_time
     user_name = cmd.from_user.username
     user_id = cmd.from_user.id
     user_1stname = cmd.from_user.first_name
@@ -647,7 +651,7 @@ def FofoMetrics(cmd):
     """
     def DataRead():
         debug("DataRead")
-        global simple_lock
+        global simple_lock, fofondex
         while simple_lock:
             time.sleep(random.random())
         simple_lock = True
@@ -665,7 +669,13 @@ def FofoMetrics(cmd):
 
     def DataWrite(dict_information=None):
         debug("DataWrite")
-        global simple_lock
+        global simple_lock, fofondex, start_time
+        current_time = time.time()
+        # just save data if time > 5 minutes to preserve disk
+        if (current_time - start_time < 5 * 60):
+            return
+        else:
+            start_time = current_time
         while simple_lock:
             time.sleep(random.random())
         simple_lock = True

@@ -658,6 +658,7 @@ def FofoMetrics(cmd):
             pass
         simple_lock = False
         if not fofondex:
+            debug("Using empty fofondex.")
             fofondex = {}
         return fofondex
 
@@ -669,7 +670,8 @@ def FofoMetrics(cmd):
         try:
             if dict_information == None:
                 os.unlink(FOFODB)
-            #pickle.dump(dict_information, open(FOFODB, "wb"))
+            else:
+                pickle.dump(dict_information, open(FOFODB, "wb"))
         except IOError:
             debug("Failed to save DB")
             pass

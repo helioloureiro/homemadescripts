@@ -654,7 +654,7 @@ def FofoMetrics(cmd):
         debug("DataRead")
         global simple_lock, fofondex
         # if data, skip to read since it is updated via memory
-        if fofondex:
+        if fofondex != None:
             return
         while simple_lock:
             time.sleep(random.random())

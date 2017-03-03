@@ -10,6 +10,7 @@ import shutil
 import random
 import pickle
 from datetime import date
+import mmap
 import requests
 import BeautifulSoup as bp
 import telebot
@@ -631,8 +632,8 @@ start_time = time.time()
 @bot.message_handler(commands=["fofometro", "fofondex", "resetfofos"])
 def FofoMetrics(cmd):
     debug(cmd.text)
-    debug("Fofondex on call: %s" % fofondex)
     global fofondex, start_time
+    debug("Fofondex on call: %s" % fofondex)
     user_name = cmd.from_user.username
     user_id = cmd.from_user.id
     user_1stname = cmd.from_user.first_name
@@ -671,6 +672,7 @@ def FofoMetrics(cmd):
         if not fofondex:
             debug("Using empty fofondex.")
             fofondex = {}
+        debug(" * DataRead.fofondex: %s" % fofondex)
 
     def DataWrite():
         debug("DataWrite")

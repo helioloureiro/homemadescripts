@@ -677,6 +677,7 @@ def FofoMetrics(cmd):
         current_time = time.time()
         # just save data if time > 5 minutes to preserve disk
         if (current_time - start_time < 5 * 60):
+            debug("Skipping write.")
             return
         else:
             start_time = current_time

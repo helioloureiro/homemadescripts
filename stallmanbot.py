@@ -450,7 +450,7 @@ def Distros(cmd):
 
 @bot.message_handler(commands=["xkcd", "dilbert", "vidadeprogramador",
     "tirinhas", "strips", "vidadesuporte", "angulodevista",
-    "mandanudes", "nudes", "tirinhadorex"])
+    "mandanudes", "nudes", "tirinhadorex", "megazine"])
 def Comics(cmd):
     debug(cmd.text)
     def GetContent(url):
@@ -600,6 +600,13 @@ def Comics(cmd):
         except Exception as e:
             bot.send_message(cmd.chat.id, "Ooopsss... deu merda! %s" % e)
         os.unlink(img)
+    elif re.search("megazine", cmd.text):
+        megazines = [ "xkcd", "dilbert", "vidadeprogramador",
+    "vidadesuporte", "angulodevista", "tirinhadorex" ]
+        cmd_new = cmd
+        for zine in megazines:
+            cmd_new.text = "/%s" % zine
+            Comics(cmd_new)
     else:
         bot.send_message(cmd.chat.id, "É... foi não...")
 """

@@ -647,7 +647,10 @@ def FofoMetrics(cmd):
 
     user = user_name  # backward compatibility
     if not user_name:  # got None
-        user_name = "Anonimo da Internet (%s)" % user_id
+        if not user_1stname:
+            user_name = "Anonimo da Internet (%s)" % user_id
+        else:
+            user_name = "%s (%s)" % (user_1stname, user_id)
     if not user_1stname:
         user_1stname = user_name
     """"

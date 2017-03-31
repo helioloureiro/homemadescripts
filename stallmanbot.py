@@ -131,7 +131,7 @@ def HelloWorld(cmd):
         fe_amo = "%s/Pictures/fe_amo.png" % os.environ.get("HOME")
         if os.path.exists(fe_amo):
             love = open(fe_amo, 'rb')
-            bot.send_photo(cmd.chat.id, fe_amo)
+            bot.send_photo(cmd.chat.id, love)
         bot.reply_to(cmd, u"Te amo também.")
         return
     try:

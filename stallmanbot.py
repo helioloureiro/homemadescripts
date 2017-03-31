@@ -52,9 +52,9 @@ DEBUG = True
 def debug(msg):
     if DEBUG and msg:
         try:
-            print u"%s" % msg
+            print u"[%s] %s" % (time.ctime(), msg)
         except Exception as e:
-            print u"DEBUG ERROR: %s" % e
+            print u"[%s] DEBUG ERROR: %s" % (time.ctime(), e)
 
 HOME = os.environ.get('HOME')
 PIDFILE = "%s/.stallmanbot.pid" % HOME
@@ -71,7 +71,7 @@ if os.path.exists(PIDFILE):
         pid = None
     if pid and int(pid) > 0 and int(pid) != os.getpid():
         if os.path.exists("/proc/%d" % int(pid)):
-            print "Already running."
+            print "[%s] Already running." % time.ctime()
             sys.exit(0)
 
 fd = open(PIDFILE, 'w')
@@ -963,7 +963,7 @@ def WhatEver(session):
         return
     #bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")
 
-while True:
+if __name__ == '__main__':
     StartUp()
     try:
         debug("Polling...")
@@ -971,6 +971,5 @@ while True:
     except Exception as e:
         print e
         debug(e)
-
-os.unlink(PIDFILE)
+    os.unlink(PIDFILE)
 

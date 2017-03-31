@@ -45,6 +45,7 @@ blob - Quem não precisa de firmware pra funcionar?
 mimimi - Mande: /mimimi frase.
 bomdia - Assim que se começa um dia de verdade.
 fontes - Pra ter livre acesso ao conteúdo.
+oiamor - Também te amo.
 """
 
 CONFIG = ".twitterc"
@@ -123,9 +124,16 @@ def StartUp():
 debug("Starting bot for FreeSpeech")
 bot = telebot.TeleBot(key)
 
-@bot.message_handler(commands=["oi", "hello", "helloworld"])
+@bot.message_handler(commands=["oi", "hello", "helloworld", "oiamor"])
 def HelloWorld(cmd):
     debug(cmd.text)
+    if re.search("oiamor", cmd.text):
+        fe_amo = "%s/Pictures/fe_amo.png" % os.environ.get("HOME")
+        if os.path.exists(fe_amo):
+            love = open(fe_amo, 'rb')
+            bot.send_photo(cmd.chat.id, fe_amo)
+        bot.reply_to(cmd, u"Te amo também.")
+        return
     try:
         bot.send_message(cmd.chat.id, "OSI world")
     except Exception as e:

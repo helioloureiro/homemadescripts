@@ -850,7 +850,7 @@ def FofoMetrics(cmd):
             for u in sorted(ranking, key=ranking.get, reverse=False):
                 pct = fofondex[u]['foforate']
                 u_name = fofondex[u]['user_name']
-                msg += u"%d) %s: %d%s\n" % (i, u_name, pct, '%')
+                msg += u"%d) %s: %d%s\n" % (i, u_name, 100 - pct, '%')
                 i += 1
             del ranking
         try:

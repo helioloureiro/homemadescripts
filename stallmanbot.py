@@ -33,6 +33,8 @@ angulodevista - Sua dose diária de vida.  Infelizmente.
 tirinhadorex - Tirinhas meio emo.
 fofometro - Quão fofo você é?  Tente.
 fofondex - Ranking de fofura.
+blobometro - Quão blob você é?  Tente.
+blobondex - Ranking de blobura.
 fortune - A sorte do dia.  Ou não.
 date - A data atual.
 uptime - Somente os fortes entenderão.
@@ -644,7 +646,8 @@ def Comics(cmd):
 fofondex = {}
 start_time = time.time()
 
-@bot.message_handler(commands=["fofometro", "fofondex", "resetfofos"])
+@bot.message_handler(commands=["fofometro", "fofondex", "resetfofos",
+    "blobometro", "blobondex"])
 def FofoMetrics(cmd):
     debug(cmd.text)
     global fofondex, start_time
@@ -775,7 +778,7 @@ def FofoMetrics(cmd):
             + "antes de querer vir aqui me dar ordem.")
         return
 
-    if re.search("/fofometro", cmd.text):
+    if re.search("/(fof|blob)ometro", cmd.text):
         DataRead()
         if not fofondex.has_key(user_id):
             InitializeUser()
@@ -806,6 +809,9 @@ def FofoMetrics(cmd):
             #debug(" * Fofondex before publishing: %s" % fofondex)
             msg = u"Hoje %s tem %d%s de ultrafofura mas " % (user_name, pctg, '%')
             msg += u"aquele %d%s de blob binário no kernel." % (100 - pctg, '%',)
+            if re.search("blob", cmd.text):
+                msg = u"Hoje %s tem %d%s de blobura mas " % (user_name, 100 - pctg, '%')
+                msg += u"aquele %d%s de software livre no kernel." % (pctg, '%',)
             debug(u'%s' % msg)
             DataWrite()
             bot.send_message(cmd.chat.id, u'%s' % msg)
@@ -813,12 +819,14 @@ def FofoMetrics(cmd):
             bot.send_message(cmd.chat.id, "Deu ruim... %s" % e)
         return
 
-    if re.search("/fofondex", cmd.text):
+    if re.search("/(fof|blob)ondex", cmd.text):
         if len(fofondex.keys()) == 0:
             msg = u"Ninguém ainda teve coragem de tentar esse UltraFofo."
             bot.send_message(cmd.chat.id, u'%s' % msg)
             return
         msg = u"Ranking Dollyinho de #UltraFofos:\n"
+        if re.search("blob", cmd.text):
+            msg = u"Ranking Dollyinho de #Blobura:\n"
         ranking = {}
         isUpdated = False
         for u in fofondex.keys():
@@ -832,12 +840,19 @@ def FofoMetrics(cmd):
         if isUpdated:
             DataWrite()
         i = 1
-        for u in sorted(ranking, key=ranking.get, reverse=True):
-            pct = fofondex[u]['foforate']
-            u_name = fofondex[u]['user_name']
-            msg += u"%d) %s: %d%s\n" % (i, u_name, pct, '%')
-            i += 1
-        del ranking
+        if re.search("fofo", cmd.text):
+            for u in sorted(ranking, key=ranking.get, reverse=True):
+                pct = fofondex[u]['foforate']
+                u_name = fofondex[u]['user_name']
+                msg += u"%d) %s: %d%s\n" % (i, u_name, pct, '%')
+                i += 1
+        elif re.search("blob", cmd.text):
+            for u in sorted(ranking, key=ranking.get, reverse=False):
+                pct = fofondex[u]['foforate']
+                u_name = fofondex[u]['user_name']
+                msg += u"%d) %s: %d%s\n" % (i, u_name, pct, '%')
+                i += 1
+            del ranking
         try:
             debug(u'%s' % msg)
             bot.send_message(cmd.chat.id, u'%s' % msg)

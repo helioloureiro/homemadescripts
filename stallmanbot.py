@@ -811,7 +811,7 @@ def FofoMetrics(cmd):
             msg += u"aquele %d%s de blob binário no kernel." % (100 - pctg, '%',)
             if re.search("blob", cmd.text):
                 msg = u"Hoje %s tem %d%s de blobura mas " % (user_name, 100 - pctg, '%')
-                msg += u"aquele %d%s de software livre no kernel." % (pctg, '%',)
+                msg += u"aquele %d%s de linux-libre no kernel." % (pctg, '%',)
             debug(u'%s' % msg)
             DataWrite()
             bot.send_message(cmd.chat.id, u'%s' % msg)

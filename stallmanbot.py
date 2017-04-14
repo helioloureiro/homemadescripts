@@ -34,7 +34,7 @@ tirinhadorex - Tirinhas meio emo.
 fofometro - Quão fofo você é?  Tente.
 fofondex - Ranking de fofura.
 blobometro - Quão blob você é?  Tente.
-blobondex - Ranking de blobura.
+blobondex - Ranking de blobice.
 fortune - A sorte do dia.  Ou não.
 date - A data atual.
 uptime - Somente os fortes entenderão.
@@ -810,7 +810,7 @@ def FofoMetrics(cmd):
             msg = u"Hoje %s tem %d%s de ultrafofura mas " % (user_name, pctg, '%')
             msg += u"aquele %d%s de blob binário no kernel." % (100 - pctg, '%',)
             if re.search("blob", cmd.text):
-                msg = u"Hoje %s tem %d%s de blobura mas " % (user_name, 100 - pctg, '%')
+                msg = u"Hoje %s tem %d%s de blobice mas " % (user_name, 100 - pctg, '%')
                 msg += u"aquele %d%s de linux-libre no kernel." % (pctg, '%',)
             debug(u'%s' % msg)
             DataWrite()
@@ -826,7 +826,7 @@ def FofoMetrics(cmd):
             return
         msg = u"Ranking Dollyinho de #UltraFofos:\n"
         if re.search("blob", cmd.text):
-            msg = u"Ranking Dollyinho de #Blobura:\n"
+            msg = u"Ranking Dollyinho de #Blobice:\n"
         ranking = {}
         isUpdated = False
         for u in fofondex.keys():

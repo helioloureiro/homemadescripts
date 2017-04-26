@@ -48,6 +48,7 @@ mimimi - Mande: /mimimi frase.
 bomdia - Assim que se começa um dia de verdade.
 fontes - Pra ter livre acesso ao conteúdo.
 oiamor - Também te amo.
+fuda - Os males do software livre.
 """
 
 CONFIG = ".twitterc"
@@ -206,6 +207,15 @@ def Reload(cmd):
             bot.reply_to(cmd, "Deu merda... %s" % e)
         except Exception as z:
             print z
+@bot.message_handler(commands=["fuda"])
+def SysCmd(cmd):
+    debug("Running: %s" % cmd.text)
+    try:
+        resp = u"FUDA: Fear, Uncertainty, Doubt and Anahuac.  " + \
+            u"Os males do software livre atualmente."
+        bot.reply_to(cmd, "%s" % resp)
+    except Exception as e:
+        print e
 
 @bot.message_handler(commands=["uname", "uptime", "date"])
 def SysCmd(cmd):

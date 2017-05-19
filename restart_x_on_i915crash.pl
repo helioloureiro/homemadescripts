@@ -11,8 +11,9 @@ use strict;
 my $DELTATIME = 5;         # in minutes - must be the same in crontab
 my $GRAPHSERVICE = "sddm"; # the graphical server you're running
 my $logcmd = "journalctl -k --since \"$DELTATIME minutes ago\"";
+my $now = localtime();
 
-open(CMD, "$logcmd|") or die "Impossible to run succh command: $!\n";
+open(CMD, "$logcmd|") or die "Impossible to run such command: $!\n";
 
 my $crash_flag = 0;
 foreach my $line (<CMD>) {
@@ -24,7 +25,10 @@ foreach my $line (<CMD>) {
 }
 
 if ($crash_flag > 0) {
+    print "[ $now ]Crash detected.  Restarting $GRAPHSERVICE\n";
     system("systemctl restart $GRAPHSERVICE");
+} else {
+ print "[ $now ] system is ok\n";
 }
 
 "

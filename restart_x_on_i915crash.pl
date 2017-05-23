@@ -27,9 +27,9 @@ foreach my $line (<CMD>) {
 if ($crash_flag > 0) {
     print "[ $now ] Crash detected.  Restarting $GRAPHSERVICE\n";
     system("systemctl -f stop $GRAPHSERVICE");
-    print "[ $now ] Stop done.\n");
+    print "[ $now ] Stop done.\n";
     system("systemctl start $GRAPHSERVICE");
-    print "[ $now ] Start done.\n");
+    print "[ $now ] Start done.\n";
 } else {
  print "[ $now ] system is ok\n";
 }

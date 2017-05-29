@@ -53,7 +53,8 @@ def main():
             if td['class'][0] == "pl-video-thumbnail":
                 thumb = td.img['data-thumb']
                 VIDEOS[title]['thumb'] = thumb
-    print simplejson.dumps(VIDEOS, sort_keys=True, indent='    ')
+    return VIDEOS
 
 if __name__ == '__main__':
-    main()
+    videos = main()
+    print simplejson.dumps(videos, sort_keys=True, indent='    ')

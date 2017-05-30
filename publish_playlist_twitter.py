@@ -83,7 +83,7 @@ def TwitterPost(video_info):
         TwitterPost(video)
         return
     try:
-        msg = "Don't forget to send you talk proposal for #pyconse (September 6th in Stockholm). " + \
+        msg = "Don't forget to send you talk proposal for #pyconse (September 6th in Stockholm). key=%d " % random.randint(1000,5000) + \
             "https://goo.gl/RjHpoS"
         print "Posting: %s" % msg
         tw.PostUpdate(msg)

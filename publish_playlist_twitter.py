@@ -70,8 +70,26 @@ def TwitterPost(video_info):
     msg = "Watch again: %s\n%s #pyconse" % (title, url)
     print "Posting: %s" % msg
     print "Image: %s" % file_image
-    tw.PostMedia(status = msg,media = file_image)
-    os.unlink(file_image)
+    try:
+        tw.PostMedia(status = msg,media = file_image)
+        os.unlink(file_image)
+    except twitter.TwitterError as err:
+        # twitter.TwitterError: [{u'message': u'Status is a duplicate.', u'code': 187}]
+        print "ERROR: %s" % err.args[0][0]['message']
+        print "Post on Twitter failed. Trying again..."
+        if os.path.exists(file_image):
+            os.unlink(file_image)
+        video = GetVideo()
+        TwitterPost(video)
+        return
+    try:
+        msg = "Don't forget to send you talk proposal for #pyconse (September 6th in Stockholm). " + \
+            "https://goo.gl/RjHpoS"
+        print "Posting: %s" % msg
+        tw.PostUpdate(msg)
+    except twitter.TwitterError as err:
+        error = err.args[0][0]
+        print "ERROR: %s" % error['message']
 
 def main():
     video = GetVideo()

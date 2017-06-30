@@ -28,6 +28,7 @@ SIZE = 140
 MSG = ""
 PCTG = 10 # % of chance to post.  Lower means less posts.
 counter = 1 # users count
+threshold = 60 # number of posts
 
 TESTE = False
 
@@ -216,9 +217,11 @@ def main():
         FFS[l.slug.lower()] = []
         members = api.GetListMembers(list_id=l.id)
         #print members
+        limit_counter = 0
         for m in members:
-            if isLucky():
+            if isLucky() and limit_counter < threshold:
                 FFS[l.slug].append(m.screen_name)
+                limit_counter += 1
             else:
                 CONTROLE[m.screen_name] = 1
         print "Total: %d" % len(FFS[l.slug])

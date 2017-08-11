@@ -45,7 +45,7 @@ up to present your topic there.
 
 Best Regards,
 Helio Loureiro
-in behalf of PyCon Swede Board
+in behalf of PyCon Sweden Board
 
 
 """ % (author, title)

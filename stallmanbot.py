@@ -15,6 +15,8 @@ import requests
 import BeautifulSoup as bp
 import telebot
 
+__version__ = "20170816-19:10"
+
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
 
@@ -151,6 +153,18 @@ def Ping(cmd):
     debug(cmd.text)
     try:
         bot.send_message(cmd.chat.id, "ACK")
+    except Exception as e:
+        try:
+            bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
+        except Exception as z:
+            print z
+    debug("tchau")
+
+@bot.message_handler(commands=["version"])
+def Version(cmd):
+    debug(cmd.text)
+    try:
+        bot.send_message(cmd.chat.id, __version__)
     except Exception as e:
         try:
             bot.send_message(cmd.chat.id, "Deu merda... %s" % e)

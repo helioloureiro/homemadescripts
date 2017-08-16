@@ -255,7 +255,7 @@ def Requer(cmd):
     try:
         if re.search("sudo rm -rf /", cmd.text):
             vd = open("%s/sudo_rm_rf.gif" % IMGDIR, "rb")
-            bot.send_video(cmd.chat.id, video = vd)
+            bot.send_video(cmd.chat.id, vd)
             return
         bot.reply_to(cmd, "Ah lá... achando que é réquer.")
     except Exception as e:

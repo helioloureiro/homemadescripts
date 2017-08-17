@@ -148,6 +148,20 @@ def HelloWorld(cmd):
             print z
     debug("tchau")
 
+
+@bot.message_handler(commands=["pipoca"])
+def PipocaGif(cmd):
+        gif = "https://media.giphy.com/media/TrDxCdtmdluP6/giphy.gif"
+        return
+    try:
+        bot.send_document(cmd.chat.id, gif)
+    except Exception as e:
+        try:
+            bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
+        except Exception as z:
+            print z
+    debug("tchau")
+
 @bot.message_handler(commands=["ping"])
 def Ping(cmd):
     debug(cmd.text)

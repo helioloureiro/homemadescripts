@@ -151,8 +151,7 @@ def HelloWorld(cmd):
 
 @bot.message_handler(commands=["pipoca"])
 def PipocaGif(cmd):
-        gif = "https://media.giphy.com/media/TrDxCdtmdluP6/giphy.gif"
-        return
+    gif = "https://media.giphy.com/media/TrDxCdtmdluP6/giphy.gif"
     try:
         bot.send_document(cmd.chat.id, gif)
     except Exception as e:

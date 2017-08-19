@@ -15,7 +15,7 @@ import requests
 import BeautifulSoup as bp
 import telebot
 
-__version__ = "20170819-20:45 (codiname \"pwn3d by Maycon\")"
+__version__ = "20170819-21:10 (codiname \"pwn3d by Maycon\")"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -93,7 +93,18 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
         "nudes" : [ "https://media.giphy.com/media/PpNTwxZyJUFby/giphy.gif",
                    "https://media.giphy.com/media/q4cdfs7GcvzG0/giphy.gif",
                    "https://media.giphy.com/media/ERay9nmFB027m/giphy.gif",
-                   "https://media.giphy.com/media/t7NsoBIxIT4mQ/giphy.gif" ]
+                   "https://media.giphy.com/media/t7NsoBIxIT4mQ/giphy.gif",
+                   "https://media.giphy.com/media/Hbutx0s2ZYZyw/giphy.gif",
+                   "https://media.giphy.com/media/l3vQWJaua7jOns9dC/giphy.gif",
+                   "https://media.giphy.com/media/3o6ZsTf2gnGE5liGdi/giphy.gif",
+                   "https://media.giphy.com/media/NK2UQa6mbtrW0/giphy.gif",
+                   "https://media.giphy.com/media/l0HlK37zDy1JsJnji/giphy.gif",
+                   "https://media.giphy.com/media/3oz8xWkBckB1SbmAXC/giphy.gif",
+                   "https://media.giphy.com/media/MFFyKHqLNe9cQ/giphy.gif",
+                   "https://media.giphy.com/media/l2JdXY0zQv7uN0uVG/giphy.gif",
+                   "https://media.giphy.com/media/GqxwTEeHIeMo0/giphy.gif",
+                   "https://media.giphy.com/media/10yqoCYci3xxn2/giphy.gif",
+                   "https://media.giphy.com/media/hx9SHiDED2nv2/giphy.gif" ]
         }
 
 if os.path.exists(PIDFILE):

@@ -88,7 +88,8 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
         "ban" : [ "https://media.giphy.com/media/xT5LMDzs9xYtHXeItG/giphy.gif",
                  "https://media.giphy.com/media/H99r2HtnYs492/giphy.gif",
                  "https://media.giphy.com/media/l2JebrcLzSVLwCYEM/giphy.gif",
-                 "https://media.giphy.com/media/10A60gknFNLUVq/giphy.gif" ]
+                 "https://media.giphy.com/media/10A60gknFNLUVq/giphy.gif" ],
+        "helio" : [ "https://media.giphy.com/media/l3fzBbBklSWVRPz9K/giphy.gif" ]
         }
 
 if os.path.exists(PIDFILE):

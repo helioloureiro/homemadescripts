@@ -79,7 +79,7 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
         "coffee" : [ "https://media.giphy.com/media/3owvK3nt6hDUbcWiI0/giphy.gif" ],
         "shame" : [ "https://media.giphy.com/media/vX9WcCiWwUF7G/giphy.gif" ],
         "boyola" : [ "https://media.giphy.com/media/3owvJYxTqRz6w5chwc/giphy.gif" ],
-        "approval" : [ "https://media.giphy.com/media/xUNemUBRwwZKnBDUc0/giphy.gif",
+        "approval" : [ "https://media.giphy.com/media/xSM46ernAUN3y/giphy.gif",
                       "https://media.giphy.com/media/3owvK1HepTg3TnLRhS/giphy.gif" ]
         }
 

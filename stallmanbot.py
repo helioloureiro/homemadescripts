@@ -167,9 +167,34 @@ def HelloWorld(cmd):
         try:
             bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
         except Exception as z:
-            print z
+            print u"%s" % z
     debug("tchau")
 
+@bot.message_handler(commands=["manda"])
+def Manda(cmd):
+    debug(cmd.text)
+    args = cmd.text.split()
+    opts = GIFS.keys()
+    if len(args) <= 1:
+        try:
+            bot.reply_to(cmd, u"Use: /manda [opts]")
+            bot.reply_to(cmd, u"Opções: %s" % opts )
+        except Exception as e:
+            try:
+                bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
+            except Exception as z:
+                print u"%s" % z
+        return
+    for theme in args[1:]:
+        gif = GetGif(theme)
+        try:
+            bot.send_document(cmd.chat.id, gif)
+        except Exception as e:
+            try:
+                bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
+            except Exception as z:
+                print u"%s" % z
+    debug("tchau")
 
 @bot.message_handler(commands=["pipoca"])
 def PipocaGif(cmd):
@@ -178,9 +203,9 @@ def PipocaGif(cmd):
         bot.send_document(cmd.chat.id, gif)
     except Exception as e:
         try:
-            bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
+            bot.send_message(cmd.chat.id, u"Deu merda... %s" % e)
         except Exception as z:
-            print z
+            print u"%s" % z
     debug("tchau")
 
 @bot.message_handler(commands=["ping", "pong"])
@@ -190,9 +215,9 @@ def Ping(cmd):
         bot.send_message(cmd.chat.id, "ACK")
     except Exception as e:
         try:
-            bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
+            bot.send_message(cmd.chat.id, u"Deu merda... %s" % e)
         except Exception as z:
-            print z
+            print u"%s" % z
     debug("tchau")
 
 @bot.message_handler(commands=["version"])
@@ -202,9 +227,9 @@ def Version(cmd):
         bot.send_message(cmd.chat.id, __version__)
     except Exception as e:
         try:
-            bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
+            bot.send_message(cmd.chat.id, u"Deu merda... %s" % e)
         except Exception as z:
-            print z
+            print u"%s" % z
     debug("tchau")
 
 @bot.message_handler(commands=["ultrafofo", "ultrafofos"])
@@ -216,9 +241,9 @@ def UltraFofo(cmd):
             "Veja mais em: https://www.youtube.com/watch?v=eIRk38d32vA")
     except Exception as e:
         try:
-            bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
+            bot.send_message(cmd.chat.id, u"Deu merda... %s" % e)
         except Exception as z:
-            printz
+            print u"%s" % z
 
 @bot.message_handler(commands=["reload"])
 def Reload(cmd):
@@ -253,9 +278,9 @@ def Reload(cmd):
         os.execl(python, python, *sys.argv)
     except Exception as e:
         try:
-            bot.reply_to(cmd, "Deu merda... %s" % e)
+            bot.reply_to(cmd, u"Deu merda... %s" % e)
         except Exception as z:
-            print z
+            print u"%s" % z
 @bot.message_handler(commands=["fuda"])
 def SysCmd(cmd):
     debug("Running: %s" % cmd.text)
@@ -264,7 +289,7 @@ def SysCmd(cmd):
             u"Os males do software livre atualmente."
         bot.reply_to(cmd, "%s" % resp)
     except Exception as e:
-        print e
+        print u"%s" % e
 
 @bot.message_handler(commands=["uname", "uptime", "date"])
 def SysCmd(cmd):
@@ -283,7 +308,7 @@ def SysCmd(cmd):
         try:
             bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
         except Exception as z:
-            print z
+            print u"%s" % z
     debug("done here")
 
 @bot.message_handler(commands=["reboot", "shutdown", "sudo", "su"])
@@ -299,7 +324,7 @@ def Requer(cmd):
         try:
             bot.reply_to(cmd, "Deu merda... %s" % e)
         except Exception as z:
-            print z
+            print u"%s" % z
 
 @bot.message_handler(commands=["man", "info"])
 def ManPages(cmd):
@@ -318,7 +343,7 @@ def ManPages(cmd):
         try:
             bot.reply_to(cmd, "Deu merda... %s" % e)
         except Exception as z:
-            print z
+            print u"%s" % z
 
 
 @bot.message_handler(commands=["help", "ajuda"])
@@ -331,7 +356,7 @@ def Help(cmd):
         try:
             bot.reply_to(cmd, u"Deu merda... %s" % e)
         except Exception as z:
-            print z
+            print u"%s" % z
 
 @bot.message_handler(commands=["fortune", "fortunes", "sorte"])
 def Fortune(cmd):
@@ -489,7 +514,7 @@ def UnixLoadOn(cmd):
         try:
             bot.reply_to(cmd, "Deu merda: %s" % e)
         except Exception as z:
-            print z
+            print u"%s" % z
 
     os.chdir(curdir)
     if not msg:

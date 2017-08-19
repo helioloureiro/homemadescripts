@@ -154,7 +154,7 @@ bot = telebot.TeleBot(key)
 @bot.message_handler(commands=["oi", "hello", "helloworld", "oiamor", "teamo"])
 def HelloWorld(cmd):
     debug(cmd.text)
-    if re.search("oiamor", cmd.text):
+    if re.search("oiamor|teamo", cmd.text):
         fe_amo = "%s/Pictures/fe_amo.png" % os.environ.get("HOME")
         if os.path.exists(fe_amo):
             love = open(fe_amo, 'rb')

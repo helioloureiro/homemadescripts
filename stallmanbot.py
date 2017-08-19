@@ -89,7 +89,11 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
                  "https://media.giphy.com/media/H99r2HtnYs492/giphy.gif",
                  "https://media.giphy.com/media/l2JebrcLzSVLwCYEM/giphy.gif",
                  "https://media.giphy.com/media/10A60gknFNLUVq/giphy.gif" ],
-        "helio" : [ "https://media.giphy.com/media/l3fzBbBklSWVRPz9K/giphy.gif" ]
+        "helio" : [ "https://media.giphy.com/media/l3fzBbBklSWVRPz9K/giphy.gif" ],
+        "nudes" : [ "https://media.giphy.com/media/PpNTwxZyJUFby/giphy.gif",
+                   "https://media.giphy.com/media/q4cdfs7GcvzG0/giphy.gif",
+                   "https://media.giphy.com/media/ERay9nmFB027m/giphy.gif",
+                   "https://media.giphy.com/media/t7NsoBIxIT4mQ/giphy.gif" ]
         }
 
 if os.path.exists(PIDFILE):

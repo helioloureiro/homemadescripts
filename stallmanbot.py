@@ -15,7 +15,7 @@ import requests
 import BeautifulSoup as bp
 import telebot
 
-__version__ = "20170816-19:10"
+__version__ = "20170819-18:20 (codiname \"pwn3d by Maycon\")"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -51,6 +51,7 @@ bomdia - Assim que se começa um dia de verdade.
 fontes - Pra ter livre acesso ao conteúdo.
 oiamor - Também te amo.
 fuda - Os males do software livre.
+hacked - Shame, shame, shame...
 """
 
 CONFIG = ".twitterc"
@@ -129,7 +130,7 @@ def StartUp():
 debug("Starting bot for FreeSpeech")
 bot = telebot.TeleBot(key)
 
-@bot.message_handler(commands=["oi", "hello", "helloworld", "oiamor"])
+@bot.message_handler(commands=["oi", "hello", "helloworld", "oiamor", "teamo"])
 def HelloWorld(cmd):
     debug(cmd.text)
     if re.search("oiamor", cmd.text):
@@ -161,7 +162,7 @@ def PipocaGif(cmd):
             print z
     debug("tchau")
 
-@bot.message_handler(commands=["ping"])
+@bot.message_handler(commands=["ping", "pong"])
 def Ping(cmd):
     debug(cmd.text)
     try:
@@ -250,6 +251,8 @@ def SysCmd(cmd):
     sanitize = re.sub(";.*", "", cmd.text)
     sanitize = re.sub("|.*", "", sanitize)
     sanitize = re.sub("@.*", "", sanitize)
+    sanitize = re.sub("&.*", "", sanitize)
+    sanitize = re.sub("[^A-Za-z0-9\./-]", " ", sanitize)
     try:
         resp = os.popen(sanitize[1:]).read()
         resp = re.sub("GNU", "OSI", resp)
@@ -267,8 +270,8 @@ def Requer(cmd):
     debug(cmd.text)
     try:
         if re.search("sudo rm -rf /", cmd.text):
-            vd = open("%s/sudo_rm_rf.gif" % IMGDIR, "rb")
-            bot.send_video(cmd.chat.id, vd)
+            gif = open("%s/sudo_rm_rf.gif" % IMGDIR, "rb")
+            bot.send_document(cmd.chat.id, gif)
             return
         bot.reply_to(cmd, "Ah lá... achando que é réquer.")
     except Exception as e:
@@ -327,6 +330,17 @@ def RTFM(cmd):
         bot.reply_to(cmd, "http://www.guiafoca.org/")
     except:
         bot.reply_to(cmd, "Deu merda...")
+
+@bot.message_handler(commands=["hacked", "pwn3d"])
+def Hacked(cmd):
+    try:
+        bot.reply_to(cmd, u"This is the gallery of metions from those who dared to hack, and just made it true.")
+        bot.reply_to(cmd, u"Helio is my master but Maycon is my hacker <3 (Hack N' Roll)")
+        gif = "https://media.giphy.com/media/26ufcVAp3AiJJsrIs/giphy.gif"
+        bot.send_document(cmd.chat.id, gif)
+    except:
+        bot.reply_to(cmd, "Deu merda...")
+
 
 @bot.message_handler(commands=["apt-get", "aptitude", "apt"])
 def AptCmds(session):

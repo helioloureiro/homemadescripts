@@ -15,7 +15,7 @@ import requests
 import BeautifulSoup as bp
 import telebot
 
-__version__ = "20170819-20:17 (codiname \"pwn3d by Maycon\")"
+__version__ = "20170819-20:45 (codiname \"pwn3d by Maycon\")"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """

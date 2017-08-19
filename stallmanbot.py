@@ -71,6 +71,18 @@ SCRIPTHOME = "%s/homemadescripts" % HOME
 FOFODB = "%s/fofondex.db" % HOME
 simple_lock = False # very simple lock way
 
+GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.gif",
+                      "https://media.giphy.com/media/l3fzIJxUF2EpGqk48/giphy.gif",
+                      "https://media.giphy.com/media/l3fzQLOZjieBbUGv6/giphy.gif" ],
+        "popcorn" : [ "https://media.giphy.com/media/3owvKgvqkDWzQtv8UU/giphy.gif",
+                     "https://media.giphy.com/media/TrDxCdtmdluP6/giphy.gif" ],
+        "coffee" : [ "https://media.giphy.com/media/3owvK3nt6hDUbcWiI0/giphy.gif" ],
+        "shame" : [ "https://media.giphy.com/media/vX9WcCiWwUF7G/giphy.gif" ],
+        "boyola" : [ "https://media.giphy.com/media/3owvJYxTqRz6w5chwc/giphy.gif" ],
+        "approval" : [ "https://media.giphy.com/media/xUNemUBRwwZKnBDUc0/giphy.gif",
+                      "https://media.giphy.com/media/3owvK1HepTg3TnLRhS/giphy.gif" ]
+        }
+
 if os.path.exists(PIDFILE):
     try:
         pid = open(PIDFILE).read()
@@ -127,6 +139,15 @@ def StartUp():
             python = sys.executable
             os.execl(python, python, *sys.argv)
 
+def GetGif(theme):
+    if not GIFS.has_key(theme):
+        return None
+    sizeof = len(GIFS[theme])
+    if sizeof <= 1:
+        return GIFS[theme][0]
+    get_id = random.randint(0, sizeof - 1)
+    return GIFS[theme][get_id]
+
 debug("Starting bot for FreeSpeech")
 bot = telebot.TeleBot(key)
 
@@ -152,7 +173,7 @@ def HelloWorld(cmd):
 
 @bot.message_handler(commands=["pipoca"])
 def PipocaGif(cmd):
-    gif = "https://media.giphy.com/media/TrDxCdtmdluP6/giphy.gif"
+    gif = GetGif("popcorn")
     try:
         bot.send_document(cmd.chat.id, gif)
     except Exception as e:

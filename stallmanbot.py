@@ -15,7 +15,7 @@ import requests
 import BeautifulSoup as bp
 import telebot
 
-__version__ = "20170819-21:10 (codiname \"pwn3d by Maycon\")"
+__version__ = "20170821-16:04 (codiname \"pwn3d by Maycon\")"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -104,7 +104,8 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
                    "https://media.giphy.com/media/l2JdXY0zQv7uN0uVG/giphy.gif",
                    "https://media.giphy.com/media/GqxwTEeHIeMo0/giphy.gif",
                    "https://media.giphy.com/media/10yqoCYci3xxn2/giphy.gif",
-                   "https://media.giphy.com/media/hx9SHiDED2nv2/giphy.gif" ]
+                   "https://media.giphy.com/media/hx9SHiDED2nv2/giphy.gif" ],
+        "aprigio" : [ "https://media.giphy.com/media/l3fzQbp5wdi2HiSCk/giphy.gif" ]
         }
 
 if os.path.exists(PIDFILE):

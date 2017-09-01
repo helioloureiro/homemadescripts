@@ -15,7 +15,7 @@ import requests
 import BeautifulSoup as bp
 import telebot
 
-__version__ = "Fri Sep  1 15:15:43 CEST 2017"
+__version__ = "Fri Sep  1 15:36:40 CEST 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -81,6 +81,7 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
                      "https://media.giphy.com/media/TrDxCdtmdluP6/giphy.gif" ],
         "coffee" : [ "https://media.giphy.com/media/3owvK3nt6hDUbcWiI0/giphy.gif",
                     "https://media.giphy.com/media/DrJm6F9poo4aA/giphy.gif",
+                    "https://media.giphy.com/media/MKkpDUqXFaL7O/giphy.gif",
                     "https://media.giphy.com/media/oZEBLugoTthxS/giphy.gif" ],
         "shame" : [ "https://media.giphy.com/media/vX9WcCiWwUF7G/giphy.gif",
                    "https://media.giphy.com/media/eP1fobjusSbu/giphy.gif",
@@ -111,7 +112,8 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
                    "https://media.giphy.com/media/GqxwTEeHIeMo0/giphy.gif",
                    "https://media.giphy.com/media/10yqoCYci3xxn2/giphy.gif",
                    "https://media.giphy.com/media/hx9SHiDED2nv2/giphy.gif" ],
-        "aprigio" : [ "https://media.giphy.com/media/l3fzQbp5wdi2HiSCk/giphy.gif" ]
+        "aprigio" : [ "https://media.giphy.com/media/l3fzQbp5wdi2HiSCk/giphy.gif" ],
+        "anemonos" : [ "https://media.giphy.com/media/SYEskzoOgwxWM/giphy.gif" ]
         }
 
 GIFS["pipoca"] = GIFS["popcorn"]

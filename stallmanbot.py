@@ -15,7 +15,7 @@ import requests
 import BeautifulSoup as bp
 import telebot
 
-__version__ = "Fri Sep  1 15:44:08 CEST 2017"
+__version__ = "Fri Sep  1 15:48:20 CEST 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -233,6 +233,7 @@ def Manda(cmd):
         except Exception as e:
             try:
                 bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
+                bot.send_message(cmd.chat.id, "Link: %s" % gif)
             except Exception as z:
                 print u"%s" % z
     debug("tchau")

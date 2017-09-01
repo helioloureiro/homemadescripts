@@ -73,14 +73,18 @@ simple_lock = False # very simple lock way
 
 GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.gif",
                       "https://media.giphy.com/media/l3fzIJxUF2EpGqk48/giphy.gif",
+                      "https://media.giphy.com/media/hbqoS6tq5CMtq/giphy.gif",
                       "https://media.giphy.com/media/l3fzQLOZjieBbUGv6/giphy.gif" ],
         "popcorn" : [ "https://media.giphy.com/media/3owvKgvqkDWzQtv8UU/giphy.gif",
+                    "https://media.giphy.com/media/MSapGH8s2hoNG/giphy.gif",
+                    "https://media.giphy.com/media/51sOSwMffAAuY/giphy.gif",
                      "https://media.giphy.com/media/TrDxCdtmdluP6/giphy.gif" ],
         "coffee" : [ "https://media.giphy.com/media/3owvK3nt6hDUbcWiI0/giphy.gif",
                     "https://media.giphy.com/media/DrJm6F9poo4aA/giphy.gif",
                     "https://media.giphy.com/media/oZEBLugoTthxS/giphy.gif" ],
         "shame" : [ "https://media.giphy.com/media/vX9WcCiWwUF7G/giphy.gif",
                    "https://media.giphy.com/media/eP1fobjusSbu/giphy.gif",
+                   "https://media.giphy.com/media/SSX4Sj7oB0cWQ/giphy.gif",
                    "https://media.giphy.com/media/m6ljvZNi8xnvG/giphy.gif" ],
         "boyola" : [ "https://media.giphy.com/media/3owvJYxTqRz6w5chwc/giphy.gif" ],
         "approval" : [ "https://media.giphy.com/media/xSM46ernAUN3y/giphy.gif",
@@ -89,7 +93,9 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
                  "https://media.giphy.com/media/H99r2HtnYs492/giphy.gif",
                  "https://media.giphy.com/media/l2JebrcLzSVLwCYEM/giphy.gif",
                  "https://media.giphy.com/media/10A60gknFNLUVq/giphy.gif" ],
-        "helio" : [ "https://media.giphy.com/media/l3fzBbBklSWVRPz9K/giphy.gif" ],
+        "helio" : [ "https://media.giphy.com/media/l3fzBbBklSWVRPz9K/giphy.gif",
+                    "https://media.giphy.com/media/hbqoS6tq5CMtq/giphy.gif",
+                    "https://media.giphy.com/media/MSapGH8s2hoNG/giphy.gif" ],
         "nudes" : [ "https://media.giphy.com/media/PpNTwxZyJUFby/giphy.gif",
                    "https://media.giphy.com/media/q4cdfs7GcvzG0/giphy.gif",
                    "https://media.giphy.com/media/ERay9nmFB027m/giphy.gif",
@@ -107,6 +113,11 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
                    "https://media.giphy.com/media/hx9SHiDED2nv2/giphy.gif" ],
         "aprigio" : [ "https://media.giphy.com/media/l3fzQbp5wdi2HiSCk/giphy.gif" ]
         }
+
+GIFS["pipoca"] = GIFS["popcorn"]
+GIFS["vergonha"] = GIFS["shame"]
+GIFS["cafe"] = GIFS["coffee"]
+GIFS["no_wait"] = GIFS["pera"]
 
 if os.path.exists(PIDFILE):
     try:

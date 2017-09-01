@@ -15,7 +15,7 @@ import requests
 import BeautifulSoup as bp
 import telebot
 
-__version__ = "Fri Sep  1 16:38:25 CEST 2017"
+__version__ = "Fri Sep  1 17:10:46 CEST 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -97,10 +97,13 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
         "helio" : [ "https://media.giphy.com/media/l3fzBbBklSWVRPz9K/giphy.gif",
                     "https://media.giphy.com/media/hbqoS6tq5CMtq/giphy.gif",
                     "https://media.giphy.com/media/SYEskzoOgwxWM/giphy.gif",
-                    "https://media.giphy.com/media/oZEBLugoTthxS/giphy.gif",
-                    "https://media.giphy.com/media/l3fzQLOZjieBbUGv6/giphy.gif",
+                    "https://media.giphy.com/media/MKkpDUqXFaL7O/giphy.gif",
                     "https://media.giphy.com/media/KsW4LMQRO1YLS/giphy.gif",
                     "https://media.giphy.com/media/qkXhEeRO3Rrt6/giphy.gif",
+                    "https://media.giphy.com/media/51sOSwMffAAuY/giphy.gif",
+                    "https://media.giphy.com/media/3owvKgvqkDWzQtv8UU/giphy.gif",
+                    "https://media.giphy.com/media/l3fzIJxUF2EpGqk48/giphy.gif",
+                    "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.gif",
                     "https://media.giphy.com/media/MSapGH8s2hoNG/giphy.gif" ],
         "nudes" : [ "https://media.giphy.com/media/PpNTwxZyJUFby/giphy.gif",
                    "https://media.giphy.com/media/q4cdfs7GcvzG0/giphy.gif",

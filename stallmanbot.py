@@ -113,6 +113,7 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
                    "https://media.giphy.com/media/10yqoCYci3xxn2/giphy.gif",
                    "https://media.giphy.com/media/hx9SHiDED2nv2/giphy.gif" ],
         "aprigio" : [ "https://media.giphy.com/media/l3fzQbp5wdi2HiSCk/giphy.gif" ],
+        "treta" : [ "https://media.giphy.com/media/KsW4LMQRO1YLS/giphy.gif" ],
         "anemonos" : [ "https://media.giphy.com/media/SYEskzoOgwxWM/giphy.gif" ]
         }
 

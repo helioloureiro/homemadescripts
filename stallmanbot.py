@@ -15,7 +15,7 @@ import requests
 import BeautifulSoup as bp
 import telebot
 
-__version__ = "20170821-16:04 (codiname \"pwn3d by Maycon\")"
+__version__ = "Fri Sep  1 15:15:43 CEST 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -117,7 +117,7 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
 GIFS["pipoca"] = GIFS["popcorn"]
 GIFS["vergonha"] = GIFS["shame"]
 GIFS["cafe"] = GIFS["coffee"]
-GIFS["no_wait"] = GIFS["pera"]
+GIFS["pera"] = GIFS["no_wait"]
 
 if os.path.exists(PIDFILE):
     try:

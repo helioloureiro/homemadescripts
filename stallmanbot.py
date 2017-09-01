@@ -15,7 +15,7 @@ import requests
 import BeautifulSoup as bp
 import telebot
 
-__version__ = "Fri Sep  1 15:36:40 CEST 2017"
+__version__ = "Fri Sep  1 15:44:08 CEST 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -225,6 +225,9 @@ def Manda(cmd):
         return
     for theme in args[1:]:
         gif = GetGif(theme)
+        if gif is None:
+            bot.reply_to(cmd, u"Use: /manda [opts]")
+            bot.reply_to(cmd, u"Opções: %s" % opts )
         try:
             bot.send_document(cmd.chat.id, gif)
         except Exception as e:

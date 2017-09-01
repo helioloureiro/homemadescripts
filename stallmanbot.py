@@ -15,7 +15,7 @@ import requests
 import BeautifulSoup as bp
 import telebot
 
-__version__ = "Fri Sep  1 15:48:20 CEST 2017"
+__version__ = "Fri Sep  1 16:25:37 CEST 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """

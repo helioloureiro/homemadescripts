@@ -109,6 +109,7 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
                     "https://media.giphy.com/media/l378zoQ5oTatwi2li/giphy.gif", # eye sight
                     "https://media.giphy.com/media/3ov9jNAyexHvu0Ela0/giphy.gif", # send bun
                     "https://media.giphy.com/media/3ohhwp0HAJ2R49xNks/giphy.gif", # thumbs up
+                    "https://media.giphy.com/media/3ohhwneKeCkbALPcKk/giphy.gif", # tinder
                     "https://media.giphy.com/media/MSapGH8s2hoNG/giphy.gif" ],
         "nudes" : [ "https://media.giphy.com/media/PpNTwxZyJUFby/giphy.gif",
                    "https://media.giphy.com/media/q4cdfs7GcvzG0/giphy.gif",
@@ -140,6 +141,7 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
                    "https://media.giphy.com/media/CidfkCKipW1sQ/giphy.gif",
                    ],
         "bun" : [ "https://media.giphy.com/media/3ov9jNAyexHvu0Ela0/giphy.gif" ],
+        "tinder" : [ "https://media.giphy.com/media/3ohhwneKeCkbALPcKk/giphy.gif" ], # tinder
         "wtf" : [ "https://media.giphy.com/media/l378zoQ5oTatwi2li/giphy.gif" ] # eye sight
         }
 

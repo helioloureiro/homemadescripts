@@ -15,7 +15,7 @@ import requests
 import BeautifulSoup as bp
 import telebot
 
-__version__ = "Wed Oct  4 21:31:27 CEST 2017"
+__version__ = "Wed Oct  4 21:40:18 CEST 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -141,6 +141,8 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
                    "https://media.giphy.com/media/CidfkCKipW1sQ/giphy.gif",
                    ],
         "bun" : [ "https://media.giphy.com/media/3ov9jNAyexHvu0Ela0/giphy.gif" ],
+        "mimimi" : [ "https://media.giphy.com/media/ylPWDQuapyexa/giphy.gif" ],
+        "nanga" : [ "https://media.giphy.com/media/RCBQSWiMPTQly/giphy.gif" ],
         "tinder" : [ "https://media.giphy.com/media/3ohhwneKeCkbALPcKk/giphy.gif", # tinder
                      "https://giphy.com/gifs/3ohhwneKeCkbALPcKk/html5" ], # same, but w/ different version
         "wtf" : [ "https://media.giphy.com/media/l378zoQ5oTatwi2li/giphy.gif" ] # eye sight
@@ -238,7 +240,7 @@ def HelloWorld(cmd):
             print u"%s" % z
     debug("tchau")
 
-@bot.message_handler(commands=["manda"])
+@bot.message_handler(commands=["manda", "manga"])
 def Manda(cmd):
     debug(cmd.text)
     args = cmd.text.split()

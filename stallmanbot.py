@@ -15,7 +15,7 @@ import requests
 import BeautifulSoup as bp
 import telebot
 
-__version__ = "Fri Sep 22 17:51:52 CEST 2017"
+__version__ = "Wed Oct  4 20:56:43 CEST 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -89,7 +89,8 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
                    "https://media.giphy.com/media/m6ljvZNi8xnvG/giphy.gif" ],
         "boyola" : [ "https://media.giphy.com/media/3owvJYxTqRz6w5chwc/giphy.gif" ],
         "approval" : [ "https://media.giphy.com/media/xSM46ernAUN3y/giphy.gif",
-                      "https://media.giphy.com/media/3owvK1HepTg3TnLRhS/giphy.gif" ],
+                       "https://media.giphy.com/media/3ohhwp0HAJ2R49xNks/giphy.gif", # thumbs up
+                       "https://media.giphy.com/media/3owvK1HepTg3TnLRhS/giphy.gif" ],
         "ban" : [ "https://media.giphy.com/media/xT5LMDzs9xYtHXeItG/giphy.gif",
                  "https://media.giphy.com/media/H99r2HtnYs492/giphy.gif",
                  "https://media.giphy.com/media/l2JebrcLzSVLwCYEM/giphy.gif",
@@ -104,6 +105,10 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
                     "https://media.giphy.com/media/3owvKgvqkDWzQtv8UU/giphy.gif",
                     "https://media.giphy.com/media/l3fzIJxUF2EpGqk48/giphy.gif",
                     "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.gif",
+                    "https://media.giphy.com/media/3ohhwwnixgbdViKREI/giphy.gif", # kannelbulla
+                    "https://media.giphy.com/media/l378zoQ5oTatwi2li/giphy.gif", # eye sight
+                    "https://media.giphy.com/media/3ov9jNAyexHvu0Ela0/giphy.gif", # send bun
+                    "https://media.giphy.com/media/3ohhwp0HAJ2R49xNks/giphy.gif", # thumbs up
                     "https://media.giphy.com/media/MSapGH8s2hoNG/giphy.gif" ],
         "nudes" : [ "https://media.giphy.com/media/PpNTwxZyJUFby/giphy.gif",
                    "https://media.giphy.com/media/q4cdfs7GcvzG0/giphy.gif",
@@ -133,7 +138,9 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
                    "https://media.giphy.com/media/F2fv3bjPnYhKE/giphy.gif",
                    "https://media.giphy.com/media/CSXoBa3YNXk0U/giphy.gif",
                    "https://media.giphy.com/media/CidfkCKipW1sQ/giphy.gif",
-                   ]
+                   ],
+        "bun" : [ "https://media.giphy.com/media/3ov9jNAyexHvu0Ela0/giphy.gif" ],
+        "wtf" : [ "https://media.giphy.com/media/l378zoQ5oTatwi2li/giphy.gif" ] # eye sight
         }
 
 GIFS["pipoca"] = GIFS["popcorn"]

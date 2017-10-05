@@ -15,7 +15,7 @@ import requests
 import BeautifulSoup as bp
 import telebot
 
-__version__ = "Wed Oct  4 21:40:18 CEST 2017"
+__version__ = "Thu Oct  5 10:30:13 CEST 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -264,11 +264,14 @@ def Manda(cmd):
             bot.send_document(cmd.chat.id, gif)
         except Exception as e:
             try:
-                bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
-                bot.send_message(cmd.chat.id, "Link: %s" % gif)
-            except Exception as z:
-                print u"%s" % z
-    debug("tchau")
+                bot.send_message(cmd.chat.id, "<img src=\"%s\">"% gif)
+            except Exception as err2:
+                try:
+                    bot.send_message(cmd.chat.id, "Deu merda... %s" % err2)
+                    bot.send_message(cmd.chat.id, "Link: %s" % gif)
+                except Exception as z:
+                    print u"%s" % z
+        debug("tchau")
 
 @bot.message_handler(commands=["pipoca"])
 def PipocaGif(cmd):

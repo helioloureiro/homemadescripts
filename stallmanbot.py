@@ -15,7 +15,7 @@ import requests
 import BeautifulSoup as bp
 import telebot
 
-__version__ = "Thu Oct  5 10:30:13 CEST 2017"
+__version__ = "Fri Oct  6 10:56:03 CEST 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -110,6 +110,7 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
                     "https://media.giphy.com/media/3ov9jNAyexHvu0Ela0/giphy.gif", # send bun
                     "https://media.giphy.com/media/3ohhwp0HAJ2R49xNks/giphy.gif", # thumbs up
                     "https://media.giphy.com/media/3ohhwneKeCkbALPcKk/giphy.gif", # tinder
+                    "https://media.giphy.com/media/xT9IgqIuvUoKD5oliw/giphy.gif", # irony
                     "https://media.giphy.com/media/MSapGH8s2hoNG/giphy.gif" ],
         "nudes" : [ "https://media.giphy.com/media/PpNTwxZyJUFby/giphy.gif",
                    "https://media.giphy.com/media/q4cdfs7GcvzG0/giphy.gif",
@@ -145,7 +146,8 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
         "nanga" : [ "https://media.giphy.com/media/RCBQSWiMPTQly/giphy.gif" ],
         "tinder" : [ "https://media.giphy.com/media/3ohhwneKeCkbALPcKk/giphy.gif", # tinder
                      "https://giphy.com/gifs/3ohhwneKeCkbALPcKk/html5" ], # same, but w/ different version
-        "wtf" : [ "https://media.giphy.com/media/l378zoQ5oTatwi2li/giphy.gif" ] # eye sight
+        "wtf" : [ "https://media.giphy.com/media/l378zoQ5oTatwi2li/giphy.gif" ], # eye sight
+        "ironia" : [ "https://media.giphy.com/media/xT9IgqIuvUoKD5oliw/giphy.gif" ] # irony
         }
 
 GIFS["pipoca"] = GIFS["popcorn"]

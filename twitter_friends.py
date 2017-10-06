@@ -68,17 +68,18 @@ def SendingList(api, tag, list_name):
         else:
             MSG += " " + name
         counter += 1
-
-    if not dryrun:
-        sleep(randrange(1,30) * 60)
-
     print MSG
     if not dryrun:
         try:
+            if not re.search("@", MSG):
+                # empty
+                return
             api.PostUpdate(MSG)
         except twitter.TwitterError as e:
             if ( re.search('Status is a duplicate.', e.message) ):
                 pass
+        sleep(randrange(1,30) * 60)
+
 
 def ReadConfig():
     """

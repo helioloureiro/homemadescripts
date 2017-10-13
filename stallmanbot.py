@@ -1043,7 +1043,7 @@ def FofoMetrics(cmd):
 
     if re.search("/scoreblob", cmd.text):
         try:
-            text, person = split(cmd.text)
+            text, person = cmd.text.split()
         except:
             bot.send_message(cmd.chat.id,  u"Manda: /scoreblob @usuario")
             return

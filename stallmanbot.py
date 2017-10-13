@@ -17,7 +17,7 @@ import BeautifulSoup as bp
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Fri Oct 13 19:55:38 CEST 2017"
+__version__ = "Fri Oct 13 19:57:36 CEST 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -1045,7 +1045,7 @@ def FofoMetrics(cmd):
         try:
             text, person = split(cmd.text)
         except:
-            bot send_message(cmd.chat.id,  u"Manda: /scoreblob @usuario")
+            bot.send_message(cmd.chat.id,  u"Manda: /scoreblob @usuario")
             return
         debug(u"/scoreblob: %s" % person)
 

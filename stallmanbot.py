@@ -1048,6 +1048,7 @@ def FofoMetrics(cmd):
             bot.send_message(cmd.chat.id,  u"Manda: /scoreblob @usuario")
             return
         debug(u"/scoreblob: %s" % person)
+        debug(u"%s" % bot.chat_id("%s" % person) )
 
 
 @bot.message_handler(commands=["motivationals", "motivational", "motivacional" ])

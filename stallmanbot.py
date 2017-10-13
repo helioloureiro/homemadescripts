@@ -13,9 +13,11 @@ from datetime import date
 import mmap
 import requests
 import BeautifulSoup as bp
+# pyTelegramBotAPI
+# https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Fri Oct  6 10:56:03 CEST 2017"
+__version__ = "Fri Oct 13 19:42:14 CEST 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -395,7 +397,7 @@ def Requer(cmd):
     debug(cmd.text)
     try:
         if re.search("sudo rm -rf /", cmd.text):
-            gif = open("%s/sudo_rm_rf.gif" % IMGDIR, "rb")
+            gif = "https://media.giphy.com/media/7cxkulE62EV2/giphy.gif"
             bot.send_document(cmd.chat.id, gif)
             return
         bot.reply_to(cmd, "Ah lá... achando que é réquer.")
@@ -823,7 +825,7 @@ fofondex = {}
 start_time = time.time()
 
 @bot.message_handler(commands=["fofometro", "fofondex", "resetfofos",
-    "blobometro", "blobondex"])
+    "blobometro", "blobondex", "scoreblob"])
 def FofoMetrics(cmd):
     debug(cmd.text)
     global fofondex, start_time
@@ -1138,6 +1140,8 @@ Amuleke!
 def Ban(session):
     debug(session.text)
     bot.reply_to(session, u"Deixa que eu pego ele na hora da saída.")
+    gif = "https://media.giphy.com/media/H99r2HtnYs492/giphy.gif"
+    bot.send_document(session.chat.id, gif)
     # Falta implementar quem...
 
 @bot.message_handler(commands=["fonte", "fontes", "src", "source"])

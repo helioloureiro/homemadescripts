@@ -17,7 +17,7 @@ import BeautifulSoup as bp
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Mon Oct 23 12:08:01 CEST 2017"
+__version__ = "Mon Oct 23 12:12:50 CEST 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -911,7 +911,7 @@ def FofoMetrics(cmd):
 
     def RunTheDice(n=None):
         debug("RunTheDice")
-        if n:
+        if n >=0 and n <= 100:
             return n
         random.seed(os.urandom(random.randint(0,1000)))
         return random.randint(0,100)

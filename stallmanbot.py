@@ -17,7 +17,7 @@ import BeautifulSoup as bp
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Fri Oct 13 19:57:36 CEST 2017"
+__version__ = "Mon Oct 23 12:08:01 CEST 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -973,9 +973,12 @@ def FofoMetrics(cmd):
                 bot.send_message(cmd.chat.id, u"Perdão patrão... Estava aqui " + \
                     u"compilando o emacs e me distraí.  Deixa eu fazer de novo.")
                 if re.search("blob", cmd.text):
-                    pctg = RunTheDice(0)
+                    pctg = RunTheDice(n=0)
+                    bot.send_message(cmd.chat.id, u"Seu valor é=%d" % pctg)
                 elif re.search("fofo", cmd.text):
                     pctg = RunTheDice(100)
+                    bot.send_message(cmd.chat.id, u"Seu valor é=%d" % pctg)
+                bot.send_message(cmd.chat.id, u"Inicializando com pctg=%d" % pctg)
                 fofondex[user_id] = InitializeUser(pctg=pctg)
             else:
                 bot.send_message(cmd.chat.id, u"Quem você pensa que é pra " + \

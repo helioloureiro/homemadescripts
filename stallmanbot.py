@@ -43,6 +43,7 @@ fortune - A sorte do dia.  Ou não.
 date - A data atual.
 uptime - Somente os fortes entenderão.
 mandanudes - Pura sensualidade.
+mandafoods - Descrição vai aqui.
 nudes - Sensualidade dum jeito mais rápido.
 emacs - Religião é coisa séria.  Principalmente a parte do vinho e pecado.
 motivational - Pra melhorar *aquela* segunda-feira.
@@ -638,7 +639,8 @@ def Distros(cmd):
 
 @bot.message_handler(commands=["xkcd", "dilbert", "vidadeprogramador",
     "tirinhas", "strips", "vidadesuporte", "angulodevista",
-    "mandanudes", "nudes", "tirinhadorex", "megazine"])
+    "mandanudes", "nudes", "mandafoods", "foods",
+    "tirinhadorex", "megazine"])
 def Comics(cmd):
     debug(cmd.text)
     def GetContent(url):
@@ -780,6 +782,14 @@ def Comics(cmd):
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
         bot.send_message(cmd.chat.id, "Diretamente de %s" % url)
+    elif re.search("foods", cmd.text):
+        url = "My_placeholder"
+        bot.send_message(cmd.chat.id, "placeholder")
+        html = GetContent(url)
+        img_link = GetImgUrl("placeholder")
+        debug("%s: %s" % (cmd.text, img_link))
+        img = GetImg(img_link)
+        bot.send_message(cmd.chat.id, "placeholder %s" % url)
 
     if img:
         try:
@@ -1192,4 +1202,3 @@ if __name__ == '__main__':
         print e
         debug(e)
     os.unlink(PIDFILE)
-

@@ -784,12 +784,20 @@ def Comics(cmd):
         bot.send_message(cmd.chat.id, "Diretamente de %s" % url)
     elif re.search("foods", cmd.text):
         url = "My_placeholder"
+<<<<<<< HEAD
         bot.send_message(cmd.chat.id, "Nham nham! 🍔")
+=======
+        bot.send_message(cmd.chat.id, "placeholder")
+>>>>>>> 98214ea64eec34fdd3a6adbd229518a66dff80b8
         html = GetContent(url)
         img_link = GetImgUrl("placeholder")
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
+<<<<<<< HEAD
         bot.send_message(cmd.chat.id, "Servido por %s" % url)
+=======
+        bot.send_message(cmd.chat.id, "placeholder %s" % url)
+>>>>>>> 98214ea64eec34fdd3a6adbd229518a66dff80b8
 
     if img:
         try:

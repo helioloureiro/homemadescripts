@@ -1,4 +1,5 @@
 # just an example of .twitterc
+# Create yours and add it to .gitignore
 [TWITTER]
 CONS_KEY = abacdadfadasdf
 CONS_SEC = babadafasfasdfasdfasdfasdfasdfsadfsdfasfsaddf

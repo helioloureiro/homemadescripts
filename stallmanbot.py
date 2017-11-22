@@ -199,7 +199,10 @@ def StartUp():
         os.system(oscmd)
         botname = "stallmanbot.py"
         debug(oscmd)
-        oscmd = "diff -q %s %s/bin/%s" % (botname, HOME, botname)
+        # For debugging
+        oscmd = "diff -q %s %s/homemadescripts/%s" % (botname, HOME, botname)
+        # Original Raspberry Pi command
+        # oscmd = "diff -q %s %s/bin/%s" % (botname, HOME, botname)
         res = os.system(oscmd)
         if res:
             # new version detected
@@ -1195,6 +1198,7 @@ def WhatEver(session):
     #bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")
 
 if __name__ == '__main__':
+# def main():
     StartUp()
     try:
         debug("Polling...")
@@ -1203,3 +1207,5 @@ if __name__ == '__main__':
         print e
         debug(e)
     os.unlink(PIDFILE)
+
+# main()

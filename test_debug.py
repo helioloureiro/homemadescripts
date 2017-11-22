@@ -5,6 +5,8 @@
 
 import telebot
 import ConfigParser
+import os
+import time
 
 DEBUG = True
 CONFIG = ".twitterc"
@@ -17,7 +19,32 @@ def debug(msg):
         except Exception as e:
             print u"[%s] DEBUG ERROR: %s" % (time.ctime(), e)
 
+# Get configs from .twitterc
+configuration = "%s/%s" % (os.environ.get('HOME'), CONFIG)
+cfg = ConfigParser.ConfigParser()
+debug("Reading configuration: %s" % configuration)
+if not os.path.exists(configuration):
+    print "Failed to find configuration file %s" % configuration
+    sys.exit(1)
+cfg.read(configuration)
+try:
+    key = cfg.get("TELEGRAM", "STALLBOT")
+    botadm = cfg.get("TELEGRAM", "STALLBOTADM")
+except ConfigParser.NoSectionError:
+    print "No TELEGRAM session found to retrieve settings."
+    print "Check your configuration file."
+    sys.exit(1)
+debug("Key acquired.")
+
+debug("Starting bot for FreeSpeech")
+bot = telebot.TeleBot(key)
+
 # Function that gets the images from the listed sites.
+# The error is in here somewhere
+@bot.message_handler(commands=["xkcd", "dilbert", "vidadeprogramador",
+    "tirinhas", "strips", "vidadesuporte", "angulodevista",
+    "mandanudes", "nudes", "mandafoods", "foods",
+    "tirinhadorex", "megazine"])
 def Comics(cmd):
     debug(cmd.text)
     def GetContent(url):
@@ -191,5 +218,12 @@ def send_welcome(message):
 
 # Start the bot using:
 # $ python2 -u test_debug.py
-if __name__ == "main":
-    bot.polling()
+def main():
+    try:
+        debug("Polling...")
+        bot.polling()
+    except Exception as e:
+        print e
+        debug(e)
+
+main()

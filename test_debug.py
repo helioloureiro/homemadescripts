@@ -7,6 +7,7 @@ import telebot
 import ConfigParser
 import os
 import time
+import requests
 
 DEBUG = True
 CONFIG = ".twitterc"

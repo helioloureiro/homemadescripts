@@ -26,28 +26,29 @@ Commands_Listing = """
 
 oi - Hummm... então tá.
 ultrafofos - Quem são, o que são e como vivem.
-photo - Maravilhos nudes livres.  Sério.
+photo - Maravilhos nudes livres. Sério.
 rtfm - O que todo mundo já devia saber.
-distro - Use: distro <suadistro>. Uma fofurinha sobre sua distro favorita.  Ou não.
+distro - Use: distro <suadistro>. Uma fofurinha sobre sua distro favorita. Ou não.
 xkcd - Sua dose diária de humor ácido do xkcd.
 dilbert - Sua dose diária de humor corporativo.
 vidadeprogramador - Sua dose diária de Alonzo.
 vidadesuporte - Sua dose diária de chamados no helpdesk.
-angulodevista - Sua dose diária de vida.  Infelizmente.
+angulodevista - Sua dose diária de vida. Infelizmente.
 tirinhadorex - Tirinhas meio emo.
-fofometro - Quão fofo você é?  Tente.
+fofometro - Quão fofo você é? Tente.
 fofondex - Ranking de fofura.
-blobometro - Quão blob você é?  Tente.
+blobometro - Quão blob você é? Tente.
 blobondex - Ranking de blobice.
 fortune - A sorte do dia.  Ou não.
 date - A data atual.
 uptime - Somente os fortes entenderão.
 mandanudes - Pura sensualidade.
-mandafoods - Descrição vai aqui.
+mandafoods - Aquele nham-nham pra deixar seu dia mais alegre! 💞
 nudes - Sensualidade dum jeito mais rápido.
+foods - Fome de um jeito mais rápido.
 emacs - Religião é coisa séria.  Principalmente a parte do vinho e pecado.
 motivational - Pra melhorar *aquela* segunda-feira.
-dia - Pra saber em qual dia da semana estamos.  Ou não.
+dia - Pra saber em qual dia da semana estamos. Ou não.
 blob - Quem não precisa de firmware pra funcionar?
 mimimi - Mande: /mimimi frase.
 bomdia - Assim que se começa um dia de verdade.
@@ -783,21 +784,13 @@ def Comics(cmd):
         img = GetImg(img_link)
         bot.send_message(cmd.chat.id, "Diretamente de %s" % url)
     elif re.search("foods", cmd.text):
-        url = "My_placeholder"
-<<<<<<< HEAD
+        url = "www.foodporndaily.com"
         bot.send_message(cmd.chat.id, "Nham nham! 🍔")
-=======
-        bot.send_message(cmd.chat.id, "placeholder")
->>>>>>> 98214ea64eec34fdd3a6adbd229518a66dff80b8
         html = GetContent(url)
-        img_link = GetImgUrl("placeholder")
+        img_link = GetImgUrl("<img id=\"mainPhoto\"/>", html)
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
-<<<<<<< HEAD
         bot.send_message(cmd.chat.id, "Servido por %s" % url)
-=======
-        bot.send_message(cmd.chat.id, "placeholder %s" % url)
->>>>>>> 98214ea64eec34fdd3a6adbd229518a66dff80b8
 
     if img:
         try:

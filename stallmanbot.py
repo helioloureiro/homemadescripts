@@ -202,10 +202,10 @@ def StartUp():
         os.system(oscmd)
         botname = "stallmanbot.py"
         debug(oscmd)
-        # For debugging
-        oscmd = "diff -q %s %s/homemadescripts/%s" % (botname, HOME, botname)
+        # For debugging outside of the Raspberry Pi
+        # oscmd = "diff -q %s %s/homemadescripts/%s" % (botname, HOME, botname)
         # Original Raspberry Pi command
-        # oscmd = "diff -q %s %s/bin/%s" % (botname, HOME, botname)
+        oscmd = "diff -q %s %s/bin/%s" % (botname, HOME, botname)
         res = os.system(oscmd)
         if res:
             # new version detected

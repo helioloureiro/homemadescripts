@@ -75,6 +75,7 @@ PAUTAS = "%s/canalunixloadon/pautas" % HOME
 IMGDIR = "%s/Pictures" % HOME
 SCRIPTHOME = "%s/homemadescripts" % HOME
 FOFODB = "%s/fofondex.db" % HOME
+MANDAFOODSFILE = "%s/foodporn.json" % HOME
 simple_lock = False # very simple lock way
 
 GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.gif",
@@ -219,6 +220,10 @@ def StartUp():
             debug("Calling restart")
             python = sys.executable
             os.execl(python, python, *sys.argv)
+
+        # Update the foodporn.json file
+        get_foodporn_json_cmd = "curl https://www.reddit.com/r/foodporn.json > %s" % MANDAFOODSFILE
+        os.system(get_foodporn_json_cmd)
 
 def GetGif(theme):
     if not GIFS.has_key(theme):
@@ -794,10 +799,10 @@ def Comics(cmd):
         # Which will be stored in the home folder, got a problem with requests
 
         # Get the post list
-        json_data = json.loads(open("%s/foodporn.json" % HOME).read())
+        json_data = json.loads(open(MANDAFOODSFILE).read())
         seed = random.seed(os.urandom(random.randint(0,1000)))
         # Shuffling the posts
-        post_number = random.randint(0, 25)
+        post_number = random.randint(1, 25) # 0 is the pinned title post for the subreddit
         img_link = json_data["data"]["children"][post_number]["data"]["url"]
         bot.send_message(cmd.chat.id, "Nham nham! 🍔")
         debug("%s: %s" % (cmd.text, img_link))

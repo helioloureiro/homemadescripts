@@ -787,10 +787,10 @@ def Comics(cmd):
         img = GetImg(img_link)
         bot.send_message(cmd.chat.id, "Diretamente de %s" % url)
     elif re.search("foods", cmd.text):
-        url = "www.foodporndaily.com"
+        url = "http://www.foodporndaily.com"
         bot.send_message(cmd.chat.id, "Nham nham! 🍔")
         html = GetContent(url)
-        img_link = GetImgUrl("<img id=\"mainPhoto\"/>", html)
+        img_link = GetImgUrl("img id=\"mainPhoto\" src=\"http://foodporndaily.com\/pictures\/.*\.jpg", html)
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
         bot.send_message(cmd.chat.id, "Servido por %s" % url)
@@ -1198,7 +1198,6 @@ def WhatEver(session):
     #bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")
 
 if __name__ == '__main__':
-# def main():
     StartUp()
     try:
         debug("Polling...")
@@ -1207,5 +1206,3 @@ if __name__ == '__main__':
         print e
         debug(e)
     os.unlink(PIDFILE)
-
-# main()

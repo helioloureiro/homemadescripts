@@ -13,6 +13,8 @@ from datetime import date
 import mmap
 import requests
 import BeautifulSoup as bp
+import json
+
 # pyTelegramBotAPI
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
@@ -644,7 +646,7 @@ def Distros(cmd):
 @bot.message_handler(commands=["xkcd", "dilbert", "vidadeprogramador",
     "tirinhas", "strips", "vidadesuporte", "angulodevista",
     "mandanudes", "nudes", "mandafoods", "foods",
-    "tirinhadorex", "megazine"])
+    "tirinhadorex", "megazine", "pudim"])
 def Comics(cmd):
     debug(cmd.text)
     def GetContent(url):
@@ -787,10 +789,16 @@ def Comics(cmd):
         img = GetImg(img_link)
         bot.send_message(cmd.chat.id, "Diretamente de %s" % url)
     elif re.search("foods", cmd.text):
-        url = "http://www.foodporndaily.com"
+
+        # We'll grab the images from /r/foodporn JSON file.
+        # Which will be stored in the home folder, got a problem with requests
+
+        # Preparing the image link
+        json_data = json.loads(open("%s/foodporn.json" % HOME).read())
+        seed = random.seed(os.urandom(random.randint(0,1000)))
+        post_number = random.randint(0, 25)
+        img_link = json_data["data"]["children"][post_number]["data"]["preview"]["images"][0]["source"]["url"]
         bot.send_message(cmd.chat.id, "Nham nham! 🍔")
-        html = GetContent(url)
-        img_link = GetImgUrl("img id=\"mainPhoto\" src=\"http://foodporndaily.com\/pictures\/.*\.jpg", html)
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
         bot.send_message(cmd.chat.id, "Servido por %s" % url)

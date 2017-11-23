@@ -793,15 +793,16 @@ def Comics(cmd):
         # We'll grab the images from /r/foodporn JSON file.
         # Which will be stored in the home folder, got a problem with requests
 
-        # Preparing the image link
+        # Get the post list
         json_data = json.loads(open("%s/foodporn.json" % HOME).read())
         seed = random.seed(os.urandom(random.randint(0,1000)))
+        # Shuffling the posts
         post_number = random.randint(0, 25)
-        img_link = json_data["data"]["children"][post_number]["data"]["preview"]["images"][0]["source"]["url"]
+        img_link = json_data["data"]["children"][post_number]["data"]["url"]
         bot.send_message(cmd.chat.id, "Nham nham! 🍔")
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
-        bot.send_message(cmd.chat.id, "Servido por %s" % url)
+        bot.send_message(cmd.chat.id, "Direto de https://www.reddit.com/r/foodporn")
 
     if img:
         try:

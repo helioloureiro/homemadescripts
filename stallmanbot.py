@@ -799,17 +799,23 @@ def Comics(cmd):
         # Which will be stored in the home folder, got a problem with requests
 
         # Get the post list
+        debug("foods")
         if not os.path.exists(MANDAFOODSFILE):
             # download here
+            debug(" * download foodporn")
             get_foodporn_json_cmd = "curl https://www.reddit.com/r/foodporn.json > %s" % MANDAFOODSFILE
             os.system(get_foodporn_json_cmd)
 
         try:
+            debug(" * reading json")
             json_data = json.loads(open(MANDAFOODSFILE).read())
         except:
+            debug(" * json failed: creating one")
             json_data = { "error" : 666, "message" : "error fazendo parsing do json" }
         if json_data.has_key("error"):
+            debug(" * found key error")
             bot.send_message(cmd.chat.id, u"Deu merda no Jasão: %s" % json_data["message"])
+            debug(" * removing file")
             os.unlink(MANDAFOODSFILE)
             return
 

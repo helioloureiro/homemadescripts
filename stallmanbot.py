@@ -19,7 +19,7 @@ import json
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Mon Oct 23 12:16:14 CEST 2017"
+__version__ = "Fri Nov 24 15:48:53 CET 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -799,7 +799,20 @@ def Comics(cmd):
         # Which will be stored in the home folder, got a problem with requests
 
         # Get the post list
-        json_data = json.loads(open(MANDAFOODSFILE).read())
+        if not os.path.exists(MANDAFOODSFILE):
+            # download here
+            get_foodporn_json_cmd = "curl https://www.reddit.com/r/foodporn.json > %s" % MANDAFOODSFILE
+            os.system(get_foodporn_json_cmd)
+
+        try:
+            json_data = json.loads(open(MANDAFOODSFILE).read())
+        except:
+            json_data = { "error" : 666, "message" : "error fazendo parsing do json" }
+        if json_data.has_key["error"]:
+            bot.send_message(cmd.chat.id, u"Deu merda no Jasão: %s" % json_data["message"])
+            os.unlink(MANDAFOODSFILE)
+            return
+
         seed = random.seed(os.urandom(random.randint(0,1000)))
         # Shuffling the posts
         post_number = random.randint(1, 25) # 0 is the pinned title post for the subreddit

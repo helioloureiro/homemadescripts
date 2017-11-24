@@ -70,7 +70,7 @@ SCRIPTHOME = "%s/homemadescripts" % HOME
 FOFODB = "%s/fofondex.db" % HOME
 MANDAFOODSFILE = "%s/foodporn.json" % HOME
 simple_lock = False # very simple lock way
-botadm, cfg, key = None, None, None
+botadm, cfg, key, bot = None, None, None, None
 
 GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.gif",
                       "https://media.giphy.com/media/l3fzIJxUF2EpGqk48/giphy.gif",
@@ -200,7 +200,7 @@ def read_configuration(config_file):
     debug("Reading configuration: %s" % config_file)
     if not os.path.exists(config_file):
         print "Failed to find configuration file %s" % config_file
-        sys.exit(1)
+        sys.exit(os.EX_CONFIG)
     cfg.read(config_file)
     return cfg
 
@@ -214,22 +214,7 @@ def get_telegram_key(config_obj, parameter):
         print "No %s session found to retrieve settings." % config_section
         print "Check your configuration file."
         sys.exit(os.EX_CONFIG)
-    debug(" * Key acquired.")
-
-def main():
-    """Main settings"""
-    global botadm, cfg, key
-    check_if_run()
-    save_file("%d\n" % os.getpid(), PIDFILE)
-
-    # setup debug on shell as argument
-    if os.environ.has_key("DEBUG"):
-        DEBUG = True
-
-    configuration = "%s/%s" % (os.environ.get('HOME'), CONFIG)
-    cfg = read_configuration(configuration)
-    key = get_telegram_key(cfg, "STALLBOT")
-    botadm = get_telegram_key(cfg, "STALLBOTADM")
+    debug(" * Key acquired (%s=%s)." % (parameter, value) )
 
 
 def StartUp():
@@ -274,8 +259,25 @@ def GetGif(theme):
     get_id = random.randint(0, sizeof - 1)
     return GIFS[theme][get_id]
 
-debug("Starting bot for FreeSpeech")
-bot = telebot.TeleBot(key)
+def main():
+    """Main settings"""
+    global botadm, cfg, key, bot
+    check_if_run()
+    save_file("%d\n" % os.getpid(), PIDFILE)
+
+    # setup debug on shell as argument
+    if os.environ.has_key("DEBUG"):
+        DEBUG = True
+
+    configuration = "%s/%s" % (os.environ.get('HOME'), CONFIG)
+    cfg = read_configuration(configuration)
+    key = get_telegram_key(cfg, "STALLBOT")
+    botadm = get_telegram_key(cfg, "STALLBOTADM")
+
+    StartUp()
+
+    debug("Starting bot for FreeSpeech")
+    bot = telebot.TeleBot(key)
 
 @bot.message_handler(commands=["oi", "hello", "helloworld", "oiamor", "teamo"])
 def HelloWorld(cmd):
@@ -1271,7 +1273,7 @@ def WhatEver(session):
     #bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")
 
 if __name__ == '__main__':
-    StartUp()
+    main()
     try:
         debug("Polling...")
         bot.polling()

@@ -71,7 +71,6 @@ FOFODB = "%s/fofondex.db" % HOME
 MANDAFOODSFILE = "%s/foodporn.json" % HOME
 simple_lock = False # very simple lock way
 botadm, cfg, key = None, None, None
-bot = telebot.TeleBot()
 
 GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.gif",
                       "https://media.giphy.com/media/l3fzIJxUF2EpGqk48/giphy.gif",
@@ -277,9 +276,10 @@ def main():
 
     StartUp()
 
-    debug("Starting bot for FreeSpeech")
-    bot = telebot.TeleBot(key)
+debug("Starting bot for FreeSpeech")
+bot = telebot.TeleBot(key)
 
+### Bot callbacks below ###
 @bot.message_handler(commands=["oi", "hello", "helloworld", "oiamor", "teamo"])
 def HelloWorld(cmd):
     debug(cmd.text)

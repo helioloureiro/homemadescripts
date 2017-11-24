@@ -19,7 +19,7 @@ import json
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Fri Nov 24 19:03:39 CET 2017"
+__version__ = "Fri Nov 24 19:32:49 CET 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """

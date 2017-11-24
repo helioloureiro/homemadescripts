@@ -19,7 +19,7 @@ import json
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Fri Nov 24 17:44:45 CET 2017"
+__version__ = "Fri Nov 24 19:03:39 CET 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -158,6 +158,12 @@ GIFS["pera"] = GIFS["no_wait"]
 
 ### Refactoring
 # Applying the concepts from clean code (thanks uncle Bob)
+def set_debug():
+    global DEBUG
+    if DEBUG is False:
+        if os.environ.has_key("DEBUG"):
+            DEBUG = True
+
 def debug(msg):
     if DEBUG and msg:
         try:
@@ -207,15 +213,17 @@ def read_configuration(config_file):
 def get_telegram_key(config_obj, parameter):
     """Read a parameter from configuration object for TELEGRAM
     and return it or exit on failure"""
+    debug("get_telegram_key()")
     config_section = "TELEGRAM"
     try:
         value = config_obj.get(config_section, parameter)
+        debug(" * value=%s" % value)
     except ConfigParser.NoSectionError:
         print "No %s session found to retrieve settings." % config_section
         print "Check your configuration file."
         sys.exit(os.EX_CONFIG)
     debug(" * Key acquired (%s=%s)." % (parameter, value) )
-
+    return value
 
 def StartUp():
     debug("Startup")
@@ -229,7 +237,7 @@ def StartUp():
         # For debugging outside of the Raspberry Pi
         # oscmd = "diff -q %s %s/homemadescripts/%s" % (botname, HOME, botname)
         # Original Raspberry Pi command
-        oscmd = "diff -q %s %s/bin/%s" % (botname, HOME, botname)
+        oscmd = "diff -q %s %s/bin/%s check" % (botname, HOME, botname)
         res = os.system(oscmd)
         if res:
             # new version detected
@@ -260,26 +268,32 @@ def GetGif(theme):
 
 def main():
     """Main settings"""
-    global botadm, cfg, key, bot, configuration
+    global botadm
+    #, cfg, key, bot, configuration
     check_if_run()
     save_file("%d\n" % os.getpid(), PIDFILE)
 
-    # setup debug on shell as argument
-    if os.environ.has_key("DEBUG"):
-        DEBUG = True
+    #configuration = "%s/%s" % (os.environ.get('HOME'), CONFIG)
+    #cfg = read_configuration(configuration)
+    #key = get_telegram_key(cfg, "STALLBOT")
 
+
+    StartUp()
+
+def get_global_keys():
+    """Read globa settings like telegram key API"""
+    debug("get_global_keys()")
+    global botadm, key
     configuration = "%s/%s" % (os.environ.get('HOME'), CONFIG)
     cfg = read_configuration(configuration)
     key = get_telegram_key(cfg, "STALLBOT")
     botadm = get_telegram_key(cfg, "STALLBOTADM")
 
-    StartUp()
-
 # avoiding nulls
-configuration = "%s/%s" % (os.environ.get('HOME'), CONFIG)
-cfg = read_configuration(configuration)
+set_debug()
 debug("Starting bot for FreeSpeech")
-bot = telebot.TeleBot(get_telegram_key(cfg, "STALLBOT"))
+get_global_keys()
+bot = telebot.TeleBot(key)
 
 ### Bot callbacks below ###
 @bot.message_handler(commands=["oi", "hello", "helloworld", "oiamor", "teamo"])
@@ -1276,8 +1290,12 @@ def WhatEver(session):
     #bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")
 
 if __name__ == '__main__':
-    main()
+    if sys.argv[-1] == "check":
+        print "Ok"
+        sys.exit(os.EX_OK)
     try:
+        debug("Main()")
+        main()
         debug("Polling...")
         bot.polling()
     except Exception as e:

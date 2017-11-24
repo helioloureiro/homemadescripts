@@ -651,7 +651,7 @@ def Distros(cmd):
 @bot.message_handler(commands=["xkcd", "dilbert", "vidadeprogramador",
     "tirinhas", "strips", "vidadesuporte", "angulodevista",
     "mandanudes", "nudes", "mandafoods", "foods",
-    "tirinhadorex", "megazine", "pudim"])
+    "tirinhadorex", "megazine"])
 def Comics(cmd):
     debug(cmd.text)
     def GetContent(url):

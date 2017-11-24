@@ -276,7 +276,7 @@ def main():
     StartUp()
 
 debug("Starting bot for FreeSpeech")
-bot = telebot.TeleBot(key)
+bot = telebot.TeleBot(get_telegram_key(cfg, "STALLBOT"))
 
 ### Bot callbacks below ###
 @bot.message_handler(commands=["oi", "hello", "helloworld", "oiamor", "teamo"])

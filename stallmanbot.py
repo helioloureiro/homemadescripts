@@ -19,7 +19,7 @@ import json
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Fri Nov 24 15:48:53 CET 2017"
+__version__ = "Fri Nov 24 17:44:45 CET 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -60,15 +60,8 @@ fuda - Os males do software livre.
 hacked - Shame, shame, shame...
 """
 
+DEBUG = False
 CONFIG = ".twitterc"
-DEBUG = True
-def debug(msg):
-    if DEBUG and msg:
-        try:
-            print u"[%s] %s" % (time.ctime(), msg)
-        except Exception as e:
-            print u"[%s] DEBUG ERROR: %s" % (time.ctime(), e)
-
 HOME = os.environ.get('HOME')
 PIDFILE = "%s/.stallmanbot.pid" % HOME
 PAUTAS = "%s/canalunixloadon/pautas" % HOME
@@ -162,36 +155,77 @@ GIFS["vergonha"] = GIFS["shame"]
 GIFS["cafe"] = GIFS["coffee"]
 GIFS["pera"] = GIFS["no_wait"]
 
-if os.path.exists(PIDFILE):
-    try:
-        pid = open(PIDFILE).read()
-    except:
-        pid = None
-    if pid and int(pid) > 0 and int(pid) != os.getpid():
-        if os.path.exists("/proc/%d" % int(pid)):
-            print "[%s] Already running." % time.ctime()
-            sys.exit(0)
+check_if_run()
+save_file("%d\n" % os.getpid(), PIDFILE)
 
-fd = open(PIDFILE, 'w')
-fd.write("%d\n" % os.getpid())
-fd.flush()
-fd.close()
+# setup debug on shell as argument
+if os.environ.has_key("DEBUG"):
+    DEBUG = True
 
 configuration = "%s/%s" % (os.environ.get('HOME'), CONFIG)
-cfg = ConfigParser.ConfigParser()
-debug("Reading configuration: %s" % configuration)
-if not os.path.exists(configuration):
-    print "Failed to find configuration file %s" % configuration
-    sys.exit(1)
-cfg.read(configuration)
-try:
-    key = cfg.get("TELEGRAM", "STALLBOT")
-    botadm = cfg.get("TELEGRAM", "STALLBOTADM")
-except ConfigParser.NoSectionError:
-    print "No TELEGRAM session found to retrieve settings."
-    print "Check your configuration file."
-    sys.exit(1)
-debug("Key acquired.")
+cfg = read_configuration(configuration)
+key = get_telegram_key(cfg, "STALLBOT")
+botadm = get_telegram_key(cfg, "STALLBOTADM")
+
+### Refactoring
+# Applying the concepts from clean code (thanks uncle Bob)
+def debug(msg):
+    if DEBUG and msg:
+        try:
+            print u"[%s] %s" % (time.ctime(), msg)
+        except Exception as e:
+            print u"[%s] DEBUG ERROR: %s" % (time.ctime(), e)
+
+def read_file(filename):
+    content = None
+    if not os.path.exists(filename):
+        return content
+    try:
+        content = open(filename).read()
+    except:
+        print "Failed to read file %s" % filename
+        pass
+    return content
+
+def check_if_run():
+    pid = read_file(PIDFILE)
+    current_pid = os.getpid()
+    if pid is None:
+        return
+    if int(pid) > 0 and int(pid) != current_pid:
+        if os.path.exists("/proc/%d" % int(pid)):
+            print "[%s] Already running - keepalive done." % time.ctime()
+            sys.exit(os.EX_OK)
+
+def save_file(content, filename):
+    """Snippet to write down data"""
+    fd = open(filename, 'w')
+    fd.write(content)
+    fd.flush()
+    fd.close()
+
+def read_configuration(config_file):
+    """ Read configuration file and return object
+    with config attributes"""
+    cfg = ConfigParser.ConfigParser()
+    debug("Reading configuration: %s" % config_file)
+    if not os.path.exists(config_file):
+        print "Failed to find configuration file %s" % config_file
+        sys.exit(1)
+    cfg.read(config_file)
+    return cfg
+
+def get_telegram_key(config_obj, parameter):
+    """Read a parameter from configuration object for TELEGRAM
+    and return it or exit on failure"""
+    config_section = "TELEGRAM"
+    try:
+        value = config_obj.get(config_section, parameter)
+    except ConfigParser.NoSectionError:
+        print "No %s session found to retrieve settings." % config_section
+        print "Check your configuration file."
+        sys.exit(os.EX_CONFIG)
+    debug(" * Key acquired.")
 
 def StartUp():
     debug("Startup")

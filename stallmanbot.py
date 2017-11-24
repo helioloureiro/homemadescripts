@@ -13,6 +13,8 @@ from datetime import date
 import mmap
 import requests
 import BeautifulSoup as bp
+import json
+
 # pyTelegramBotAPI
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
@@ -26,27 +28,29 @@ Commands_Listing = """
 
 oi - Hummm... então tá.
 ultrafofos - Quem são, o que são e como vivem.
-photo - Maravilhos nudes livres.  Sério.
+photo - Maravilhos nudes livres. Sério.
 rtfm - O que todo mundo já devia saber.
-distro - Use: distro <suadistro>. Uma fofurinha sobre sua distro favorita.  Ou não.
+distro - Use: distro <suadistro>. Uma fofurinha sobre sua distro favorita. Ou não.
 xkcd - Sua dose diária de humor ácido do xkcd.
 dilbert - Sua dose diária de humor corporativo.
 vidadeprogramador - Sua dose diária de Alonzo.
 vidadesuporte - Sua dose diária de chamados no helpdesk.
-angulodevista - Sua dose diária de vida.  Infelizmente.
+angulodevista - Sua dose diária de vida. Infelizmente.
 tirinhadorex - Tirinhas meio emo.
-fofometro - Quão fofo você é?  Tente.
+fofometro - Quão fofo você é? Tente.
 fofondex - Ranking de fofura.
-blobometro - Quão blob você é?  Tente.
+blobometro - Quão blob você é? Tente.
 blobondex - Ranking de blobice.
 fortune - A sorte do dia.  Ou não.
 date - A data atual.
 uptime - Somente os fortes entenderão.
 mandanudes - Pura sensualidade.
+mandafoods - Aquele nham-nham pra deixar seu dia mais alegre! 💞
 nudes - Sensualidade dum jeito mais rápido.
+foods - Fome de um jeito mais rápido.
 emacs - Religião é coisa séria.  Principalmente a parte do vinho e pecado.
 motivational - Pra melhorar *aquela* segunda-feira.
-dia - Pra saber em qual dia da semana estamos.  Ou não.
+dia - Pra saber em qual dia da semana estamos. Ou não.
 blob - Quem não precisa de firmware pra funcionar?
 mimimi - Mande: /mimimi frase.
 bomdia - Assim que se começa um dia de verdade.
@@ -71,6 +75,7 @@ PAUTAS = "%s/canalunixloadon/pautas" % HOME
 IMGDIR = "%s/Pictures" % HOME
 SCRIPTHOME = "%s/homemadescripts" % HOME
 FOFODB = "%s/fofondex.db" % HOME
+MANDAFOODSFILE = "%s/foodporn.json" % HOME
 simple_lock = False # very simple lock way
 
 GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.gif",
@@ -197,6 +202,9 @@ def StartUp():
         os.system(oscmd)
         botname = "stallmanbot.py"
         debug(oscmd)
+        # For debugging outside of the Raspberry Pi
+        # oscmd = "diff -q %s %s/homemadescripts/%s" % (botname, HOME, botname)
+        # Original Raspberry Pi command
         oscmd = "diff -q %s %s/bin/%s" % (botname, HOME, botname)
         res = os.system(oscmd)
         if res:
@@ -212,6 +220,10 @@ def StartUp():
             debug("Calling restart")
             python = sys.executable
             os.execl(python, python, *sys.argv)
+
+        # Update the foodporn.json file
+        get_foodporn_json_cmd = "curl https://www.reddit.com/r/foodporn.json > %s" % MANDAFOODSFILE
+        os.system(get_foodporn_json_cmd)
 
 def GetGif(theme):
     if not GIFS.has_key(theme):
@@ -638,7 +650,8 @@ def Distros(cmd):
 
 @bot.message_handler(commands=["xkcd", "dilbert", "vidadeprogramador",
     "tirinhas", "strips", "vidadesuporte", "angulodevista",
-    "mandanudes", "nudes", "tirinhadorex", "megazine"])
+    "mandanudes", "nudes", "mandafoods", "foods",
+    "tirinhadorex", "megazine"])
 def Comics(cmd):
     debug(cmd.text)
     def GetContent(url):
@@ -780,6 +793,21 @@ def Comics(cmd):
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
         bot.send_message(cmd.chat.id, "Diretamente de %s" % url)
+    elif re.search("foods", cmd.text):
+
+        # We'll grab the images from /r/foodporn JSON file.
+        # Which will be stored in the home folder, got a problem with requests
+
+        # Get the post list
+        json_data = json.loads(open(MANDAFOODSFILE).read())
+        seed = random.seed(os.urandom(random.randint(0,1000)))
+        # Shuffling the posts
+        post_number = random.randint(1, 25) # 0 is the pinned title post for the subreddit
+        img_link = json_data["data"]["children"][post_number]["data"]["url"]
+        bot.send_message(cmd.chat.id, "Nham nham! 🍔")
+        debug("%s: %s" % (cmd.text, img_link))
+        img = GetImg(img_link)
+        bot.send_message(cmd.chat.id, "Direto de https://www.reddit.com/r/foodporn")
 
     if img:
         try:
@@ -1192,4 +1220,3 @@ if __name__ == '__main__':
         print e
         debug(e)
     os.unlink(PIDFILE)
-

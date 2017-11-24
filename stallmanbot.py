@@ -808,7 +808,7 @@ def Comics(cmd):
             json_data = json.loads(open(MANDAFOODSFILE).read())
         except:
             json_data = { "error" : 666, "message" : "error fazendo parsing do json" }
-        if json_data.has_key["error"]:
+        if json_data.has_key("error"):
             bot.send_message(cmd.chat.id, u"Deu merda no Jasão: %s" % json_data["message"])
             os.unlink(MANDAFOODSFILE)
             return

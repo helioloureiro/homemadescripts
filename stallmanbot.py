@@ -275,6 +275,9 @@ def main():
 
     StartUp()
 
+# avoiding nulls
+configuration = "%s/%s" % (os.environ.get('HOME'), CONFIG)
+cfg = read_configuration(configuration)
 debug("Starting bot for FreeSpeech")
 bot = telebot.TeleBot(get_telegram_key(cfg, "STALLBOT"))
 

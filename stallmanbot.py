@@ -237,14 +237,14 @@ def StartUp():
         # For debugging outside of the Raspberry Pi
         # oscmd = "diff -q %s %s/homemadescripts/%s" % (botname, HOME, botname)
         # Original Raspberry Pi command
-        oscmd = "diff -q %s %s/bin/%s check" % (botname, HOME, botname)
+        oscmd = "diff -q %s %s/bin/%s" % (botname, HOME, botname)
         res = os.system(oscmd)
         if res:
             # new version detected
-            res = os.system("%s %s" % (sys.executable, sys.argv[0]))
+            res = os.system("%s %s check" % (sys.executable, sys.argv[0]))
             if res != 0:
                 debug("Versão bugada")
-                sys.exit(1)
+                sys.exit(os.EX_OSERR)
             debug("Updating bot...")
             shutil.copy(botname, "%s/bin/%s" % (HOME, botname))
             debug("Bot version updated.")

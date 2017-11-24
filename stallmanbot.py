@@ -70,6 +70,7 @@ SCRIPTHOME = "%s/homemadescripts" % HOME
 FOFODB = "%s/fofondex.db" % HOME
 MANDAFOODSFILE = "%s/foodporn.json" % HOME
 simple_lock = False # very simple lock way
+botadm, cfg, key = None, None, None
 
 GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.gif",
                       "https://media.giphy.com/media/l3fzIJxUF2EpGqk48/giphy.gif",
@@ -155,18 +156,6 @@ GIFS["vergonha"] = GIFS["shame"]
 GIFS["cafe"] = GIFS["coffee"]
 GIFS["pera"] = GIFS["no_wait"]
 
-check_if_run()
-save_file("%d\n" % os.getpid(), PIDFILE)
-
-# setup debug on shell as argument
-if os.environ.has_key("DEBUG"):
-    DEBUG = True
-
-configuration = "%s/%s" % (os.environ.get('HOME'), CONFIG)
-cfg = read_configuration(configuration)
-key = get_telegram_key(cfg, "STALLBOT")
-botadm = get_telegram_key(cfg, "STALLBOTADM")
-
 ### Refactoring
 # Applying the concepts from clean code (thanks uncle Bob)
 def debug(msg):
@@ -227,7 +216,24 @@ def get_telegram_key(config_obj, parameter):
         sys.exit(os.EX_CONFIG)
     debug(" * Key acquired.")
 
+def main():
+    """Main settings"""
+    global botadm, cfg, key
+    check_if_run()
+    save_file("%d\n" % os.getpid(), PIDFILE)
+
+    # setup debug on shell as argument
+    if os.environ.has_key("DEBUG"):
+        DEBUG = True
+
+    configuration = "%s/%s" % (os.environ.get('HOME'), CONFIG)
+    cfg = read_configuration(configuration)
+    key = get_telegram_key(cfg, "STALLBOT")
+    botadm = get_telegram_key(cfg, "STALLBOTADM")
+
+
 def StartUp():
+    main()
     debug("Startup")
     if os.path.exists(SCRIPTHOME):
         os.chdir(SCRIPTHOME)

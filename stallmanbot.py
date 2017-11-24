@@ -14,12 +14,13 @@ import mmap
 import requests
 import BeautifulSoup as bp
 import json
+import syslog
 
 # pyTelegramBotAPI
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Fri Nov 24 19:32:49 CET 2017"
+__version__ = "Fri Nov 24 21:23:36 CET 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -179,6 +180,20 @@ def debug(msg):
         except Exception as e:
             print u"[%s] DEBUG ERROR: %s" % (time.ctime(), e)
 
+def error(message):
+    """Error handling for logs"""
+    errormsg = u"ERROR: %s" % message
+    debug(errormsg)
+    syslog.openlog("StallNoMan")
+    syslog.syslog(syslog.LOG_ERR, errormsg)
+
+def log(message):
+    """Syslog handling for logs"""
+    infomsg = u"%s" % message
+    debug(infomsg)
+    syslog.openlog("StallNoMan")
+    syslog.syslog(syslog.LOG_INFO, infomsg)
+
 def read_file(filename):
     content = None
     if not os.path.exists(filename):
@@ -186,8 +201,7 @@ def read_file(filename):
     try:
         content = open(filename).read()
     except:
-        print "Failed to read file %s" % filename
-        pass
+        error("Failed to read file %s" % filename)
     return content
 
 def check_if_run():
@@ -197,7 +211,7 @@ def check_if_run():
         return
     if int(pid) > 0 and int(pid) != current_pid:
         if os.path.exists("/proc/%d" % int(pid)):
-            print "[%s] Already running - keepalive done." % time.ctime()
+            log("[%s] Already running - keepalive done." % time.ctime())
             sys.exit(os.EX_OK)
 
 def save_file(content, filename):
@@ -213,7 +227,7 @@ def read_configuration(config_file):
     cfg = ConfigParser.ConfigParser()
     debug("Reading configuration: %s" % config_file)
     if not os.path.exists(config_file):
-        print "Failed to find configuration file %s" % config_file
+        error("Failed to find configuration file %s" % config_file)
         sys.exit(os.EX_CONFIG)
     cfg.read(config_file)
     return cfg
@@ -348,23 +362,17 @@ def shit_happens(chat_id, error):
     send_message_to_chat(chat_id, str(error))
 
 @bot.message_handler(commands=["oi", "hello", "helloworld", "oiamor", "teamo"])
-def HelloWorld(cmd):
-    debug(cmd.text)
-    if re.search("oiamor|teamo", cmd.text):
+def hello_world(chat):
+    debug("hello_world()")
+    debug(chat.text)
+    if re.search("oiamor|teamo", chat.text):
         fe_amo = "%s/Pictures/fe_amo.png" % os.environ.get("HOME")
         if os.path.exists(fe_amo):
             love = open(fe_amo, 'rb')
             bot.send_photo(cmd.chat.id, love)
-        bot.reply_to(cmd, u"Te amo também.")
+        bot.reply_to(chat, u"Te amo também.")
         return
-    try:
-        bot.send_message(cmd.chat.id, "OSI world")
-    except Exception as e:
-        try:
-            bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
-        except Exception as z:
-            print u"%s" % z
-    debug("tchau")
+    send_message_to_chat(cmd.chat.id, "OSI world")
 
 @bot.message_handler(commands=["manda", "manga"])
 def Manda(cmd):
@@ -438,15 +446,10 @@ def Version(cmd):
 @bot.message_handler(commands=["ultrafofo", "ultrafofos"])
 def UltraFofo(cmd):
     debug(cmd.text)
-    try:
-        bot.send_message(cmd.chat.id,
-            "#UltraFofos é o grupo super fofis de defensores de software livre." + \
-            "Veja mais em: https://www.youtube.com/watch?v=eIRk38d32vA")
-    except Exception as e:
-        try:
-            bot.send_message(cmd.chat.id, u"Deu merda... %s" % e)
-        except Exception as z:
-            print u"%s" % z
+    message =  "#UltraFofos é o grupo super fofis de defensores de software livre."
+    message += "Veja mais em: https://www.youtube.com/watch?v=eIRk38d32vA"
+
+    send_message_to_chat(cmd.chat.id, message)
 
 @bot.message_handler(commands=["reload"])
 def Reload(cmd):

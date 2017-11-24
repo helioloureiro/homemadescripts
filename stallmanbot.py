@@ -69,6 +69,7 @@ IMGDIR = "%s/Pictures" % HOME
 SCRIPTHOME = "%s/homemadescripts" % HOME
 FOFODB = "%s/fofondex.db" % HOME
 MANDAFOODSFILE = "%s/foodporn.json" % HOME
+FOODPORNURL = "https://www.reddit.com/r/foodporn.json?sort=new"
 simple_lock = False # very simple lock way
 botadm, cfg, key, configuration = None, None, None, None
 
@@ -225,6 +226,25 @@ def get_telegram_key(config_obj, parameter):
     debug(" * Key acquired (%s=%s)." % (parameter, value) )
     return value
 
+def get_foodporn_json():
+    """Retrieve json data from reddit"""
+    debug("get_foodporn_json()")
+    request = requests.get(FOODPORNURL)
+    if request.status_code != 200:
+        request = requests.get(FOODPORNURL)
+    return request.text
+
+def dump_foodporn(json_data):
+    """Save json data for later"""
+    debug("dump_foodporn()")
+    save_file(json_data, MANDAFOODSFILE)
+
+def run_foodporn_update():
+    """Run the whole foodporn stuff"""
+    debug("run_foodporn_update()")
+    food_json = get_foodporn_json()
+    dump_foodporn(food_json)
+
 def StartUp():
     debug("Startup")
     if os.path.exists(SCRIPTHOME):
@@ -254,8 +274,7 @@ def StartUp():
             os.execl(python, python, *sys.argv)
 
         # Update the foodporn.json file
-        get_foodporn_json_cmd = "curl https://www.reddit.com/r/foodporn.json > %s" % MANDAFOODSFILE
-        os.system(get_foodporn_json_cmd)
+        run_foodporn_update()
 
 def GetGif(theme):
     if not GIFS.has_key(theme):
@@ -268,16 +287,8 @@ def GetGif(theme):
 
 def main():
     """Main settings"""
-    global botadm
-    #, cfg, key, bot, configuration
     check_if_run()
     save_file("%d\n" % os.getpid(), PIDFILE)
-
-    #configuration = "%s/%s" % (os.environ.get('HOME'), CONFIG)
-    #cfg = read_configuration(configuration)
-    #key = get_telegram_key(cfg, "STALLBOT")
-
-
     StartUp()
 
 def get_global_keys():

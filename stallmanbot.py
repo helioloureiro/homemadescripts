@@ -218,7 +218,6 @@ def get_telegram_key(config_obj, parameter):
 
 
 def StartUp():
-    main()
     debug("Startup")
     if os.path.exists(SCRIPTHOME):
         os.chdir(SCRIPTHOME)

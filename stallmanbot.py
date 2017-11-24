@@ -362,15 +362,15 @@ def shit_happens(chat_id, error):
     send_message_to_chat(chat_id, str(error))
 
 @bot.message_handler(commands=["oi", "hello", "helloworld", "oiamor", "teamo"])
-def hello_world(chat):
+def hello_world(cmd):
     debug("hello_world()")
-    debug(chat.text)
-    if re.search("oiamor|teamo", chat.text):
+    debug(cmd.text)
+    if re.search("oiamor|teamo", cmd.text):
         fe_amo = "%s/Pictures/fe_amo.png" % os.environ.get("HOME")
         if os.path.exists(fe_amo):
             love = open(fe_amo, 'rb')
             bot.send_photo(cmd.chat.id, love)
-        bot.reply_to(chat, u"Te amo também.")
+        bot.reply_to(cmd, u"Te amo também.")
         return
     send_message_to_chat(cmd.chat.id, "OSI world")
 

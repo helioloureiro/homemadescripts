@@ -157,6 +157,13 @@ GIFS["vergonha"] = GIFS["shame"]
 GIFS["cafe"] = GIFS["coffee"]
 GIFS["pera"] = GIFS["no_wait"]
 
+FAILURES = [
+    "https://media.giphy.com/media/LDay3WufGjxEA/giphy.gif",
+    "https://media.giphy.com/media/5AlEvP1UEeecg/giphy.gif",
+    "https://media.giphy.com/media/5xaOcLyxnN1UxgqDTuU/giphy.gif",
+    "https://media.giphy.com/media/vPH4IIua3umxG/giphy.gif",
+    "https://media.giphy.com/media/8LkXSrAACvLAA/giphy.gif",
+    "https://media.giphy.com/media/nEovVMM8Z5H6U/giphy.gif" ]
 ### Refactoring
 # Applying the concepts from clean code (thanks uncle Bob)
 def set_debug():
@@ -307,6 +314,39 @@ get_global_keys()
 bot = telebot.TeleBot(key)
 
 ### Bot callbacks below ###
+
+def get_random_link(links_array):
+    """Return random line w/ link (expected array of links)"""
+    debug("get_random_link()")
+    size = len(links_array)
+    position = random.randint(0,size -1)
+    return links_array[position]
+
+def send_animated_image_by_link_to_chat(chat_id, image_link):
+    """Send a specific animated gif to a chat"""
+    debug("send_animated_image_by_link_to_chat()")
+    try:
+        bot.send_document(chat_id, image_link)
+    except:
+        error("Failed to send image=%s to chat_id=%s" % \
+            (image_link, chat_id))
+
+def send_message_to_chat(chat_id, message):
+    """Send a specific message to a chat"""
+    debug("send_message_to_chat()")
+    try:
+        bot.send_message(chat_id, u"%s" % message)
+    except:
+        error("Failed to send message=%s to chat_id=%s" % \
+            (message, chat_id))
+
+def shit_happens(chat_id, error):
+    """Send error back"""
+    debug("shit_happens()")
+    gif = get_random_link(FAILURES)
+    send_animated_image_by_link_to_chat(chat_id, gif)
+    send_message_to_chat(chat_id, str(error))
+
 @bot.message_handler(commands=["oi", "hello", "helloworld", "oiamor", "teamo"])
 def HelloWorld(cmd):
     debug(cmd.text)

@@ -70,7 +70,7 @@ SCRIPTHOME = "%s/homemadescripts" % HOME
 FOFODB = "%s/fofondex.db" % HOME
 MANDAFOODSFILE = "%s/foodporn.json" % HOME
 simple_lock = False # very simple lock way
-botadm, cfg, key = None, None, None
+botadm, cfg, key, configuration = None, None, None, None
 
 GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.gif",
                       "https://media.giphy.com/media/l3fzIJxUF2EpGqk48/giphy.gif",
@@ -260,7 +260,7 @@ def GetGif(theme):
 
 def main():
     """Main settings"""
-    global botadm, cfg, key, bot
+    global botadm, cfg, key, bot, configuration
     check_if_run()
     save_file("%d\n" % os.getpid(), PIDFILE)
 

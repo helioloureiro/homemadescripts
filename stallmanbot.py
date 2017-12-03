@@ -20,7 +20,7 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Sun Dec  3 16:31:25 CET 2017"
+__version__ = "Sun Dec  3 16:46:13 CET 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """

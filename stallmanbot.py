@@ -20,7 +20,7 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Sun Dec  3 16:53:18 CET 2017"
+__version__ = "Sun Dec  3 16:54:45 CET 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -179,9 +179,9 @@ https://github.com/helioloureiro/homemadescripts/blob/master/stallmanbot.py
 
 }
 # Aliases
-RESPONSES_TEXT["fontes"] : RESPONSES_TEXT["fonte"]
-RESPONSES_TEXT["src"] : RESPONSES_TEXT["fonte"]
-RESPONSES_TEXT["source"] : RESPONSES_TEXT["fonte"]
+RESPONSES_TEXT["fontes"] = RESPONSES_TEXT["fonte"]
+RESPONSES_TEXT["src"] = RESPONSES_TEXT["fonte"]
+RESPONSES_TEXT["source"] = RESPONSES_TEXT["fonte"]
 ### Refactoring
 # Applying the concepts from clean code (thanks uncle Bob)
 def set_debug():

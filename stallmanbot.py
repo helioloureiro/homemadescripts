@@ -168,6 +168,11 @@ FAILURES = [
     "https://media.giphy.com/media/vPH4IIua3umxG/giphy.gif",
     "https://media.giphy.com/media/8LkXSrAACvLAA/giphy.gif",
     "https://media.giphy.com/media/nEovVMM8Z5H6U/giphy.gif" ]
+
+RESPONSES_TEXT = {
+    u"kkkkkk" : u"Hilário.",
+    u"hahahah" : u"Hilário."
+}
 ### Refactoring
 # Applying the concepts from clean code (thanks uncle Bob)
 def set_debug():
@@ -268,6 +273,19 @@ def run_foodporn_update():
     debug("run_foodporn_update()")
     food_json = get_foodporn_json()
     dump_foodporn(food_json)
+
+def get_answer(question):
+    """ Search for a response from dictionary """
+    if RESPONSES_TEXT.has_key(question.lower()):
+        return RESPONSES_TEXT[question.lower()]
+    return None
+
+def reply_text(obj, session, text):
+    """ Generic interface to answer """
+    try:
+        obj.reply_to(session, text)
+    except Exception as e:
+        error("%s" % e)
 
 def StartUp():
     debug("Startup")
@@ -1347,11 +1365,8 @@ def GenericMessageHandler(session):
 @bot.message_handler(func=lambda m: True)
 def WhatEver(session):
     debug(session.text)
-    if re.search(u"kkkkkk", session.text):
-        bot.reply_to(session, u"Hilário.")
-        return
-    elif re.search(u"hahahaha", session.text):
-        bot.reply_to(session, u"Hilário.")
+    if get_answer(session.text):
+        reply_text(bot, session, get_answer(session.text))
         return
     elif re.search(u"bom dia", session.text.lower()):
         Dia(session)

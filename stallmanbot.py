@@ -20,7 +20,7 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Sun Dec  3 16:02:56 CET 2017"
+__version__ = "Sun Dec  3 16:31:25 CET 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -1332,13 +1332,17 @@ def Source(session):
 https://github.com/helioloureiro/homemadescripts/blob/master/stallmanbot.py
 """)
 def is_command(message):
-    return re.search("^/", message.text)
+    try:
+        u_message_text = u"%s" % message.text
+    except:
+        return False
+    return re.search("^/[A-Za-z].*", u_message_text)
 
 @bot.message_handler(func=is_command, content_types=['text'])
 def GenericMessageHandler(session):
-    command = session.text
-    debug("Generic calling for %s" % command)
-    bot.reply_to(session, "I got: %s" % command)
+    command = u"%s" % session.text
+    debug(u"Generic calling for %s" % command)
+    bot.reply_to(session, u"I got: %s" % command)
 
 @bot.message_handler(func=lambda m: True)
 def WhatEver(session):

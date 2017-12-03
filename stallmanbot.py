@@ -20,7 +20,7 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Sun Dec  3 16:46:13 CET 2017"
+__version__ = "Sun Dec  3 16:53:18 CET 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -170,9 +170,18 @@ FAILURES = [
     "https://media.giphy.com/media/nEovVMM8Z5H6U/giphy.gif" ]
 
 RESPONSES_TEXT = {
-    u"kkkkkk" : u"Hilário.",
-    u"hahahah" : u"Hilário."
+    u"kkkk" : u"Hilário.",
+    u"hahaha" : u"Hilário.",
+    u"fonte" : u"""Estou aqui com 100% de acesso ao conteúdo em:
+
+https://github.com/helioloureiro/homemadescripts/blob/master/stallmanbot.py
+""",
+
 }
+# Aliases
+RESPONSES_TEXT["fontes"] : RESPONSES_TEXT["fonte"]
+RESPONSES_TEXT["src"] : RESPONSES_TEXT["fonte"]
+RESPONSES_TEXT["source"] : RESPONSES_TEXT["fonte"]
 ### Refactoring
 # Applying the concepts from clean code (thanks uncle Bob)
 def set_debug():
@@ -1342,13 +1351,6 @@ def Ban(session):
     bot.send_document(session.chat.id, gif)
     # Falta implementar quem...
 
-@bot.message_handler(commands=["fonte", "fontes", "src", "source"])
-def Source(session):
-    debug(session.text)
-    bot.reply_to(session, u"""Estou aqui com 100% de acesso ao conteúdo em:
-
-https://github.com/helioloureiro/homemadescripts/blob/master/stallmanbot.py
-""")
 def is_command(message):
     try:
         u_message_text = u"%s" % message.text
@@ -1358,7 +1360,8 @@ def is_command(message):
 
 @bot.message_handler(func=is_command, content_types=['text'])
 def GenericMessageHandler(session):
-    command = u"%s" % session.text
+    command = u"%s" % session.text[1:]
+    command = command.split()[0]
     debug(u"Generic calling for %s" % command)
     bot.reply_to(session, u"I got: %s" % command)
 

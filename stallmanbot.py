@@ -20,7 +20,7 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Sun Dec  3 17:10:19 CET 2017"
+__version__ = "Sun Dec  3 17:14:24 CET 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -176,6 +176,20 @@ RESPONSES_TEXT = {
 
 https://github.com/helioloureiro/homemadescripts/blob/master/stallmanbot.py
 """,
+    u"blob" : u"""
+Blob nosso que estais no kernel
+codificado seja o vosso nome.
+Venha a nós o vosso driver.
+Seja feita integração com vontade,
+assim no kernel como no shell.
+O patch nosso de cada dia nos dai hoje.
+Perdoai os nossos scripts,
+assim com nós perdoamos a quem é ultrafofo.
+Não nos deixei cair de uptime.
+Mas livrai-nos do FUDA,
+
+Amuleke!
+"""
 
 }
 # Aliases
@@ -1322,26 +1336,6 @@ def Mimimizer(session):
     resp = re.sub(u"Á|É|Ó|Ú", u"Í", resp)
     bot.reply_to(session, u"%s" % resp)
     # Falta implementar quem...
-
-@bot.message_handler(commands=["blob"])
-def Mimimizer(session):
-    debug(session.text)
-    msg = u"""
-Blob nosso que estais no kernel
-codificado seja o vosso nome.
-Venha a nós o vosso driver.
-Seja feita integração com vontade,
-assim no kernel como no shell.
-O patch nosso de cada dia nos dai hoje.
-Perdoai os nossos scripts,
-assim com nós perdoamos a quem é ultrafofo.
-Não nos deixei cair de uptime.
-Mas livrai-nos do FUDA,
-
-Amuleke!
-"""
-    bot.reply_to(session, u"%s" % msg)
-
 
 @bot.message_handler(commands=["ban"])
 def Ban(session):

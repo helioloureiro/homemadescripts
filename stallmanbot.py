@@ -20,7 +20,7 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Sun Dec  3 16:54:45 CET 2017"
+__version__ = "Sun Dec  3 17:07:57 CET 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -1363,7 +1363,7 @@ def GenericMessageHandler(session):
     command = u"%s" % session.text[1:]
     command = command.split()[0]
     debug(u"Generic calling for %s" % command)
-    bot.reply_to(session, u"I got: %s" % command)
+    reply_to(bot, session, command)
 
 @bot.message_handler(func=lambda m: True)
 def WhatEver(session):

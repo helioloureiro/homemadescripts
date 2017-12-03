@@ -20,10 +20,13 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Fri Nov 24 21:23:36 CET 2017"
+__version__ = "Sun Dec  3 16:02:56 CET 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
+
+Open a talk to @BotFather and send these commands
+using "/setcommands"
 
 == Super ultra bot.==
 
@@ -1328,6 +1331,14 @@ def Source(session):
 
 https://github.com/helioloureiro/homemadescripts/blob/master/stallmanbot.py
 """)
+def is_command(message):
+    return re.search("^/", message.text)
+
+@bot.message_handler(func=is_command, content_types=['text'])
+def GenericMessageHandler(session):
+    command = session.text
+    debug("Generic calling for %s" % command)
+    bot.reply_to(session, "I got: %s" % command)
 
 @bot.message_handler(func=lambda m: True)
 def WhatEver(session):

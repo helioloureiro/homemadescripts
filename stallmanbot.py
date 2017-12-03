@@ -20,7 +20,7 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Sun Dec  3 17:14:24 CET 2017"
+__version__ = "Sun Dec  3 17:49:33 CET 2017"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -189,13 +189,43 @@ Não nos deixei cair de uptime.
 Mas livrai-nos do FUDA,
 
 Amuleke!
-"""
+""",
+    u"emacs" : """
+Linux nosso que estais no PC
+Bem compilado seja o vosso Kernel
+Venha a nós o vosso código
+Seja feita a vossa tarball
+Assim em casa como no trabalho
+O bit nosso de cada dia seja escovado
+Apagai com rm -rf
+Para nunca mais recuperar o que foi perdido
+E não nos deixeis errar a compilação
+E livrai a todos da M$
 
+Amém.
+""",
+    u"ping" : u"ACK",
+    u"version" : __version__,
+    u"ultrafofo" : """#UltraFofos é o grupo super fofis de defensores de software livre.
+Veja mais em: https://www.youtube.com/watch?v=eIRk38d32vA
+""",
+    u"help" : u"""Precisa de ajuda?
+Procure o CVV.
+
+http://www.cvv.org.br
+""",
+    u"rtfm" : u"""Read The F*cking Manual.  Ou leia o Guia Foca GNU/Linux.
+
+http://www.guiafoca.org/
+"""
 }
 # Aliases
-RESPONSES_TEXT["fontes"] = RESPONSES_TEXT["fonte"]
-RESPONSES_TEXT["src"] = RESPONSES_TEXT["fonte"]
-RESPONSES_TEXT["source"] = RESPONSES_TEXT["fonte"]
+RESPONSES_TEXT[u"fontes"] = RESPONSES_TEXT["fonte"]
+RESPONSES_TEXT[u"src"] = RESPONSES_TEXT["fonte"]
+RESPONSES_TEXT[u"source"] = RESPONSES_TEXT["fonte"]
+RESPONSES_TEXT[u"pong"] = RESPONSES_TEXT["ping"]
+RESPONSES_TEXT[u"ajuda"] = RESPONSES_TEXT["help"]
+RESPONSES_TEXT[u"ultrafofos"] = RESPONSES_TEXT["ultrafofo"]
 ### Refactoring
 # Applying the concepts from clean code (thanks uncle Bob)
 def set_debug():
@@ -463,38 +493,6 @@ def PipocaGif(cmd):
             print u"%s" % z
     debug("tchau")
 
-@bot.message_handler(commands=["ping", "pong"])
-def Ping(cmd):
-    debug(cmd.text)
-    try:
-        bot.send_message(cmd.chat.id, "ACK")
-    except Exception as e:
-        try:
-            bot.send_message(cmd.chat.id, u"Deu merda... %s" % e)
-        except Exception as z:
-            print u"%s" % z
-    debug("tchau")
-
-@bot.message_handler(commands=["version"])
-def Version(cmd):
-    debug(cmd.text)
-    try:
-        bot.send_message(cmd.chat.id, __version__)
-    except Exception as e:
-        try:
-            bot.send_message(cmd.chat.id, u"Deu merda... %s" % e)
-        except Exception as z:
-            print u"%s" % z
-    debug("tchau")
-
-@bot.message_handler(commands=["ultrafofo", "ultrafofos"])
-def UltraFofo(cmd):
-    debug(cmd.text)
-    message =  "#UltraFofos é o grupo super fofis de defensores de software livre."
-    message += "Veja mais em: https://www.youtube.com/watch?v=eIRk38d32vA"
-
-    send_message_to_chat(cmd.chat.id, message)
-
 @bot.message_handler(commands=["reload"])
 def Reload(cmd):
     debug(cmd.text)
@@ -576,38 +574,6 @@ def Requer(cmd):
         except Exception as z:
             print u"%s" % z
 
-@bot.message_handler(commands=["man", "info"])
-def ManPages(cmd):
-    debug("Running: %s" % cmd.text)
-    sanitize = re.sub(";.*", "", cmd.text)
-    sanitize = re.sub("|.*", "", sanitize)
-    params = sanitize.split()
-    page = " ".join(params[1:])
-    try:
-        resp = os.popen("man %s" % page).read()
-        debug("Response: %s" % resp)
-        buf = resp.split("\n")
-        output = "\n".join(buf[0:10])
-        bot.reply_to(cmd, "%s" % output)
-    except Exception as e:
-        try:
-            bot.reply_to(cmd, "Deu merda... %s" % e)
-        except Exception as z:
-            print u"%s" % z
-
-
-@bot.message_handler(commands=["help", "ajuda"])
-def Help(cmd):
-    debug(cmd.text)
-    try:
-        bot.reply_to(cmd, u"Precisa de ajuda?  Procure o CVV. http://www.cvv.org.br")
-        bot.send_message(cmd.chat.id, Commands_Listing)
-    except Exception as e:
-        try:
-            bot.reply_to(cmd, u"Deu merda... %s" % e)
-        except Exception as z:
-            print u"%s" % z
-
 @bot.message_handler(commands=["fortune", "fortunes", "sorte"])
 def Fortune(cmd):
     fortune = os.popen("/usr/games/fortune").read()
@@ -616,14 +582,6 @@ def Fortune(cmd):
         fortune = os.popen("/usr/games/fortune").read()
     try:
         bot.reply_to(cmd, "%s" % fortune)
-    except:
-        bot.reply_to(cmd, "Deu merda...")
-
-@bot.message_handler(commands=["rtfm", "RTFM"])
-def RTFM(cmd):
-    try:
-        bot.reply_to(cmd, "Read The F*cking Manual.  Ou leia o Guia Foca GNU/Linux.")
-        bot.reply_to(cmd, "http://www.guiafoca.org/")
     except:
         bot.reply_to(cmd, "Deu merda...")
 
@@ -1300,28 +1258,6 @@ def DuckDuckGo(cmd):
         bot.reply_to(cmd, answer)
     except Exception as e:
         bot.reply_to(cmd, "Deu merda: %s" % e)
-
-@bot.message_handler(commands=["emacs"])
-def Emacs(cmd):
-    debug(cmd.text)
-    pray = """
-Linux nosso que estais no PC
-Bem compilado seja o vosso Kernel
-Venha a nós o vosso código
-Seja feita a vossa tarball
-Assim em casa como no trabalho
-O bit nosso de cada dia seja escovado
-Apagai com rm -rf
-Para nunca mais recuperar o que foi perdido
-E não nos deixeis errar a compilação
-E livrai a todos da M$
-
-Amém.
-"""
-    try:
-        bot.send_message(cmd.chat.id, pray)
-    except Exception as e:
-        bot.reply_to(cmd, "Um exu-tranca-sistema derrubou tudo aqui: %s" % e)
 
 @bot.message_handler(commands=["mimimi"])
 def Mimimizer(session):

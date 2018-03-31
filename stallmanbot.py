@@ -156,7 +156,7 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
                      "https://giphy.com/gifs/3ohhwneKeCkbALPcKk/html5" ], # same, but w/ different version
         "wtf" : [ "https://media.giphy.com/media/l378zoQ5oTatwi2li/giphy.gif" ], # eye sight
         "ironia" : [ "https://media.giphy.com/media/xT9IgqIuvUoKD5oliw/giphy.gif" ], # irony
-        "mondays" : [ "https://media.giphy.com/media/nDZ3OkpknpElZdseUb/giphy.gif" ],
+        "segundas" : [ "https://media.giphy.com/media/nDZ3OkpknpElZdseUb/giphy.gif" ],
         "sevira" : [ "https://media.giphy.com/media/MSfMd1JFtnZfj644Tl/giphy.gif" ]
         }
 
@@ -164,9 +164,6 @@ GIFS["pipoca"] = GIFS["popcorn"]
 GIFS["vergonha"] = GIFS["shame"]
 GIFS["cafe"] = GIFS["coffee"]
 GIFS["pera"] = GIFS["no_wait"]
-GIFS["mondays"] = GIFS["segundas"]
-GIFS["mondays"] = GIFS["segunda"]
-GIFS["mondays"] = GIFS["monday"]
 GIFS["sevira"] = GIFS["estudar"]
 
 FAILURES = [

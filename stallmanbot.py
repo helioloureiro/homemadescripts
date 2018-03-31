@@ -20,7 +20,7 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Sat Mar 31 21:10:31 CEST 2018"
+__version__ = "Sat Mar 31 21:22:35 CEST 2018"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -164,10 +164,10 @@ GIFS["pipoca"] = GIFS["popcorn"]
 GIFS["vergonha"] = GIFS["shame"]
 GIFS["cafe"] = GIFS["coffee"]
 GIFS["pera"] = GIFS["no_wait"]
-GIFS[ "mondays" ] = GIFS[ "segundas"]
-GIFS[ "mondays" ] = GIFS[ "segunda"]
-GIFS[ "mondays" ] = GIFS[ "monday"]
-GIFS[ "sevira" ] = GIFS[ "estudar"]
+GIFS["mondays"] = GIFS["segundas"]
+GIFS["mondays"] = GIFS["segunda"]
+GIFS["mondays"] = GIFS["monday"]
+GIFS["sevira"] = GIFS["estudar"]
 
 FAILURES = [
     "https://media.giphy.com/media/LDay3WufGjxEA/giphy.gif",

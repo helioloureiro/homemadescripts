@@ -20,7 +20,7 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Sat Mar 31 22:37:11 CEST 2018"
+__version__ = "Sat Mar 31 21:22:35 CEST 2018"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -478,10 +478,13 @@ def Manda(cmd):
                 debug(u"%s" % z)
         return
     for theme in args[1:]:
+        debug(u"Manda(): theme=%s" % theme)
         gif = GetGif(theme)
         if gif is None:
             GenerateButtons(cmd.chat.id)
+            return
         try:
+            debug(u"Manda(): sending gif=%s" % gif)
             bot.send_document(cmd.chat.id, gif)
         except Exception as e:
             try:
@@ -492,15 +495,16 @@ def Manda(cmd):
                     bot.send_message(cmd.chat.id, "Link: %s" % gif)
                 except Exception as z:
                     print u"%s" % z
-        debug("tchau")
+        debug(u"Manda(): end of for interaction - can go next")
+    debug(u"Manda(): end of loop for")
     # remove button if there
     try:
-        debug("Manda(): Removing buttons...")
+        debug(u"Manda(): Removing buttons...")
         markup = telebot.types.ReplyKeyboardRemove(selective=True)
         bot.send_message(cmd.chat.id, "", reply_markup=markup)
     except Exception as e:
         debug("Error at Manda(): %s" % e)
-
+    debug(u"Manda(): end of function")
 
 @bot.message_handler(commands=["pipoca"])
 def PipocaGif(cmd):

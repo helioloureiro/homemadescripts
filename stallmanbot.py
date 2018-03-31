@@ -466,8 +466,8 @@ def Manda(cmd):
             size_GIFS = len(GIFS)
             markup = telebot.types.ReplyKeyboardMarkup(row_width=size_GIFS)
             itembuttons = []
-            for key in opts:
-                item = telebot.types.KeyboardButton("/manda %s" % key)
+            for key in opts.sorted():
+                item = telebot.types.KeyboardButton("%s" % key)
                 itembuttons.append(item)
             markup.add(tuple(itembuttons))
             bot.send_message(cmd.chat.id, "Escolha a opção:", reply_markup=markup)

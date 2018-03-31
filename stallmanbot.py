@@ -20,7 +20,7 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Sat Mar 31 22:25:43 CEST 2018"
+__version__ = "Sat Mar 31 22:37:11 CEST 2018"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -495,7 +495,8 @@ def Manda(cmd):
         debug("tchau")
     # remove button if there
     try:
-        markup = telebot.types.ReplyKeyboardRemove(selective=False)
+        debug("Manda(): Removing buttons...")
+        markup = telebot.types.ReplyKeyboardRemove(selective=True)
         bot.send_message(cmd.chat.id, "", reply_markup=markup)
     except Exception as e:
         debug("Error at Manda(): %s" % e)

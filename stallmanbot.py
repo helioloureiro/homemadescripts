@@ -20,7 +20,7 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Sat Mar 31 22:17:10 CEST 2018"
+__version__ = "Sat Mar 31 22:25:43 CEST 2018"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -458,28 +458,29 @@ def Manda(cmd):
     debug(cmd.text)
     args = cmd.text.split()
     opts = GIFS.keys()
+
+    def GenerateButtons(chat_id):
+        markup = telebot.types.ReplyKeyboardMarkup(row_width=2)
+        for key in sorted(opts):
+            item = telebot.types.KeyboardButton("/manda %s" % key)
+            markup.add(item)
+        bot.send_message(chat_id, "Escolha a opção:", reply_markup=markup)
+
     if len(args) <= 1:
         try:
-            #bot.reply_to(cmd, u"Use: /manda [opts]")
-            #bot.reply_to(cmd, u"Opções: %s" % opts )
             size_GIFS = len(GIFS)
-            markup = telebot.types.ReplyKeyboardMarkup(row_width=2)
-            for key in sorted(opts):
-                item = telebot.types.KeyboardButton("/manda %s" % key)
-                markup.add(item)
-            bot.send_message(cmd.chat.id, "Escolha a opção:", reply_markup=markup)
+            GenerateButtons(cmd.chat.id)
 
         except Exception as e:
             try:
-                bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
+                bot.send_message(cmd.chat.id, u"Deu merda... %s" % e)
             except Exception as z:
-                print u"%s" % z
+                debug(u"%s" % z)
         return
     for theme in args[1:]:
         gif = GetGif(theme)
         if gif is None:
-            bot.reply_to(cmd, u"Use: /manda [opts]")
-            bot.reply_to(cmd, u"Opções: %s" % opts )
+            GenerateButtons(cmd.chat.id)
         try:
             bot.send_document(cmd.chat.id, gif)
         except Exception as e:
@@ -496,8 +497,8 @@ def Manda(cmd):
     try:
         markup = telebot.types.ReplyKeyboardRemove(selective=False)
         bot.send_message(cmd.chat.id, "", reply_markup=markup)
-    except:
-        pass
+    except Exception as e:
+        debug("Error at Manda(): %s" % e)
 
 
 @bot.message_handler(commands=["pipoca"])

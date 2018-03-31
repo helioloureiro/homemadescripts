@@ -20,7 +20,7 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Sat Mar 31 21:22:35 CEST 2018"
+__version__ = "Sat Mar 31 22:52:12 CEST 2018"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -64,7 +64,7 @@ fuda - Os males do software livre.
 hacked - Shame, shame, shame...
 """
 
-DEBUG = True
+DEBUG = False
 CONFIG = ".twitterc"
 HOME = os.environ.get('HOME')
 PIDFILE = "%s/.stallmanbot.pid" % HOME
@@ -554,6 +554,27 @@ def Reload(cmd):
             bot.reply_to(cmd, u"Deu merda... %s" % e)
         except Exception as z:
             print u"%s" % z
+
+@bot.message_handler(commands=["debug"])
+def ToggleDebug(cmd):
+    global DEBUG
+    debug(cmd.text)
+    if not cmd.from_user.username == botadm:
+        bot.reply_to(cmd, "Só patrão pode isso.")
+        return
+    try:
+        debug(cmd)
+        if DEBUG is True:
+            DEBUG = False
+            status = "disabled"
+        elif DEBUG is False:
+            DEBUG = True
+            status = "enabled"
+        bot.reply_to(cmd, "debug=%s" % status)
+    except Exception as e:
+        print u"%s" % e
+
+
 @bot.message_handler(commands=["fuda"])
 def SysCmd(cmd):
     debug("Running: %s" % cmd.text)

@@ -152,8 +152,7 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
         "coc" : [ "https://media.giphy.com/media/OT5oCJMFLq0wZ2xuX8/giphy.gif" ],
         "mimimi" : [ "https://media.giphy.com/media/ylPWDQuapyexa/giphy.gif" ],
         "nanga" : [ "https://media.giphy.com/media/RCBQSWiMPTQly/giphy.gif" ],
-        "tinder" : [ "https://media.giphy.com/media/3ohhwneKeCkbALPcKk/giphy.gif", # tinder
-                     "https://giphy.com/gifs/3ohhwneKeCkbALPcKk/html5" ], # same, but w/ different version
+        "tinder" : [ "https://media.giphy.com/media/3ohhwneKeCkbALPcKk/giphy.gif" ],
         "wtf" : [ "https://media.giphy.com/media/l378zoQ5oTatwi2li/giphy.gif" ], # eye sight
         "ironia" : [ "https://media.giphy.com/media/xT9IgqIuvUoKD5oliw/giphy.gif" ], # irony
         "segundas" : [ "https://media.giphy.com/media/nDZ3OkpknpElZdseUb/giphy.gif" ],

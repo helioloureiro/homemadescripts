@@ -157,14 +157,13 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
         "wtf" : [ "https://media.giphy.com/media/l378zoQ5oTatwi2li/giphy.gif" ], # eye sight
         "ironia" : [ "https://media.giphy.com/media/xT9IgqIuvUoKD5oliw/giphy.gif" ], # irony
         "segundas" : [ "https://media.giphy.com/media/nDZ3OkpknpElZdseUb/giphy.gif" ],
-        "sevira" : [ "https://media.giphy.com/media/MSfMd1JFtnZfj644Tl/giphy.gif" ]
+        "estudar" : [ "https://media.giphy.com/media/MSfMd1JFtnZfj644Tl/giphy.gif" ]
         }
 
 GIFS["pipoca"] = GIFS["popcorn"]
 GIFS["vergonha"] = GIFS["shame"]
 GIFS["cafe"] = GIFS["coffee"]
 GIFS["pera"] = GIFS["no_wait"]
-GIFS["sevira"] = GIFS["estudar"]
 
 FAILURES = [
     "https://media.giphy.com/media/LDay3WufGjxEA/giphy.gif",

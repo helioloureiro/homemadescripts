@@ -20,7 +20,7 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Sat Mar 31 22:05:57 CEST 2018"
+__version__ = "Sat Mar 31 22:17:10 CEST 2018"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -492,6 +492,13 @@ def Manda(cmd):
                 except Exception as z:
                     print u"%s" % z
         debug("tchau")
+    # remove button if there
+    try:
+        markup = telebot.types.ReplyKeyboardRemove(selective=False)
+        tb.send_message(cmd.chat.id, "", reply_markup=markup)
+    except:
+        pass
+
 
 @bot.message_handler(commands=["pipoca"])
 def PipocaGif(cmd):

@@ -20,7 +20,7 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Sat Mar 31 21:22:35 CEST 2018"
+__version__ = "Sat Mar 31 22:05:57 CEST 2018"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -463,11 +463,9 @@ def Manda(cmd):
             bot.reply_to(cmd, u"Use: /manda [opts]")
             bot.reply_to(cmd, u"Opções: %s" % opts )
             size_GIFS = len(GIFS)
-            markup = telebot.types.ReplyKeyboardMarkup(row_width=size_GIFS)
-            itembuttons = []
+            markup = telebot.types.ReplyKeyboardMarkup(row_width=(size_GIFS / 2))
             for key in sorted(opts):
-                item = telebot.types.KeyboardButton("%s" % key)
-                itembuttons.append(item)
+                item = telebot.types.KeyboardButton("/manda %s" % key)
                 markup.add(item)
             bot.send_message(cmd.chat.id, "Escolha a opção:", reply_markup=markup)
 

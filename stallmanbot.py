@@ -20,7 +20,7 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Mon Dec  4 09:46:44 CET 2017"
+__version__ = "Sat Mar 31 21:10:31 CEST 2018"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -139,6 +139,7 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
         "anemonos" : [ "https://media.giphy.com/media/SYEskzoOgwxWM/giphy.gif" ],
         "tasqueopariu" : [ "https://media.giphy.com/media/qkXhEeRO3Rrt6/giphy.gif" ],
         "diego" : [ "https://media.giphy.com/media/3o7aDdlF3viwGzKJZ6/giphy.gif"],
+        "patola" : [ "https://media.giphy.com/media/1gdwLUi5QUzKDUx7U8/giphy.gif" ],
         "spock" : [ "https://media.giphy.com/media/26vIdECBsGvzl9pxS/giphy.gif",
                    "https://media.giphy.com/media/CSXoBa3YNXk0U/giphy.gif",
                    "https://media.giphy.com/media/eSXWZ93nNrq00/giphy.gif",
@@ -148,18 +149,25 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
                    "https://media.giphy.com/media/CidfkCKipW1sQ/giphy.gif",
                    ],
         "bun" : [ "https://media.giphy.com/media/3ov9jNAyexHvu0Ela0/giphy.gif" ],
+        "coc" : [ "https://media.giphy.com/media/OT5oCJMFLq0wZ2xuX8/giphy.gif" ],
         "mimimi" : [ "https://media.giphy.com/media/ylPWDQuapyexa/giphy.gif" ],
         "nanga" : [ "https://media.giphy.com/media/RCBQSWiMPTQly/giphy.gif" ],
         "tinder" : [ "https://media.giphy.com/media/3ohhwneKeCkbALPcKk/giphy.gif", # tinder
                      "https://giphy.com/gifs/3ohhwneKeCkbALPcKk/html5" ], # same, but w/ different version
         "wtf" : [ "https://media.giphy.com/media/l378zoQ5oTatwi2li/giphy.gif" ], # eye sight
-        "ironia" : [ "https://media.giphy.com/media/xT9IgqIuvUoKD5oliw/giphy.gif" ] # irony
+        "ironia" : [ "https://media.giphy.com/media/xT9IgqIuvUoKD5oliw/giphy.gif" ], # irony
+        "mondays" : [ "https://media.giphy.com/media/nDZ3OkpknpElZdseUb/giphy.gif" ],
+        "sevira" : [ "https://media.giphy.com/media/MSfMd1JFtnZfj644Tl/giphy.gif" ]
         }
 
 GIFS["pipoca"] = GIFS["popcorn"]
 GIFS["vergonha"] = GIFS["shame"]
 GIFS["cafe"] = GIFS["coffee"]
 GIFS["pera"] = GIFS["no_wait"]
+GIFS[ "mondays" ] = GIFS[ "segundas"]
+GIFS[ "mondays" ] = GIFS[ "segunda"]
+GIFS[ "mondays" ] = GIFS[ "monday"]
+GIFS[ "sevira" ] = GIFS[ "estudar"]
 
 FAILURES = [
     "https://media.giphy.com/media/LDay3WufGjxEA/giphy.gif",
@@ -226,6 +234,8 @@ RESPONSES_TEXT[u"source"] = RESPONSES_TEXT["fonte"]
 RESPONSES_TEXT[u"pong"] = RESPONSES_TEXT["ping"]
 RESPONSES_TEXT[u"ajuda"] = RESPONSES_TEXT["help"]
 RESPONSES_TEXT[u"ultrafofos"] = RESPONSES_TEXT["ultrafofo"]
+
+
 ### Refactoring
 # Applying the concepts from clean code (thanks uncle Bob)
 def set_debug():
@@ -539,7 +549,7 @@ def SysCmd(cmd):
     except Exception as e:
         print u"%s" % e
 
-@bot.message_handler(commands=["uname", "uptime", "date"])
+@bot.message_handler(commands=["uname", "uptime", "date", "df"])
 def SysCmd(cmd):
     debug("Running: %s" % cmd.text)
     sanitize = re.sub(";.*", "", cmd.text)

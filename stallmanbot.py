@@ -463,7 +463,7 @@ def Manda(cmd):
             bot.reply_to(cmd, u"Use: /manda [opts]")
             bot.reply_to(cmd, u"Opções: %s" % opts )
             size_GIFS = len(GIFS)
-            markup = telebot.types.ReplyKeyboardMarkup(row_width=(size_GIFS / 2))
+            markup = telebot.types.ReplyKeyboardMarkup(row_width=2)
             for key in sorted(opts):
                 item = telebot.types.KeyboardButton("/manda %s" % key)
                 markup.add(item)

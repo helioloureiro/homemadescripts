@@ -468,7 +468,7 @@ def Manda(cmd):
             for key in sorted(opts):
                 item = telebot.types.KeyboardButton("%s" % key)
                 itembuttons.append(item)
-            markup.add(tuple(itembuttons))
+                markup.add(item)
             bot.send_message(cmd.chat.id, "Escolha a opção:", reply_markup=markup)
 
         except Exception as e:

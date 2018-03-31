@@ -460,8 +460,8 @@ def Manda(cmd):
     opts = GIFS.keys()
     if len(args) <= 1:
         try:
-            bot.reply_to(cmd, u"Use: /manda [opts]")
-            bot.reply_to(cmd, u"Opções: %s" % opts )
+            #bot.reply_to(cmd, u"Use: /manda [opts]")
+            #bot.reply_to(cmd, u"Opções: %s" % opts )
             size_GIFS = len(GIFS)
             markup = telebot.types.ReplyKeyboardMarkup(row_width=2)
             for key in sorted(opts):
@@ -495,7 +495,7 @@ def Manda(cmd):
     # remove button if there
     try:
         markup = telebot.types.ReplyKeyboardRemove(selective=False)
-        tb.send_message(cmd.chat.id, "", reply_markup=markup)
+        bot.send_message(cmd.chat.id, "", reply_markup=markup)
     except:
         pass
 

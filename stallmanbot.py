@@ -465,12 +465,12 @@ def Manda(cmd):
             bot.reply_to(cmd, u"Opções: %s" % opts )
             size_GIFS = len(GIFS)
             markup = telebot.types.ReplyKeyboardMarkup(row_width=size_GIFS)
-            itembutton = []
-            for key in GIFS.keys():
+            itembuttons = []
+            for key in opts:
                 item = telebot.types.KeyboardButton("/manda %s" % key)
-                itembutton.append(item)
-            markup.add(itembutton)
-            bot.send_message(cmd.chat.id, "Choose one letter:", reply_markup=markup)
+                itembuttons.append(item)
+            markup.add(tuple(itembuttons))
+            bot.send_message(cmd.chat.id, "Escolha a opção:", reply_markup=markup)
 
         except Exception as e:
             try:

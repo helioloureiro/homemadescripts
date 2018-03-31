@@ -466,7 +466,7 @@ def Manda(cmd):
             size_GIFS = len(GIFS)
             markup = telebot.types.ReplyKeyboardMarkup(row_width=size_GIFS)
             itembuttons = []
-            for key in opts.sorted():
+            for key in sorted(opts):
                 item = telebot.types.KeyboardButton("%s" % key)
                 itembuttons.append(item)
             markup.add(tuple(itembuttons))

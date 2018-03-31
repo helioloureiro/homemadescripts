@@ -64,7 +64,7 @@ fuda - Os males do software livre.
 hacked - Shame, shame, shame...
 """
 
-DEBUG = False
+DEBUG = True
 CONFIG = ".twitterc"
 HOME = os.environ.get('HOME')
 PIDFILE = "%s/.stallmanbot.pid" % HOME

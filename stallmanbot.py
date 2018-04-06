@@ -20,7 +20,7 @@ import syslog
 # https://github.com/eternnoir/pyTelegramBotAPI
 import telebot
 
-__version__ = "Sat Mar 31 22:52:12 CEST 2018"
+__version__ = "Fri Apr  6 15:44:34 CEST 2018"
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -156,7 +156,8 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
         "wtf" : [ "https://media.giphy.com/media/l378zoQ5oTatwi2li/giphy.gif" ], # eye sight
         "ironia" : [ "https://media.giphy.com/media/xT9IgqIuvUoKD5oliw/giphy.gif" ], # irony
         "segundas" : [ "https://media.giphy.com/media/nDZ3OkpknpElZdseUb/giphy.gif" ],
-        "estudar" : [ "https://media.giphy.com/media/MSfMd1JFtnZfj644Tl/giphy.gif" ]
+        "estudar" : [ "https://media.giphy.com/media/MSfMd1JFtnZfj644Tl/giphy.gif" ],
+        "truta" : [ "http://truta.org/truta-sohquemehsabeoqueeh.jpg" ]
         }
 
 GIFS["pipoca"] = GIFS["popcorn"]

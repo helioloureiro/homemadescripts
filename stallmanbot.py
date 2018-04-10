@@ -9,18 +9,21 @@ import time
 import shutil
 import random
 import pickle
-from datetime import date
 import mmap
-import requests
-import BeautifulSoup as bp
 import json
 import syslog
 
+import requests
+import BeautifulSoup as bp
+import telebot
+from datetime import date
+
 # pyTelegramBotAPI
 # https://github.com/eternnoir/pyTelegramBotAPI
-import telebot
 
-__version__ = "Fri Apr  6 15:57:24 CEST 2018"
+
+__version__ = "Fri Apr 10 20:50:00 CEST 2018"
+
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -240,12 +243,14 @@ def set_debug():
         if os.environ.has_key("DEBUG"):
             DEBUG = True
 
+
 def debug(msg):
     if DEBUG and msg:
         try:
             print u"[%s] %s" % (time.ctime(), msg)
         except Exception as e:
             print u"[%s] DEBUG ERROR: %s" % (time.ctime(), e)
+
 
 def error(message):
     """Error handling for logs"""
@@ -254,12 +259,14 @@ def error(message):
     syslog.openlog("StallNoMan")
     syslog.syslog(syslog.LOG_ERR, errormsg)
 
+
 def log(message):
     """Syslog handling for logs"""
     infomsg = u"%s" % message
     debug(infomsg)
     syslog.openlog("StallNoMan")
     syslog.syslog(syslog.LOG_INFO, infomsg)
+
 
 def read_file(filename):
     content = None
@@ -271,6 +278,7 @@ def read_file(filename):
         error("Failed to read file %s" % filename)
     return content
 
+
 def check_if_run():
     pid = read_file(PIDFILE)
     current_pid = os.getpid()
@@ -281,12 +289,12 @@ def check_if_run():
             log("[%s] Already running - keepalive done." % time.ctime())
             sys.exit(os.EX_OK)
 
+
 def save_file(content, filename):
     """Snippet to write down data"""
-    fd = open(filename, 'w')
-    fd.write(content)
-    fd.flush()
-    fd.close()
+    with open(filename, 'w') as fd:
+        fd.write(content)
+
 
 def read_configuration(config_file):
     """ Read configuration file and return object
@@ -298,6 +306,7 @@ def read_configuration(config_file):
         sys.exit(os.EX_CONFIG)
     cfg.read(config_file)
     return cfg
+
 
 def get_telegram_key(config_obj, parameter):
     """Read a parameter from configuration object for TELEGRAM
@@ -314,6 +323,7 @@ def get_telegram_key(config_obj, parameter):
     debug(" * Key acquired (%s=%s)." % (parameter, value) )
     return value
 
+
 def get_foodporn_json():
     """Retrieve json data from reddit"""
     debug("get_foodporn_json()")
@@ -322,10 +332,12 @@ def get_foodporn_json():
         request = requests.get(FOODPORNURL)
     return request.text
 
+
 def dump_foodporn(json_data):
     """Save json data for later"""
     debug("dump_foodporn()")
     save_file(json_data, MANDAFOODSFILE)
+
 
 def run_foodporn_update():
     """Run the whole foodporn stuff"""
@@ -333,11 +345,13 @@ def run_foodporn_update():
     food_json = get_foodporn_json()
     dump_foodporn(food_json)
 
+
 def get_answer(question):
     """ Search for a response from dictionary """
     if RESPONSES_TEXT.has_key(question.lower()):
         return RESPONSES_TEXT[question.lower()]
     return None
+
 
 def reply_text(obj, session, text):
     """ Generic interface to answer """
@@ -345,6 +359,7 @@ def reply_text(obj, session, text):
         obj.reply_to(session, text)
     except Exception as e:
         error("%s" % e)
+
 
 def StartUp():
     debug("Startup")
@@ -377,6 +392,7 @@ def StartUp():
         # Update the foodporn.json file
         run_foodporn_update()
 
+
 def GetGif(theme):
     if not GIFS.has_key(theme):
         return None
@@ -386,11 +402,13 @@ def GetGif(theme):
     get_id = random.randint(0, sizeof - 1)
     return GIFS[theme][get_id]
 
+
 def main():
     """Main settings"""
     check_if_run()
     save_file("%d\n" % os.getpid(), PIDFILE)
     StartUp()
+
 
 def get_global_keys():
     """Read globa settings like telegram key API"""
@@ -407,14 +425,17 @@ debug("Starting bot for FreeSpeech")
 get_global_keys()
 bot = telebot.TeleBot(key)
 
+
 ### Bot callbacks below ###
+
 
 def get_random_link(links_array):
     """Return random line w/ link (expected array of links)"""
     debug("get_random_link()")
     size = len(links_array)
-    position = random.randint(0,size -1)
+    position = random.randint(0, size - 1)
     return links_array[position]
+
 
 def send_animated_image_by_link_to_chat(chat_id, image_link):
     """Send a specific animated gif to a chat"""
@@ -425,6 +446,7 @@ def send_animated_image_by_link_to_chat(chat_id, image_link):
         error("Failed to send image=%s to chat_id=%s" % \
             (image_link, chat_id))
 
+
 def send_message_to_chat(chat_id, message):
     """Send a specific message to a chat"""
     debug("send_message_to_chat()")
@@ -434,12 +456,14 @@ def send_message_to_chat(chat_id, message):
         error("Failed to send message=%s to chat_id=%s" % \
             (message, chat_id))
 
+
 def shit_happens(chat_id, error):
     """Send error back"""
     debug("shit_happens()")
     gif = get_random_link(FAILURES)
     send_animated_image_by_link_to_chat(chat_id, gif)
     send_message_to_chat(chat_id, str(error))
+
 
 @bot.message_handler(commands=["oi", "hello", "helloworld", "oiamor", "teamo"])
 def hello_world(cmd):
@@ -454,6 +478,7 @@ def hello_world(cmd):
         return
     send_message_to_chat(cmd.chat.id, "OSI world")
 
+
 @bot.message_handler(commands=["manda", "manga"])
 def Manda(cmd):
     debug(cmd.text)
@@ -461,11 +486,11 @@ def Manda(cmd):
     opts = GIFS.keys()
 
     def GenerateButtons(chat_id):
-        markup = telebot.types.ReplyKeyboardMarkup(row_width=2)
+        markup = telebot.types.ReplyKeyboardMarkup(row_width=2, one_time_keyboard=True, selective=True)
         for key in sorted(opts):
             item = telebot.types.KeyboardButton("/manda %s" % key)
             markup.add(item)
-        bot.send_message(chat_id, "Escolha a opção:", reply_markup=markup)
+        bot.reply_to(cmd, "Escolha a opção:", reply_markup=markup)
 
     if len(args) <= 1:
         try:
@@ -507,6 +532,7 @@ def Manda(cmd):
         debug("Error at Manda(): %s" % e)
     debug(u"Manda(): end of function")
 
+
 @bot.message_handler(commands=["pipoca"])
 def PipocaGif(cmd):
     gif = GetGif("popcorn")
@@ -518,6 +544,7 @@ def PipocaGif(cmd):
         except Exception as z:
             print u"%s" % z
     debug("tchau")
+
 
 @bot.message_handler(commands=["reload"])
 def Reload(cmd):
@@ -556,6 +583,7 @@ def Reload(cmd):
         except Exception as z:
             print u"%s" % z
 
+
 @bot.message_handler(commands=["debug"])
 def ToggleDebug(cmd):
     global DEBUG
@@ -586,6 +614,7 @@ def SysCmd(cmd):
     except Exception as e:
         print u"%s" % e
 
+
 @bot.message_handler(commands=["uname", "uptime", "date", "df"])
 def SysCmd(cmd):
     debug("Running: %s" % cmd.text)
@@ -606,6 +635,7 @@ def SysCmd(cmd):
             print u"%s" % z
     debug("done here")
 
+
 @bot.message_handler(commands=["reboot", "shutdown", "sudo", "su"])
 def Requer(cmd):
     debug(cmd.text)
@@ -621,6 +651,7 @@ def Requer(cmd):
         except Exception as z:
             print u"%s" % z
 
+
 @bot.message_handler(commands=["fortune", "fortunes", "sorte"])
 def Fortune(cmd):
     fortune = os.popen("/usr/games/fortune").read()
@@ -631,6 +662,7 @@ def Fortune(cmd):
         bot.reply_to(cmd, "%s" % fortune)
     except:
         bot.reply_to(cmd, "Deu merda...")
+
 
 @bot.message_handler(commands=["hacked", "pwn3d"])
 def Hacked(cmd):
@@ -678,6 +710,7 @@ def AptCmds(session):
     debug("Asking about it on apt loop.")
     bot.reply_to(session, u"Quê?")
 
+
 @bot.message_handler(commands=["dia", "bomdia"])
 def Dia(cmd):
     debug(cmd.text)
@@ -708,6 +741,7 @@ O nome do sistema operacional é OSI/Linux e os blobs nos representam.""")
     except:
         bot.reply_to(cmd, "Deu merda...")
 
+
 @bot.message_handler(commands=["photo"])
 def Photo(cmd):
     debug("Photo")
@@ -729,6 +763,7 @@ def Photo(cmd):
         #bot.send_photo(cmd.chat.id,"FILEID")
     except Exception as e:
         bot.reply_to(cmd, "Deu merda: %s" % e)
+
 
 @bot.message_handler(commands=["unixloadon", "pauta", "pautas"])
 def UnixLoadOn(cmd):
@@ -780,6 +815,7 @@ def UnixLoadOn(cmd):
     except Exception as e:
         bot.reply_to(cmd, "Deu merda: %s" % e)
 
+
 @bot.message_handler(commands=["distros", "distro", "ubuntu", "debian", "arch", "manjaro"])
 def Distros(cmd):
     debug(cmd.text)
@@ -809,6 +845,7 @@ def Distros(cmd):
         return
 
     bot.send_message(cmd.chat.id, "Ainda não fiz...  Mas já está no backlog.")
+
 
 @bot.message_handler(commands=["xkcd", "dilbert", "vidadeprogramador",
     "tirinhas", "strips", "vidadesuporte", "angulodevista",
@@ -1032,6 +1069,7 @@ def Comics(cmd):
 """
 fofondex = {}
 start_time = time.time()
+
 
 @bot.message_handler(commands=["fofometro", "fofondex", "resetfofos",
     "blobometro", "blobondex", "scoreblob"])
@@ -1281,6 +1319,7 @@ def Motivational(cmd):
     except Exception as e:
         bot.reply_to(cmd, "Deu merda: %s" % e)
 
+
 @bot.message_handler(commands=["oquee", "oqueé"])
 def DuckDuckGo(cmd):
     debug(cmd.text)
@@ -1306,6 +1345,7 @@ def DuckDuckGo(cmd):
     except Exception as e:
         bot.reply_to(cmd, "Deu merda: %s" % e)
 
+
 @bot.message_handler(commands=["mimimi"])
 def Mimimizer(session):
     debug(session.text)
@@ -1319,6 +1359,7 @@ def Mimimizer(session):
     resp = re.sub(u"Á|É|Ó|Ú", u"Í", resp)
     bot.reply_to(session, u"%s" % resp)
     # Falta implementar quem...
+
 
 @bot.message_handler(commands=["ban"])
 def Ban(session):
@@ -1335,6 +1376,7 @@ def is_command(message):
         return False
     return re.search("^/[A-Za-z].*", u_message_text)
 
+
 @bot.message_handler(func=is_command, content_types=['text'])
 def GenericMessageHandler(session):
     command = u"%s" % session.text[1:]
@@ -1343,6 +1385,7 @@ def GenericMessageHandler(session):
     debug(u"Generic calling for %s" % command)
     if get_answer(command):
         reply_text(bot, session, get_answer(command))
+
 
 @bot.message_handler(func=lambda m: True)
 def WhatEver(session):
@@ -1354,6 +1397,7 @@ def WhatEver(session):
         Dia(session)
         return
     #bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")
+
 
 if __name__ == '__main__':
     if sys.argv[-1] == "check":

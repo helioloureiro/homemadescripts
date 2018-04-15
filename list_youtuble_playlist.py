@@ -26,15 +26,14 @@ def retrieve_html(url):
     c.get(url)
     return c.body()
 
-def main():
-    try:
-        playlist_id = sys.argv[1]
-        # clean from full url alike
-        # https://www.youtube.com/playlist?list=PLQYPYhKQVTvcNqNnkEfEKhaMxUf2tn_CP
-        playlist_id = re.sub(".*=", "", playlist_id)
-    except:
-        help(errno=1)
-    
+def main(url):
+    if url is None:
+        help()
+    playlist_id = url
+    # clean from full url alike
+    # https://www.youtube.com/playlist?list=PLQYPYhKQVTvcNqNnkEfEKhaMxUf2tn_CP
+    playlist_id = re.sub(".*=", "", playlist_id)
+
     VIDEOS = {}
     body = retrieve_html("%s%s" % (YOUTUBE, playlist_id))
     #print body
@@ -56,5 +55,9 @@ def main():
     return VIDEOS
 
 if __name__ == '__main__':
-    videos = main()
+    try:
+        link = sys.argv[1]
+    except:
+        help(errno=1)
+    videos = main(link)
     print simplejson.dumps(videos, sort_keys=True, indent='    ')

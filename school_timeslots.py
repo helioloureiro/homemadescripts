@@ -16,7 +16,7 @@ teachers.append({'name' : "Mirian Retka", 'dow' : [2, 3, 4, 5, 6], 'class' : [6,
 teachers.append({'name' : "Mariele", 'dow' : [2, 3, 4, 5, 6], 'class' : [6, 7, 8, 9], 'period' : [1, 2, 3, 4, 5, 6], 'fixed' : False, 'nr' : 5})
 teachers.append({'name' : "Aprigio Simões", 'dow' : [2, 3, 4, 5, 6], 'class' : [6, 7, 8, 9], 'period' : [1, 2, 3, 4, 5, 6], 'fixed' : False, 'nr' : 5})
 teachers.append({'name' : "Nilo Menezes", 'dow' : [2, 3, 4, 5, 6], 'class' : [6, 7, 8, 9], 'period' : [1, 2, 3, 4, 5, 6], 'fixed' : False, 'nr' : 5})
-teachers.append({'name' : "Ingo Hoffman", 'dow' : [2, 3, 4, 5, 6], 'class' : [6, 7, 8, 9], 'period' : [1, 2, 3, 4, 5, 6], 'fixed' : False, 'nr' : 5})
+teachers.append({'name' : "Ingo Hoffmann", 'dow' : [2, 3, 4, 5, 6], 'class' : [6, 7, 8, 9], 'period' : [1, 2, 3, 4, 5, 6], 'fixed' : False, 'nr' : 5})
 # not random
 teachers. append({'name' : "Tempo livre 2", 'dow' : [2], 'class' : [6, 7, 8, 9], 'period' : [6], 'fixed' : True})
 teachers. append({'name' : "Tempo livre 3", 'dow' : [3], 'class' : [8, 9], 'period' : [6], 'fixed' : True})

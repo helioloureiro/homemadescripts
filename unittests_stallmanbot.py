@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 import unittest
-from mock import MagicMock
+from mock import MagicMock, Mock
 import mockfs
 
 
@@ -92,10 +92,97 @@ class StallmanBot(unittest.TestCase):
         print(" * process exists and is running")
         print("mypid=%d" % os.getpid())
         check_if_run()
+        #sys.exit.assert_called_with(os.EX_OK)
+
+        #print(" * process doesn't exist and isn't running")
+        #fs.remove("%s/.stallmanbot.pid" % os.environ["HOME"])
+        #check_if_run()
 
         mockfs.restore_builtins()
 
+    def test_save_file(self):
+        print("Testing check_if_run()")
+        from stallmanbot import save_file
 
+        fs = mockfs.replace_builtins()
+        fs.add_entries({"/tmp/testing" : ""})
+        save_file("12345", "/tmp/testing")
+
+        self.assertEqual("12345", fs.read("/tmp/testing"), "Saving data failed")
+
+        mockfs.restore_builtins()
+
+    def test_read_configuration(self):
+        print("Testing read_configuration()")
+        from stallmanbot import read_configuration
+        import sys
+        import time
+        import os
+        import configparser
+
+        fs = mockfs.replace_builtins()
+        SESSION = "TELEGRAM"
+        fs.add_entries({"configuration.conf" : "[TELEGRAM]\n" + \
+            "STALLBOT = abc:123456\n" + \
+            "STALLBOTADM = HelioLoureiro\n"})
+        sys.exit = MagicMock()
+        error = MagicMock()
+
+        print(" * correct configuration")
+        cfg = read_configuration("configuration.conf")
+        self.assertEqual(cfg.get(SESSION, "STALLBOT"), "abc:123456", "Parameter didn't match.")
+        self.assertEqual(cfg.get(SESSION, "STALLBOTADM"), "HelioLoureiro", "Parameter didn't match.")
+
+        print(" * missing session")
+        SESSION = "FAKE"
+        self.assertRaises(configparser.NoSectionError,
+                          cfg.get,
+                          SESSION,
+                          "STALLBOT")
+        print(" * missing session using utf-8")
+        SESSION = "FåKEçÉ"
+        self.assertRaises(configparser.NoSectionError,
+                          cfg.get,
+                          SESSION,
+                          "STÁLLBÖT")
+
+        print(" * missing parameter")
+        SESSION = "TELEGRAM"
+        self.assertRaises(configparser.NoOptionError,
+                          cfg.get,
+                          SESSION,
+                          "WHATEVER")
+        mockfs.restore_builtins()
+
+    def test_get_telegram_key(self):
+        print("Testing get_telegram_key()")
+
+        from stallmanbot import read_configuration, get_telegram_key
+        import os
+        import configparser
+
+        fs = mockfs.replace_builtins()
+        SESSION = "TELEGRAM"
+        fs.add_entries({"configuration.conf" : "[TELEGRAM]\n" + \
+            "STALLBOT = abc:123456\n" + \
+            "STALLBOTADM = HelioLoureiro\n"})
+        sys = Mock()
+        error = Mock()
+        debug = Mock()
+
+        cfg = read_configuration("configuration.conf")
+        print(" * testing existent values")
+        result = get_telegram_key(cfg, "STALLBOT")
+        self.assertEqual(result, "abc:123456", "Resulting is mismatching expected value.")
+
+        print(" * testing non-existent values")
+        result = get_telegram_key(cfg, "ROCKNROLL")
+        self.assertIsNone(result, "Command returned value (expected empty).")
+
+        mockfs.restore_builtins()
+
+    def test_get_foodporn_json(self):
+        print("Testing get_foodporn_json()")
 
 if __name__ == '__main__':
     unittest.main()

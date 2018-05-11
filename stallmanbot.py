@@ -909,7 +909,7 @@ def UnixLoadOn(cmd):
             msg = read_pauta()
 
         elif re.search("^/novapauta", cmd.text):
-            create_pauta(cmd.text)
+            create_pauta()
             msg = read_pauta()
 
     except Exception as e:

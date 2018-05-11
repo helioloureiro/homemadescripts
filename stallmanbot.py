@@ -774,7 +774,7 @@ def Photo(cmd):
         bot.reply_to(cmd, "Deu merda: %s" % e)
 
 
-@bot.message_handler(commands=["unixloadon", "pauta", "pautas", "addpauta"])
+@bot.message_handler(commands=["unixloadon", "pauta", "pautas", "addpauta", "novapauta"])
 def UnixLoadOn(cmd):
     debug("Unix Load On")
     msg = None
@@ -803,15 +803,97 @@ def UnixLoadOn(cmd):
             last_pauta = sorted(pautas)[-2]
         return last_pauta
 
-    def read_pauta():
-        last_pauta = get_last_pauta()
+    def read_pauta(filename=None):
+        if filename is None:
+            last_pauta = get_last_pauta()
+        else:
+            last_pauta = filename
         msg = open("%s/%s" % (PAUTAS, last_pauta)).read()
         #msg = "work in progress"
         return msg
 
-    def add_pauta():
+    def sanitize(text):
+        REPLACEMENTS = {
+            "\(" : "&#40;",
+            "\)" : "&#41;",
+            "\*" : "&#42;",
+            "\<" : "&#60;",
+            "\>" : "&#62;",
+            "\[" : "&#91;",
+            "\]" : "&#93;"
+            }
+        for pattern in list(REPLACEMENTS):
+            text = re.sub(pattern, REPLACEMENTS[pattern], text)
+        return text
+
+    def pauta_commit_push(pauta_name, message=None):
+        os.chdir(PAUTAS)
+        current_time = time.ctime()
+        os.system("git add %s" % pauta_name)
+        if message is None:
+            os.system("git commit -m \"Adding pauta  content at %s\" %s" % (current_time, pauta_name))
+        else:
+            os.system("git commit -m \"%s\" %s" % (message, pauta_name))
+        os.system("git push")
+
+
+    def add_pauta(command):
+        url = command.split()[-1]
+        if not re.search("^http", url):
+            return
         last_pauta = get_last_pauta()
-        pauta_body = read_pauta()
+        pauta_body = read_pauta(last_pauta)
+
+        content = pauta_body.split("\n\n")
+
+        req = requests.get(url)
+        html = None
+        if req.status_code == 200:
+            html = req.text
+
+        if html is not None:
+            soup = bs4.BeautifulSoup(html, "html")
+            title = sanitize(soup.title.text)
+            md_text = "* [%s](%s)" % (title, url2)
+            content[0] += "\n%s" %md_text
+        body = "\n\n".join(content)
+
+        with open(last_pauta, 'w') as fd:
+            fd.write(body)
+        pauta_commit_push(last_pauta)
+
+    def generate_serial(filename=None):
+        if filename is None:
+            # generate for next month
+            timestamp = str(time.strftime("%Y%m0", time.localtime(time.time() + 30 * 24 * 60 * 60)))
+        else:
+            time_string = filename.split(".")[0]
+            if time_string[0] != 2 or len(time_string) < 7:
+                timestap =generate_serial()
+            else:
+                year = time_string[:4]
+                month = time_string[4:6]
+                if int(month) == 12:
+                    year = str(int(year) + 1)
+                    month = "01"
+                else:
+                    month = "%02d" % (int(month) + 1)
+                timestamp = "%s%s" % (year, month)
+        return timestamp
+
+    def copy_template(filename):
+        os.chdir(PAUTAS)
+        template = "template.md"
+        with open(template) as tpl:
+            buf = tpl.read()
+            with open(filename, 'w') as dest:
+                dest.write(buf)
+
+    def create_pauta():
+        last_pauta = get_last_pauta()
+        new_pauta = "%s.md" % generate_serial(last_pauta)
+        copy_template(new_pauta)
+        pauta_commit_push(new_pauta, "Adicionando nova pauta.")
 
     try:
         if re.search("unixloadon", cmd.text):
@@ -823,9 +905,13 @@ def UnixLoadOn(cmd):
             msg = read_content()
 
         elif re.search("^/addpauta", cmd.text):
-            os.chdir(PAUTAS)
-            os.system("git pull --rebase --no-commit")
-            msg = "work in progress"
+            add_pauta(cmd.text)
+            msg = read_content()
+
+        elif re.search("^/novapauta", cmd.text):
+            create_pauta(cmd.text)
+            msg = read_content()
+
     except Exception as e:
         try:
             bot.reply_to(cmd, "Deu merda: %s" % e)

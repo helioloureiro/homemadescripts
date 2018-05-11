@@ -325,7 +325,7 @@ def get_telegram_key(config_obj, parameter):
     except configparser.NoOptionError:
         print("No %s session found to retrieve settings." % config_section)
         print("Check your configuration file.")
-        sys.exit(os.EX_CONFIG)
+        # keep going and just return null
     debug(" * value=%s" % value)
     debug(" * Key acquired (%s=%s)." % (parameter, value) )
     return value
@@ -420,11 +420,12 @@ def main():
 def get_global_keys():
     """Read globa settings like telegram key API"""
     debug("get_global_keys()")
-    global botadm, key
+    global botadm, key, allowed_users
     configuration = "%s/%s" % (os.environ.get('HOME'), CONFIG)
     cfg = read_configuration(configuration)
     key = get_telegram_key(cfg, "STALLBOT")
     botadm = get_telegram_key(cfg, "STALLBOTADM")
+    allowed_users = get_telegram_key(cfg, "ALLOWEDUSERS")
 
 # avoiding nulls
 set_debug()
@@ -774,7 +775,7 @@ def Photo(cmd):
         bot.reply_to(cmd, "Deu merda: %s" % e)
 
 
-@bot.message_handler(commands=["unixloadon", "pauta", "pautas", "addpauta", "novapauta"])
+@bot.message_handler(commands=["unixloadon", "pauta", "pautas", "addpauta", "novapauta", "testauser"])
 def UnixLoadOn(cmd):
     debug("Unix Load On")
     msg = None
@@ -895,6 +896,14 @@ def UnixLoadOn(cmd):
         copy_template(new_pauta)
         pauta_commit_push(new_pauta, "Adicionando nova pauta.")
 
+    def is_allowed(username):
+        # from config
+        print("Testing username=%s" % username)
+        print("allowed_users=%s" % allowed_users)
+        if username in allowed_users:
+            return True
+        return False
+
     try:
         if re.search("unixloadon", cmd.text):
             debug("O que é Unix Load On")
@@ -909,8 +918,16 @@ def UnixLoadOn(cmd):
             msg = read_pauta()
 
         elif re.search("^/novapauta", cmd.text):
-            create_pauta()
-            msg = read_pauta()
+            if is_allowed(cmd.from_user.username):
+                create_pauta()
+                msg = read_pauta()
+            else:
+                msg = "Sem permissão pra enviar novas entradas."
+        elif re.search("^/testauser", cmd.text)
+            if is_allowed(cmd.from_user.username):
+                msg = "Usuário %s é autorizado." % cmd.from_user.username
+            else:
+                msg = "Usuário %s não tem autorização pra enviar posts." % cmd.from_user.username
 
     except Exception as e:
         try:

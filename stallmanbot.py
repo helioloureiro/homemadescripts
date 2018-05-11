@@ -354,7 +354,7 @@ def run_foodporn_update():
 
 def get_answer(question):
     """ Search for a response from dictionary """
-    if RESPONSES_TEXT.has_key(question.lower()):
+    if question.lower() in RESPONSES_TEXT:
         return RESPONSES_TEXT[question.lower()]
     return None
 

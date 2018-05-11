@@ -1184,7 +1184,7 @@ def FofoMetrics(cmd):
 
     def RunTheDice(n=None):
         debug("RunTheDice")
-        if n >=0 and n <= 100:
+        if n is not None and n >=0 and n <= 100:
             return n
         random.seed(os.urandom(random.randint(0,1000)))
         return random.randint(0,100)

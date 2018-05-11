@@ -181,13 +181,13 @@ FAILURES = [
 
 RESPONSES_TEXT = {
     "starttime" : START_TIME,
-    u"kkkk" : u"Hilário.",
-    u"hahaha" : u"Hilário.",
-    u"fonte" : u"""Estou aqui com 100% de acesso ao conteúdo em:
+    "kkkk" : "Hilário.",
+    "hahaha" : "Hilário.",
+    "fonte" : """Estou aqui com 100% de acesso ao conteúdo em:
 
 https://github.com/helioloureiro/homemadescripts/blob/master/stallmanbot.py
 """,
-    u"blob" : u"""
+    "blob" : """
 Blob nosso que estais no kernel
 codificado seja o vosso nome.
 Venha a nós o vosso driver.
@@ -201,7 +201,7 @@ Mas livrai-nos do FUDA,
 
 Amuleke!
 """,
-    u"emacs" : """
+    "emacs" : """
 Linux nosso que estais no PC
 Bem compilado seja o vosso Kernel
 Venha a nós o vosso código
@@ -215,21 +215,22 @@ E livrai a todos da M$
 
 Amém.
 """,
-    u"ping" : u"ACK",
-    u"version" : __version__,
-    u"ultrafofo" : """#UltraFofos é o grupo super fofis de defensores de software livre.
+    "ping" : "ACK",
+    "version" : __version__,
+    "ultrafofo" : """#UltraFofos é o grupo super fofis de defensores de software livre.
 Veja mais em: https://www.youtube.com/watch?v=eIRk38d32vA
 """,
-    u"help" : u"""Precisa de ajuda?
+    "help" : """Precisa de ajuda?
 Procure o CVV.
 
 http://www.cvv.org.br
 """,
-    u"rtfm" : u"""Read The F*cking Manual.  Ou leia o Guia Foca GNU/Linux.
+    "rtfm" : """Read The F*cking Manual.  Ou leia o Guia Foca GNU/Linux.
 
 http://www.guiafoca.org/
 """
 }
+
 # Aliases
 RESPONSES_TEXT[u"fontes"] = RESPONSES_TEXT["fonte"]
 RESPONSES_TEXT[u"src"] = RESPONSES_TEXT["fonte"]
@@ -554,6 +555,7 @@ def PipocaGif(cmd):
 
 @bot.message_handler(commands=["reload"])
 def Reload(cmd):
+    global START_TIME
     debug(cmd.text)
     if not cmd.from_user.username == botadm:
         bot.reply_to(cmd, "Só patrão pode isso.")
@@ -582,6 +584,7 @@ def Reload(cmd):
                 bot.send_message(cmd.chat.id, "Bot version updated.")
         # check first
         python = sys.executable
+        START_TIME = time.ctime()
         os.execl(python, python, *sys.argv)
     except Exception as e:
         try:

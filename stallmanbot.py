@@ -401,7 +401,7 @@ def StartUp():
 
 
 def GetGif(theme):
-    if not GIFS.has_key(theme):
+    if not theme in GIFS:
         return None
     sizeof = len(GIFS[theme])
     if sizeof <= 1:
@@ -774,37 +774,54 @@ def Photo(cmd):
         bot.reply_to(cmd, "Deu merda: %s" % e)
 
 
-@bot.message_handler(commands=["unixloadon", "pauta", "pautas"])
+@bot.message_handler(commands=["unixloadon", "pauta", "pautas", "addpauta"])
 def UnixLoadOn(cmd):
     debug("Unix Load On")
     msg = None
     curdir = os.curdir
+    def get_what_is():
+        url = "https://helioloureiro.github.io/canalunixloadon/"
+        www = requests.get(url)
+        msg = www.text
+        msg = msg.encode("utf-8")
+        debug(msg)
+        soup = bs4.BeautifulSoup(msg, "html")
+        msg = ""
+        for section in soup.findAll("section"):
+            buf = section.getText(separator='\n')
+            debug(buf)
+            msg += buf
+            msg += "\n"
+        return msg
+
+    def get_last_pauta():
+        os.chdir(PAUTAS)
+        os.system("git pull --rebase --no-commit")
+        pautas = os.listdir(PAUTAS)
+        last_pauta = sorted(pautas)[-1]
+        if not re.search("^20", last_pauta):
+            last_pauta = sorted(pautas)[-2]
+        return last_pauta
+
+    def read_pauta():
+        last_pauta = get_last_pauta()
+        msg = open("%s/%s" % (PAUTAS, last_pauta)).read()
+        #msg = "work in progress"
+        return msg
+
+    def add_pauta():
+        last_pauta = get_last_pauta()
+        pauta_body = read_pauta()
+
     try:
         if re.search("unixloadon", cmd.text):
             debug("O que é Unix Load On")
-            url = "https://helioloureiro.github.io/canalunixloadon/"
-            www = requests.get(url)
-            msg = www.text
-            msg = msg.encode("utf-8")
-            debug(msg)
-            soup = bp.BeautifulSoup(msg)
-            msg = ""
-            for section in soup.findAll("section"):
-                buf = section.getText(separator='\n')
-                debug(buf)
-                msg += buf
-                msg += "\n"
+            msg = get_what_is()
 
         elif re.search("^/pauta", cmd.text):
             debug("Lendo pautas")
-            os.chdir(PAUTAS)
-            os.system("git pull --rebase --no-commit")
-            pautas = os.listdir(PAUTAS)
-            last_pauta = sorted(pautas)[-1]
-            if not re.search("^20", last_pauta):
-                last_pauta = sorted(pautas)[-2]
-            msg = open("%s/%s" % (PAUTAS, last_pauta)).read()
-            #msg = "work in progress"
+            msg = read_content()
+
         elif re.search("^/addpauta", cmd.text):
             os.chdir(PAUTAS)
             os.system("git pull --rebase --no-commit")
@@ -1020,7 +1037,7 @@ def Comics(cmd):
         except:
             debug(" * json failed: creating one")
             json_data = { "error" : 666, "message" : "error fazendo parsing do json" }
-        if json_data.has_key("error"):
+        if "error" in json_data:
             debug(" * found key error")
             bot.send_message(cmd.chat.id, u"Deu merda no Jasão: %s" % json_data["message"])
             debug(" * removing file")
@@ -1174,7 +1191,7 @@ def FofoMetrics(cmd):
 
     def TimeDelta(user_id):
         debug("TimeDelta")
-        if fofondex.has_key(user_id):
+        if user_id in fofondex:
             timestamp = fofondex[user_id]['timestamp']
             now = time.time()
             return now - int(timestamp)
@@ -1193,7 +1210,7 @@ def FofoMetrics(cmd):
     def GetPctg(user_id):
         debug("GetPctg")
         DataRead()
-        if fofondex.has_key(user_id):
+        if user_id in fofondex:
             pctg = fofondex[user_id]['foforate']
         else:
             # initialize user
@@ -1214,7 +1231,7 @@ def FofoMetrics(cmd):
 
     if re.search("/(fof|blob)ometro", cmd.text):
         DataRead()
-        if not fofondex.has_key(user_id):
+        if not user_id in fofondex:
             InitializeUser()
         if TimeDelta(user_id) < 24 * 60 * 60:
             pctg = GetPctg(user_id)
@@ -1373,14 +1390,14 @@ def Mimimizer(session):
 @bot.message_handler(commands=["ban"])
 def Ban(session):
     debug(session.text)
-    bot.reply_to(session, u"Deixa que eu pego ele na hora da saída.")
+    bot.reply_to(session, "Deixa que eu pego ele na hora da saída.")
     gif = "https://media.giphy.com/media/H99r2HtnYs492/giphy.gif"
     bot.send_document(session.chat.id, gif)
     # Falta implementar quem...
 
 def is_command(message):
     try:
-        u_message_text = u"%s" % message.text
+        u_message_text = "%s" % message.text
     except:
         return False
     return re.search("^/[A-Za-z].*", u_message_text)
@@ -1402,7 +1419,7 @@ def WhatEver(session):
     if get_answer(session.text):
         reply_text(bot, session, get_answer(session.text))
         return
-    elif re.search(u"bom dia", session.text.lower()):
+    elif re.search("bom dia", session.text.lower()):
         Dia(session)
         return
     #bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")

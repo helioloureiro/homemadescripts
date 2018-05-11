@@ -854,7 +854,7 @@ def UnixLoadOn(cmd):
         if html is not None:
             soup = bs4.BeautifulSoup(html, "html")
             title = sanitize(soup.title.text)
-            md_text = "* [%s](%s)" % (title, url2)
+            md_text = "* [%s](%s)" % (title, url)
             content[0] += "\n%s" %md_text
         body = "\n\n".join(content)
 

@@ -923,7 +923,7 @@ def UnixLoadOn(cmd):
                 msg = read_pauta()
             else:
                 msg = "Sem permissão pra enviar novas entradas."
-        elif re.search("^/testauser", cmd.text)
+        elif re.search("^/testauser", cmd.text):
             if is_allowed(cmd.from_user.username):
                 msg = "Usuário %s é autorizado." % cmd.from_user.username
             else:

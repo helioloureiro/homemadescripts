@@ -1,9 +1,9 @@
-#! /usr/bin/python -u
+#! /usr/bin/python3 -u
 # -*- coding: utf-8 -*-
 
 import os
 import sys
-import ConfigParser
+import configparser
 import re
 import time
 import shutil
@@ -14,12 +14,13 @@ import json
 import syslog
 
 import requests
-import BeautifulSoup as bp
+import bs4
 import telebot
 from datetime import date
 
 # pyTelegramBotAPI
 # https://github.com/eternnoir/pyTelegramBotAPI
+# pip3 install pyTelegramBotAPI
 
 
 __version__ = "Fri Apr 10 20:50:00 CEST 2018"
@@ -240,16 +241,16 @@ RESPONSES_TEXT[u"ultrafofos"] = RESPONSES_TEXT["ultrafofo"]
 def set_debug():
     global DEBUG
     if DEBUG is False:
-        if os.environ.has_key("DEBUG"):
+        if "DEBUG" in os.environ:
             DEBUG = True
 
 
 def debug(msg):
     if DEBUG and msg:
         try:
-            print u"[%s] %s" % (time.ctime(), msg)
+            print(u"[%s] %s" % (time.ctime(), msg))
         except Exception as e:
-            print u"[%s] DEBUG ERROR: %s" % (time.ctime(), e)
+            print(u"[%s] DEBUG ERROR: %s" % (time.ctime(), e))
 
 
 def error(message):
@@ -269,14 +270,14 @@ def log(message):
 
 
 def read_file(filename):
-    content = None
-    if not os.path.exists(filename):
-        return content
     try:
-        content = open(filename).read()
+        with open(filename) as myfile:
+            return myfile.read()
+    except FileNotFoundError:
+            return None
     except:
         error("Failed to read file %s" % filename)
-    return content
+        return None
 
 
 def check_if_run():
@@ -299,12 +300,13 @@ def save_file(content, filename):
 def read_configuration(config_file):
     """ Read configuration file and return object
     with config attributes"""
-    cfg = ConfigParser.ConfigParser()
+    cfg = configparser.ConfigParser()
     debug("Reading configuration: %s" % config_file)
     if not os.path.exists(config_file):
         error("Failed to find configuration file %s" % config_file)
         sys.exit(os.EX_CONFIG)
-    cfg.read(config_file)
+    with open(config_file) as fd:
+        cfg.read_file(fd)
     return cfg
 
 
@@ -313,13 +315,14 @@ def get_telegram_key(config_obj, parameter):
     and return it or exit on failure"""
     debug("get_telegram_key()")
     config_section = "TELEGRAM"
+    value = None
     try:
         value = config_obj.get(config_section, parameter)
-        debug(" * value=%s" % value)
-    except ConfigParser.NoSectionError:
-        print "No %s session found to retrieve settings." % config_section
-        print "Check your configuration file."
+    except configparser.NoOptionError:
+        print("No %s session found to retrieve settings." % config_section)
+        print("Check your configuration file.")
         sys.exit(os.EX_CONFIG)
+    debug(" * value=%s" % value)
     debug(" * Key acquired (%s=%s)." % (parameter, value) )
     return value
 
@@ -520,7 +523,7 @@ def Manda(cmd):
                     bot.send_message(cmd.chat.id, "Deu merda... %s" % err2)
                     bot.send_message(cmd.chat.id, "Link: %s" % gif)
                 except Exception as z:
-                    print u"%s" % z
+                    print(u"%s" % z)
         debug(u"Manda(): end of for interaction - can go next")
     debug(u"Manda(): end of loop for")
     # remove button if there
@@ -542,7 +545,7 @@ def PipocaGif(cmd):
         try:
             bot.send_message(cmd.chat.id, u"Deu merda... %s" % e)
         except Exception as z:
-            print u"%s" % z
+            print(u"%s" % z)
     debug("tchau")
 
 
@@ -581,7 +584,7 @@ def Reload(cmd):
         try:
             bot.reply_to(cmd, u"Deu merda... %s" % e)
         except Exception as z:
-            print u"%s" % z
+            print(u"%s" % z)
 
 
 @bot.message_handler(commands=["debug"])
@@ -601,7 +604,7 @@ def ToggleDebug(cmd):
             status = "enabled"
         bot.reply_to(cmd, "debug=%s" % status)
     except Exception as e:
-        print u"%s" % e
+        print(u"%s" % e)
 
 
 @bot.message_handler(commands=["fuda"])
@@ -612,7 +615,7 @@ def SysCmd(cmd):
             u"Os males do software livre atualmente."
         bot.reply_to(cmd, "%s" % resp)
     except Exception as e:
-        print u"%s" % e
+        print(u"%s" % e)
 
 
 @bot.message_handler(commands=["uname", "uptime", "date", "df"])
@@ -632,7 +635,7 @@ def SysCmd(cmd):
         try:
             bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
         except Exception as z:
-            print u"%s" % z
+            print(u"%s" % z)
     debug("done here")
 
 
@@ -649,7 +652,7 @@ def Requer(cmd):
         try:
             bot.reply_to(cmd, "Deu merda... %s" % e)
         except Exception as z:
-            print u"%s" % z
+            print(u"%s" % z)
 
 
 @bot.message_handler(commands=["fortune", "fortunes", "sorte"])
@@ -804,7 +807,7 @@ def UnixLoadOn(cmd):
         try:
             bot.reply_to(cmd, "Deu merda: %s" % e)
         except Exception as z:
-            print u"%s" % z
+            print(u"%s" % z)
 
     os.chdir(curdir)
     if not msg:
@@ -1335,7 +1338,7 @@ def DuckDuckGo(cmd):
     try:
         answer = responses[0].text
     except Exception as e:
-        print e # get internal
+        print(e) # get internal
         pass
     if not answer:
         bot.reply_to(cmd, "Não tenho a menor idéia.  Tem de perguntar no google.")
@@ -1401,7 +1404,7 @@ def WhatEver(session):
 
 if __name__ == '__main__':
     if sys.argv[-1] == "check":
-        print "Ok"
+        print("Ok")
         sys.exit(os.EX_OK)
     try:
         debug("Main()")
@@ -1409,6 +1412,6 @@ if __name__ == '__main__':
         debug("Polling...")
         bot.polling()
     except Exception as e:
-        print e
+        print(e)
         debug(e)
     os.unlink(PIDFILE)

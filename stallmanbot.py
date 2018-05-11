@@ -898,9 +898,8 @@ def UnixLoadOn(cmd):
         pauta_commit_push(new_pauta, "Adicionando nova pauta.")
 
     def is_allowed(username):
-        # from config
-        print("Testing username=%s" % username)
-        print("allowed_users=%s" % allowed_users)
+        if username is None or allowed_users is None:
+            return False
         if username in allowed_users.split():
             return True
         return False

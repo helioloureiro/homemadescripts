@@ -23,7 +23,7 @@ from datetime import date
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Fri Apr 10 20:50:00 CEST 2018"
+__version__ = "Fri May 11 22:19:07 CEST 2018"
 
 START_TIME = time.ctime()
 
@@ -564,6 +564,8 @@ def Reload(cmd):
     try:
         debug(cmd)
         bot.reply_to(cmd, "Reloading...")
+        START_TIME = time.ctime()
+
         if os.path.exists(SCRIPTHOME):
             os.chdir(SCRIPTHOME)
             oscmd = "git pull -f"
@@ -585,7 +587,6 @@ def Reload(cmd):
                 bot.send_message(cmd.chat.id, "Bot version updated.")
         # check first
         python = sys.executable
-        START_TIME = time.ctime()
         os.execl(python, python, *sys.argv)
     except Exception as e:
         try:

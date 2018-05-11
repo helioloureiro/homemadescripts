@@ -25,6 +25,8 @@ from datetime import date
 
 __version__ = "Fri Apr 10 20:50:00 CEST 2018"
 
+START_TIME = time.ctime()
+
 
 # Message to send to @BotFather about its usage.
 Commands_Listing = """
@@ -178,6 +180,7 @@ FAILURES = [
     "https://media.giphy.com/media/nEovVMM8Z5H6U/giphy.gif" ]
 
 RESPONSES_TEXT = {
+    "starttime" : START_TIME,
     u"kkkk" : u"Hilário.",
     u"hahaha" : u"Hilário.",
     u"fonte" : u"""Estou aqui com 100% de acesso ao conteúdo em:

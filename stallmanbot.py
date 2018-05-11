@@ -1277,7 +1277,7 @@ def FofoMetrics(cmd):
         return
 
     if re.search("/(fof|blob)ondex", cmd.text):
-        if len(fofondex.keys()) == 0:
+        if len(list(fofondex)) == 0:
             msg = u"Ninguém ainda teve coragem de tentar esse UltraFofo."
             bot.send_message(cmd.chat.id, u'%s' % msg)
             return
@@ -1286,7 +1286,7 @@ def FofoMetrics(cmd):
             msg = u"Ranking Dollyinho de #Blobice:\n"
         ranking = {}
         isUpdated = False
-        for u in fofondex.keys():
+        for u in list(fofondex):
             delta = TimeDelta(u)
             if delta > 24 * 60 * 60:
                 # remove old data

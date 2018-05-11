@@ -902,15 +902,15 @@ def UnixLoadOn(cmd):
 
         elif re.search("^/pauta", cmd.text):
             debug("Lendo pautas")
-            msg = read_content()
+            msg = read_pauta()
 
         elif re.search("^/addpauta", cmd.text):
             add_pauta(cmd.text)
-            msg = read_content()
+            msg = read_pauta()
 
         elif re.search("^/novapauta", cmd.text):
             create_pauta(cmd.text)
-            msg = read_content()
+            msg = read_pauta()
 
     except Exception as e:
         try:

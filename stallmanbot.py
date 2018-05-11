@@ -900,7 +900,7 @@ def UnixLoadOn(cmd):
         # from config
         print("Testing username=%s" % username)
         print("allowed_users=%s" % allowed_users)
-        if username in allowed_users:
+        if username in allowed_users.split():
             return True
         return False
 

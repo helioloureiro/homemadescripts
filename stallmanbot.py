@@ -23,7 +23,7 @@ from datetime import date
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Thu Jun 28 23:42:11 CEST 2018"
+__version__ = "Thu Jun 28 23:48:28 CEST 2018"
 
 START_TIME = time.ctime()
 
@@ -907,6 +907,8 @@ def UnixLoadOn(cmd):
         return False
 
     def add_sugestao(msg, user):
+        debug("add_sugestao()")
+        msg = re.sub("^/addsugestao ", "", msg)
         last_pauta = get_last_pauta()
         pauta_body = read_pauta(last_pauta)
 
@@ -923,6 +925,7 @@ def UnixLoadOn(cmd):
         with open(last_pauta, 'w') as fd:
             fd.write(body)
         pauta_commit_push(last_pauta)
+        return "sugestão adicionada"
 
 
     try:
@@ -940,7 +943,8 @@ def UnixLoadOn(cmd):
                 msg = read_pauta()
             else:
                 msg = "Sem permissão pra enviar novas entradas."
-        elif re.search("^/novasugestao", cmd.text):
+
+        elif re.search("^/addsugestao", cmd.text):
             msg = add_sugestao(cmd.text, cmd.from_user.username)
 
         elif re.search("^/novapauta", cmd.text):

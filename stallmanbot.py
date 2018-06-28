@@ -23,7 +23,7 @@ from datetime import date
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Thu Jun 28 22:03:10 CEST 2018"
+__version__ = "Thu Jun 28 23:42:11 CEST 2018"
 
 START_TIME = time.ctime()
 
@@ -914,7 +914,7 @@ def UnixLoadOn(cmd):
 
         position = None
         for i in range(0, len(content)):
-            if "Sugestões via telegram" in content[i]:
+            if re.search("Sugestões via telegram", content[i]):
                 position = i
                 break
         content[position] += "\n%s | author=%s" % (msg, user)

@@ -23,7 +23,7 @@ from datetime import date
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Thu Jun 28 17:28:26 CEST 2018"
+__version__ = "Thu Jun 28 17:49:33 CEST 2018"
 
 START_TIME = time.ctime()
 
@@ -941,10 +941,23 @@ def UnixLoadOn(cmd):
     if not msg:
         return
 
-    try:
-        bot.send_message(cmd.chat.id, msg)
-    except Exception as e:
-        bot.reply_to(cmd, "Deu merda: %s" % e)
+    msg_queue = []
+    msg_size = len(msg.split("\n"))
+    if msg_size > 65:
+        # it must send in two parts to avoid errors
+        half_size = msg_size /2
+        first_half = msg.split("\n")[:half_size]
+        second_half = msg.split("\n")[half_size:]
+        msg_queue.append("\n".join(first_half))
+        msg_queue.append("\n".join(second_half))
+    else:
+        msg_queue.append(msg)
+
+    for msg in msg_queue:
+        try:
+            bot.send_message(cmd.chat.id, msg)
+        except Exception as e:
+            bot.reply_to(cmd, "Deu merda: %s" % e)
 
 
 @bot.message_handler(commands=["distros", "distro", "ubuntu", "debian", "arch", "manjaro"])

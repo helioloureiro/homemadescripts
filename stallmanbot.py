@@ -23,7 +23,7 @@ from datetime import date
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Fri May 11 22:19:07 CEST 2018"
+__version__ = "Thu Jun 28 17:28:26 CEST 2018"
 
 START_TIME = time.ctime()
 
@@ -800,7 +800,7 @@ def UnixLoadOn(cmd):
 
     def get_last_pauta():
         os.chdir(PAUTAS)
-        os.system("git pull --rebase --no-commit")
+        os.system("git pull --rebase --no-commit --force")
         pautas = os.listdir(PAUTAS)
         last_pauta = sorted(pautas)[-1]
         if not re.search("^20", last_pauta):

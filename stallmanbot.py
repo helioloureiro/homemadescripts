@@ -23,7 +23,7 @@ from datetime import date
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Thu Jun 28 18:03:48 CEST 2018"
+__version__ = "Thu Jun 28 18:09:36 CEST 2018"
 
 START_TIME = time.ctime()
 
@@ -945,7 +945,7 @@ def UnixLoadOn(cmd):
     msg_size = len(msg.split("\n"))
     if msg_size > 65:
         # it must send in two parts to avoid errors
-        half_size = msg_size /2
+        half_size = int(msg_size /2)
         msg_lines = msg.split("\n")
         for lines in [ msg_lines[:half_size], msg_lines[half_size:] ]:
             msg_queue.append("\n".join(lines))

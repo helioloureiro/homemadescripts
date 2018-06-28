@@ -23,7 +23,7 @@ from datetime import date
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Thu Jun 28 18:09:36 CEST 2018"
+__version__ = "Thu Jun 28 22:03:10 CEST 2018"
 
 START_TIME = time.ctime()
 
@@ -778,7 +778,7 @@ def Photo(cmd):
         bot.reply_to(cmd, "Deu merda: %s" % e)
 
 
-@bot.message_handler(commands=["unixloadon", "pauta", "pautas", "addpauta", "novapauta", "testauser"])
+@bot.message_handler(commands=["unixloadon", "pauta", "pautas", "addpauta", "novapauta", "testauser", "addsugestao"])
 def UnixLoadOn(cmd):
     debug("Unix Load On")
     msg = None
@@ -859,7 +859,7 @@ def UnixLoadOn(cmd):
             soup = bs4.BeautifulSoup(html, "html")
             title = sanitize(soup.title.text)
             md_text = "* [%s](%s)" % (title, url)
-            content[0] += "\n%s" %md_text
+            content[0] += "\n%s" % md_text
         body = "\n\n".join(content)
 
         with open(last_pauta, 'w') as fd:
@@ -906,6 +906,25 @@ def UnixLoadOn(cmd):
             return True
         return False
 
+    def add_sugestao(msg, user):
+        last_pauta = get_last_pauta()
+        pauta_body = read_pauta(last_pauta)
+
+        content = pauta_body.split("\n\n")
+
+        position = None
+        for i in range(0, len(content)):
+            if "Sugestões via telegram" in content[i]:
+                position = i
+                break
+        content[position] += "\n%s | author=%s" % (msg, user)
+        body = "\n\n".join(content)
+
+        with open(last_pauta, 'w') as fd:
+            fd.write(body)
+        pauta_commit_push(last_pauta)
+
+
     try:
         if re.search("unixloadon", cmd.text):
             debug("O que é Unix Load On")
@@ -916,8 +935,13 @@ def UnixLoadOn(cmd):
             msg = read_pauta()
 
         elif re.search("^/addpauta", cmd.text):
-            add_pauta(cmd.text)
-            msg = read_pauta()
+            if is_allowed(cmd.from_user.username):
+                add_pauta(cmd.text)
+                msg = read_pauta()
+            else:
+                msg = "Sem permissão pra enviar novas entradas."
+        elif re.search("^/novasugestao", cmd.text):
+            msg = add_sugestao(cmd.text, cmd.from_user.username)
 
         elif re.search("^/novapauta", cmd.text):
             if is_allowed(cmd.from_user.username):

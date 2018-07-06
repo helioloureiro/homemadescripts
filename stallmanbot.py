@@ -23,7 +23,7 @@ from datetime import date
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Thu Jun 28 23:48:28 CEST 2018"
+__version__ = "Fri Jul  6 13:23:35 CEST 2018"
 
 START_TIME = time.ctime()
 
@@ -940,7 +940,7 @@ def UnixLoadOn(cmd):
         elif re.search("^/addpauta", cmd.text):
             if is_allowed(cmd.from_user.username):
                 add_pauta(cmd.text)
-                msg = read_pauta()
+                msg = "Link adicionado com sucesso.  Use /pauta pra ler o conteúdo."
             else:
                 msg = "Sem permissão pra enviar novas entradas."
 

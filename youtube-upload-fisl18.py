@@ -74,11 +74,11 @@ def download_video(video_url):
     if not os.path.exists(videopath):
         os.makedirs(videopath)
 
-    video = requests.get(video_url)
+    video = requests.get(video_url, stream=True)
     with open("%s/%s" % (videopath, videoname), 'wb') as destination:
-        destination.write(video.text)
-        destination.flush()
-        destination.close()
+        for block in video.iter_content(chunk_size=1024):
+            if block:
+                destination.write(block)
 
 def check_upload_status(filename):
     if os.path.exists("done/%s" % filename):

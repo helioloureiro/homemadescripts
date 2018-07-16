@@ -42,16 +42,24 @@ def build_talk(talkid):
 
 def youtube(title, descr, author, tags, video):
     descr = "%s\n\n%s" % (descr, author)
-    descr = re.sub("\"", "\\\"", descr.decode("utf-8"))
-    title = re.sub("\"", "\\\"", title.decode("utf-8"))
+    descr = descr.replace("\"", "\\\"")
+    title = title.replace("\"", "\\\"")
     cmd = "youtube-upload " + \
-        "--title=\"%s\" " % title.encode("utf-8") + \
-        "--description=\"%s\" " % descr.encode("utf-8") + \
+        "--title=\"%s\" " % title + \
+        "--description=\"%s\" " % descr + \
         "--client-secrets=%s " % SECRET + \
         "--tags=\"%s\" " % tags + \
-        "%s" % video
-    print(cmd)
-    os.system(cmd)
+        "\"%s\"" % video
+
+    try:
+        print(cmd)
+        result = os.system(cmd)
+    except UnicodeEncodeError:
+        cmd_ascii = cmd.decode("utf-8").encode("iso8859-1")
+        print(cmd_ascii)
+        result = os.system(cmd_ascii)
+    return result
+
 
 def processed(video):
     videoname = os.path.basename(video)
@@ -108,11 +116,10 @@ def build_listing():
                     print(" * cancelled")
                     continue
                 timestamp = presentation["begins"]
-                title = presentation["talk"]["title"].encode("utf-8")
-                authors = presentation["talk"]["owner"].encode("utf-8")
+                title = presentation["talk"]["title"]
+                authors = presentation["talk"]["owner"]
                 if presentation["talk"]["coauthors"]:
                     a = ",".join(presentation["talk"]["coauthors"])
-                    a = a.encode("utf-8")
                     authors = "%s e %s" %(a, authors)
                 #print authors
                 track = presentation["talk"]["track"]
@@ -131,7 +138,7 @@ def build_listing():
                 r = requests.get(url2)
                 j2 = json.loads(r.text)
                 #print(" * dump2: %s" % json.dumps(j2))
-                full = j2["resource"]["full"].encode("utf-8")
+                full = j2["resource"]["full"]
                 try:
                     print("Title: %s" % title)
                 except UnicodeEncodeError:
@@ -164,8 +171,11 @@ def build_listing():
 
                 if check_upload_status(videoname) is False:
                     download_video(video)
-                    youtube(title, full, authors, tags, videopath)
-                    processed(videopath)
+                    result = youtube(title, full, authors, tags, videopath + "/" + videoname)
+                    if result != 0:
+                        print("Video failed to upload.")
+                        sys.exit(result)
+                    processed(videopath + "/" + videoname)
 
 
 if __name__ == '__main__':

@@ -15,6 +15,7 @@ import re
 import os
 import shutil
 import logging
+import sys
 logging.captureWarnings('InsecurePlatformWarning')
 
 YEAR = "2018"

@@ -42,11 +42,11 @@ def build_talk(talkid):
 
 def youtube(title, descr, author, tags, video):
     descr = "%s\n\n%s" % (descr, author)
-    descr = re.sub("\"", "\\\"", descr)
-    title = re.sub("\"", "\\\"", title)
+    descr = re.sub("\"", "\\\"", descr.decode("utf-8"))
+    title = re.sub("\"", "\\\"", title.decode("utf-8"))
     cmd = "youtube-upload " + \
-        "--title=\"%s\" " % title + \
-        "--description=\"%s\" " % descr + \
+        "--title=\"%s\" " % title.encode("utf-8") + \
+        "--description=\"%s\" " % descr.encode("utf-8") + \
         "--client-secrets=%s " % SECRET + \
         "--tags=\"%s\" " % tags + \
         "%s" % video
@@ -70,6 +70,10 @@ def video_dir(full_path):
 def download_video(video_url):
     videoname = os.path.basename(video_url)
     videopath = video_dir(video_url)
+
+    if os.path.exists("%s/%s" % (videopath/videoname)):
+        if os.stat("%s/%s" % (videopath/videoname)).st_size != 0:
+            return
 
     if not os.path.exists(videopath):
         os.makedirs(videopath)

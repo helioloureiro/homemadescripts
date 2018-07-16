@@ -80,6 +80,11 @@ def download_video(video_url):
         destination.flush()
         destination.close()
 
+def check_upload_status(filename):
+    if os.path.exists("done/%s" % filename):
+        return True
+    return False
+
 def build_listing():
     if not os.path.exists("done"):
         os.mkdir("done")
@@ -153,9 +158,10 @@ def build_listing():
                 #videopath = "/fisl18/high/Sala %d/%s%s%d/%s" % (room, YEAR, MONTH, day, videoname)
                 videopath = video_dir(video)
 
-                download_video(video)
-                youtube(title, full, authors, tags, videopath)
-                processed(videopath)
+                if check_upload_status(videoname) is False:
+                    download_video(video)
+                    youtube(title, full, authors, tags, videopath)
+                    processed(videopath)
 
 
 if __name__ == '__main__':

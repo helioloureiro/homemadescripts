@@ -71,8 +71,8 @@ def download_video(video_url):
     videoname = os.path.basename(video_url)
     videopath = video_dir(video_url)
 
-    if os.path.exists("%s/%s" % (videopath/videoname)):
-        if os.stat("%s/%s" % (videopath/videoname)).st_size != 0:
+    if os.path.exists("%s/%s" % (videopath, videoname)):
+        if os.stat("%s/%s" % (videopath, videoname)).st_size != 0:
             return
 
     if not os.path.exists(videopath):

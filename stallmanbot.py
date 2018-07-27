@@ -970,13 +970,20 @@ def UnixLoadOn(cmd):
         return
 
     msg_queue = []
-    msg_size = len(msg.split("\n"))
-    if msg_size > 65:
+    MAXSIZE = 4000 # hardcoded value
+    msg_size = len(msg)
+    if msg_size > MAXSIZE:
         # it must send in two parts to avoid errors
-        half_size = int(msg_size /2)
         msg_lines = msg.split("\n")
-        for lines in [ msg_lines[:half_size], msg_lines[half_size:] ]:
-            msg_queue.append("\n".join(lines))
+        msg_buff = ""
+        while line in msg_lines:
+            if len(msg_buff + line + "\n") > MAXSIZE:
+                msg_queue.append(msg_buff)
+                msg_buff = ""
+            else:
+                msg_buff += line + "\n"
+        if len(msg_buff) > 0:
+            msg_queue.append(msg_buff)
     else:
         msg_queue.append(msg)
 

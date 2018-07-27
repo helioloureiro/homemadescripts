@@ -23,7 +23,7 @@ from datetime import date
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Fri Jul  6 13:23:35 CEST 2018"
+__version__ = "Fri Jul 27 16:49:00 CEST 2018"
 
 START_TIME = time.ctime()
 

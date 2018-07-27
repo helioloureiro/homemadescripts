@@ -976,7 +976,7 @@ def UnixLoadOn(cmd):
         # it must send in two parts to avoid errors
         msg_lines = msg.split("\n")
         msg_buff = ""
-        while line in msg_lines:
+        for line in msg_lines:
             if len(msg_buff + line + "\n") > MAXSIZE:
                 msg_queue.append(msg_buff)
                 msg_buff = ""

@@ -17,12 +17,21 @@ class SigningToolTest(unittest.TestCase):
 
     def test_get_ids(self):
         print("test_get_ids()")
-        from gpg_signing_tool import *
+        from gpg_signing_tool import SigningTool
+        import sys
         s = SigningTool()
-        s.get_ids(key=["abcde", "01234"])
+        print(" * get_id single key via stdin")
+        sys.argv = [ "gpg-signing-tool", "EDB0208D" ]
+        s.get_ids()
+        self.assertTrue(s.keys == ["EDB0208D" ], "Wrong parsed arguments.")
+
+        print(" * get_id duo keys via stdin")
+        sys.argv = [ "gpg-signing-tool", "EDB0208D", "FB5972D1" ]
+        s.get_ids()
+        self.assertTrue(s.keys == ["EDB0208D", "FB5972D1" ], "Wrong parsed arguments.")
+
+
 
 
 if __name__ == '__main__':
-    s = SigningTool()
-    s.run()
     unittest.main()

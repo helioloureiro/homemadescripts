@@ -30,6 +30,12 @@ class SigningToolTest(unittest.TestCase):
         s.get_ids()
         self.assertTrue(s.keys == ["EDB0208D", "FB5972D1" ], "Wrong parsed arguments.")
 
+        print(" * get_id missing arguments")
+        sys.argv = []
+        with self.assertRaises(RuntimeError) as error:
+            s.get_ids()
+
+
 
 
 

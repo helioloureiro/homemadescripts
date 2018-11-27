@@ -25,12 +25,18 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
+apikey = None
+SLEEP = 1
+
 def ShortMe(link):
    status=False
+   sleep_time = SLEEP
    while status is not True:
-       sleep_time = 1
        try:
-           f = urllib2.urlopen('http://eri.cx/api.php?url=' + link)
+           url = 'http://hl.eng.br/api.php?url=' + link
+           if apikey is not None:
+               url += '&key=' + apikey
+           f = urllib2.urlopen(url)
            status = True
        except:
            print "Shortening failed."
@@ -54,7 +60,13 @@ def ReadConfig():
     """
     Configuration from file ~/.twitterc
     """
-    global cons_key, cons_sec, acc_key, acc_sec, tlgr_token, channel_id
+    global cons_key, \
+        cons_sec, \
+        acc_key, \
+        acc_sec, \
+        tlgr_token, \
+        channel_id, \
+        apikey
 
     cfg = ConfigParser.ConfigParser()
     print "Reading configuration: %s" % configuration
@@ -68,6 +80,7 @@ def ReadConfig():
     acc_sec = cfg.get("TWITTER", "ACC_SEC")
     tlgr_token = cfg.get("TELEGRAM", "TOKEN")
     channel_id = int(cfg.get("TELEGRAM", "CHANNEL"))
+    apikey = cfg.get("SHORTENER", "APIKEY")
 
 def OpenDB():
     global db

@@ -33,7 +33,7 @@ def ShortMe(link):
    sleep_time = SLEEP
    while status is not True:
        try:
-           url = 'http://hl.eng.br/api.php?url=' + link
+           url = 'https://hl.eng.br/api.php?url=' + link
            if apikey is not None:
                url += '&key=' + apikey
            f = urllib2.urlopen(url)

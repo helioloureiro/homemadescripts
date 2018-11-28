@@ -86,7 +86,7 @@ if [[ $hour -ge 12 && $hour -lt 18 ]]; then
     time_status=enabled
 fi
 # from 20:00-21:59
-if [[ $hour -ge 19 && $hour -lt 22 ]]; then
+if [[ $hour -ge 20 && $hour -lt 22 ]]; then
     time_status=enabled
 fi
 echo "time_status=$time_status"

@@ -153,8 +153,8 @@ for rss in d['entries']:
     print("Publishing: %s %s" % (title, shortlink))
     try:
         print("Novo post: %s %s" % (title, shortlink))
-        #api.PostUpdate(u"Novo post: %s %s" % (title, shortlink))
-        #bot.send_message(msg.chat.id, u"%s %s" % (title, shortlink))
+        api.PostUpdate(u"Novo post: %s %s" % (title, shortlink))
+        bot.send_message(msg.chat.id, u"%s %s" % (title, shortlink))
     except:
         pass
 CloseDB()

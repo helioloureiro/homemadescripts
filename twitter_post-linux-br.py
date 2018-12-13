@@ -1,60 +1,65 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
 import twitter
 from sys import exit
-import urllib2
+import requests
 import feedparser
-from random import randrange
-import ConfigParser
+from random import randrange, randint
+import configparser
 import os
-import bsddb
+import dbm
 import time
 import telebot
 
 # pyTelegramBotAPI
 # https://github.com/eternnoir/pyTelegramBotAPI
-# pip3 install pyTelegramBotAPI
+# pip3 install pyTelegramBotAPI==3.6.2
+
+# python-twitter
+# pip3 install python-twitter==3.5
 
 
-__version__ = "Fri Aug 24 18:45:04 CEST 2018"
+__version__ = "Thu Dec 13 14:05:31 CET 2018"
 
-
-# UnicodeEncodeError: 'ascii' codec can't encode characters in position 130-131: ordinal not in range(128)
-import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
 
 apikey = None
 SLEEP = 1
+SITE = "https://linux-br.org/index.php?format=feed&type=rss"
+configuration = ".twitter_linux-br"
+configuration = "%s/%s" % (os.environ.get("HOME"), configuration)
+DBFILE = "%s/.linux-br.dbm" % os.environ.get("HOME")
+
+
+def ReverseLink(link):
+    req = requests.get(link)
+    if req.status_code != 200:
+        return None
+    return req.url
 
 def ShortMe(link):
-   status=False
-   sleep_time = SLEEP
-   while status is not True:
+   shortened = None
+   failure_counter = 0
+   while shortened is None:
        try:
            url = 'https://hl.eng.br/api.php?url=' + link
            if apikey is not None:
                url += '&key=' + apikey
-           f = urllib2.urlopen(url)
-           status = True
+           print("url=%s" % url)
+           req = requests.get(url)
+           if req.status_code == 200:
+               reverse = ReverseLink(req.text)
+               print("reverse=%s" % reverse)
+               if reverse == link:
+                   shortened = req.text
        except:
-           print "Shortening failed."
-           time.sleep(sleep_time)
-           print "Trying again"
-       sleep_time += 1
-       if sleep_time > 10:
+           print("Shortening failed.")
+           time.sleep(SLEEP * randint(1,5))
+           print("Trying again")
+       failure_counter += 1
+       if failure_counter > 10:
           raise Exception("Failed to shortener link.")
-   resp = f.read(100)
-
-   return resp
-
-print "Autenticating in Twitter"
-# App python-tweeter
-# https://dev.twitter.com/apps/815176
-configuration = ".twitter_linux-br"
-configuration = "%s/%s" % (os.environ.get("HOME"), configuration)
-DBFILE = "%s/.linux-br.db" % os.environ.get("HOME")
+   return shortened
 
 def ReadConfig():
     """
@@ -68,10 +73,10 @@ def ReadConfig():
         channel_id, \
         apikey
 
-    cfg = ConfigParser.ConfigParser()
-    print "Reading configuration: %s" % configuration
+    cfg = configparser.ConfigParser()
+    print("Reading configuration: %s" % configuration)
     if not os.path.exists(configuration):
-        print "Failed to find configuration file %s" % configuration
+        print("Failed to find configuration file %s" % configuration)
         exit(1)
     cfg.read(configuration)
     cons_key = cfg.get("TWITTER", "CONS_KEY")
@@ -84,21 +89,24 @@ def ReadConfig():
 
 def OpenDB():
     global db
-    db = bsddb.btopen(DBFILE, 'c')
+    db = dbm.open(DBFILE, 'c')
     try:
         for k in db.keys():
             None
     except:
         db.close()
-        db = bsddb.btopen(DBFILE, 'n')
+        db = dbm.open(DBFILE, 'n')
 
 
 def CloseDB():
     global db
-    db.sync()
     db.close()
 
 ReadConfig()
+
+print("Autenticating in Twitter")
+# App python-tweeter
+# https://dev.twitter.com/apps/815176
 api = twitter.Api(
             consumer_key = cons_key,
             consumer_secret = cons_sec,
@@ -130,26 +138,23 @@ msg.chat.type = "channel"
 #print bot.get_chat(msg.chat.id)
 
 OpenDB()
-print "Reading site's RSS"
-site = "https://linux-br.org/index.php?format=feed&type=rss"
-d = feedparser.parse(site)
+print("Reading site's RSS")
+d = feedparser.parse(SITE)
 
 for rss in d['entries']:
-#  if (randrange(0,2) == 0):
     title = u"%s" % rss.title
     link = u"%s" % rss.link
-    if db.has_key(link.encode("ascii")):
+    if link.encode("ascii") in db:
         continue
-    print "Adding into DB to track sent items."
+    print("Adding into DB to track sent items.")
     db[link.encode("ascii")] = title
-    print u"Shortening ", link
+    print("Shortening ", link)
     shortlink = ShortMe(link)
-    print u"Publishing: %s %s" % (title, shortlink)
-    #sleep(60)
+    print("Publishing: %s %s" % (title, shortlink))
     try:
-        api.PostUpdate(u"Novo post: %s %s" % (title, shortlink))
-        bot.send_message(msg.chat.id, u"%s %s" % (title, shortlink))
+        print("Novo post: %s %s" % (title, shortlink))
+        #api.PostUpdate(u"Novo post: %s %s" % (title, shortlink))
+        #bot.send_message(msg.chat.id, u"%s %s" % (title, shortlink))
     except:
         pass
-    #exit(0)
 CloseDB()

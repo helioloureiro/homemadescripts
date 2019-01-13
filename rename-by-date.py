@@ -6,6 +6,8 @@ Rename filename.extension to YYYYMMDD-HHMMSS.extension.
 import sys
 import os
 import time
+import datetime
+import argparse
 
 def get_time(filename):
     file_stats = os.stat(filename)
@@ -54,13 +56,37 @@ def get_new_name(filename):
         new_name = increment_name(new_name)
     return "%s%s" % (directory, new_name)
 
-def rename(listing):
+def updated_mtime(mtime, days):
+    mtime_date = datetime.datetime.fromtimestamp(mtime)
+    mtime_date_updated = mtime_date + datetime.timedelta(days=days)
+    return mtime_date_updated.timestamp()
+
+def set_file_mtime(filename, st_mtime):
+    os.utime(filename, (st_mtime, st_mtime))
+
+def add_days(filename, days):
+    stat = os.stat(filename)
+    st_mtime = updated_mtime(stat.st_mtime, days)
+    set_file_mtime(filename, st_mtime)
+
+def rename(listing, days=None):
     for filename in listing:
+        if days is not None:
+            add_days(filename, days)
         new_filename = get_new_name(filename)
         print("filename=%s => %s" % (filename, new_filename))
         os.rename(filename, new_filename)
 
-
-
 if __name__ == '__main__':
-    rename(sys.argv[1:])
+    parser = argparse.ArgumentParser(description='Rename file names based on date.')
+    parser.add_argument('--days',
+        type=int,
+        default=None,
+        help='Number of days to add or remove from file st_mtime.')
+    parser.add_argument('listing',
+        metavar='filename',
+        type=str,
+        nargs='+',
+        help='file or files to change.')
+    args = parser.parse_args()
+    rename(args.listing, args.days)

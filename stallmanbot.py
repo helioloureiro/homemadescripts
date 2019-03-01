@@ -1112,12 +1112,13 @@ def Distros(cmd):
     #distro = re.sub(".*distro ", "", distro)
     distro = distro.split()[-1]
     if distro:
-        debug("Distro: %s" % distro)
+        debug(" * distro: %s" % distro)
         if os.path.exists("%s/%s.jpg" % (IMGDIR, distro)):
             img = open("%s/%s.jpg" % (IMGDIR, distro), "rb")
             bot.send_photo(cmd.chat.id, img)
             return
         else:
+            debug(" * arquivo de imagem não encontrado em: %s/%s.jpg" % (IMGDIR, distro))
             if os.path.exists("%s/Stallman_Chora.jpg"):
                 img = open("%s/Stallman_Chora.jpg" % IMGDIR, "rb")
                 bot.send_photo(cmd.chat.id, img)

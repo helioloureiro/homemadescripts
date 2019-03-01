@@ -1291,6 +1291,18 @@ def Comics(cmd):
         th = threading.Thread(target=GetFood)
         th.start()
 
+        #  waiting time
+        counter = 5
+        while counter >= 0:
+            counter -= 1
+            if th.isAlive() is False:
+                break
+            time.sleep(1)
+
+        if not os.stat.exists(MANDAFOODSFILE):
+            bot.send_message(cmd.chat.id, "Deu alguma zica sinistra e o"
+                " arquivo json não foi baixado do site.")
+            return
         try:
             debug(" * reading json")
             json_data = json.loads(open(MANDAFOODSFILE).read())

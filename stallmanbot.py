@@ -166,7 +166,10 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
         "ironia" : [ "https://media.giphy.com/media/xT9IgqIuvUoKD5oliw/giphy.gif" ], # irony
         "segundas" : [ "https://media.giphy.com/media/nDZ3OkpknpElZdseUb/giphy.gif" ],
         "estudar" : [ "https://media.giphy.com/media/MSfMd1JFtnZfj644Tl/giphy.gif" ],
-        "truta" : [ "https://media.giphy.com/media/EBTvp73wY274d1peTg/giphy.gif" ]
+        "truta" : [ "https://media.giphy.com/media/EBTvp73wY274d1peTg/giphy.gif" ],
+        "chora" : [ "https://img.devrant.com/devrant/rant/r_1195970_gW3o6.jpg" ],
+        "cloud" : [ "https://img.devrant.com/devrant/rant/r_257328_MK4Rv.jpg" ],
+        "non-free" : [ "https://img.devrant.com/devrant/rant/r_1857481_trzgo.jpg" ]
         }
 
 GIFS["pipoca"] = GIFS["popcorn"]
@@ -493,7 +496,7 @@ def GetFood():
             text = download_food()
         else:
             text = open(MANDAFOODSFILE).read()
-            file_exist = True
+            file_exists = True
     j = json.loads(text)
     if 'error' in j:
         if file_exists:
@@ -501,7 +504,7 @@ def GetFood():
         GetFood()
     else:
         if not file_exists:
-            with open(MANDAFOODSFILE, 'wb') as output:
+            with open(MANDAFOODSFILE, 'w') as output:
                 output.write(text)
 
 

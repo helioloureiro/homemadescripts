@@ -169,7 +169,8 @@ GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.g
         "truta" : [ "https://media.giphy.com/media/EBTvp73wY274d1peTg/giphy.gif" ],
         "chora" : [ "https://img.devrant.com/devrant/rant/r_1195970_gW3o6.jpg" ],
         "cloud" : [ "https://img.devrant.com/devrant/rant/r_257328_MK4Rv.jpg" ],
-        "non-free" : [ "https://img.devrant.com/devrant/rant/r_1857481_trzgo.jpg" ]
+        "non-free" : [ "https://img.devrant.com/devrant/rant/r_1857481_trzgo.jpg" ],
+        "fe-amo" : [ "https://dinofauro.com.br/loja/wp-content/uploads/2016/05/Caneca-Fe-amo-3.png" ]
         }
 
 GIFS["pipoca"] = GIFS["popcorn"]
@@ -402,9 +403,6 @@ def StartUp():
             python = sys.executable
             os.execl(python, python, *sys.argv)
 
-        # Update the foodporn.json file
-        #run_foodporn_update()
-
 
 def GetGif(theme):
     if not theme in GIFS:
@@ -513,10 +511,11 @@ def hello_world(cmd):
     debug("hello_world()")
     debug(cmd.text)
     if re.search("oiamor|teamo", cmd.text):
-        fe_amo = "%s/Pictures/fe_amo.png" % os.environ.get("HOME")
-        if os.path.exists(fe_amo):
-            love = open(fe_amo, 'rb')
+        fe_amo = GetGif("fe-amo")
+        try:
             bot.send_photo(cmd.chat.id, love)
+        except:
+            pass
         bot.reply_to(cmd, u"Te amo também.")
         return
     send_message_to_chat(cmd.chat.id, "OSI world")
@@ -554,7 +553,10 @@ def Manda(cmd):
             return
         try:
             debug(u"Manda(): sending gif=%s" % gif)
-            bot.send_document(cmd.chat.id, gif)
+            if re.search(".(jpg|jpeg|JPG|JPEG|png|PNG)$", gif):
+                bot.send_photo(cmd.chat.id, gif)
+            else:
+                bot.send_document(cmd.chat.id, gif)
         except Exception as e:
             try:
                 bot.send_message(cmd.chat.id, "<img src=\"%s\">"% gif)

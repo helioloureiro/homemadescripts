@@ -1002,6 +1002,8 @@ def Distros(cmd):
     distro = distro.lower()
     #distro = re.sub(".*distro ", "", distro)
     distro = distro.split()[-1]
+    bot.send_message(cmd.chat.id, "Desabilitado no momento.")
+    return
     if distro:
         debug("Distro: %s" % distro)
         if os.path.exists("%s/%s.jpg" % (IMGDIR, distro)):

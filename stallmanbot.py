@@ -1182,7 +1182,7 @@ def Comics(cmd):
         if not os.path.exists(MANDAFOODSFILE):
             # download here
             debug(" * download foodporn")
-            req = requests.get(https://www.reddit.com/r/foodporn.json)
+            req = requests.get("https://www.reddit.com/r/foodporn.json")
             with open(MANDAFOODSFILE, 'rw') as output:
                 output.write(req.text)
 
@@ -1193,7 +1193,7 @@ def Comics(cmd):
             delta = now - json_date
             if delta.days > 10:
                 debug(" * download foodporn")
-                req = requests.get(https://www.reddit.com/r/foodporn.json)
+                req = requests.get("https://www.reddit.com/r/foodporn.json")
                 with open(MANDAFOODSFILE, 'rw') as output:
                     output.write(req.text)
 

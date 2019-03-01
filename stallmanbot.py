@@ -16,7 +16,7 @@ import syslog
 import requests
 import bs4
 import telebot
-from datetime import date
+from datetime import date, datetime
 
 # pyTelegramBotAPI
 # https://github.com/eternnoir/pyTelegramBotAPI
@@ -1182,8 +1182,20 @@ def Comics(cmd):
         if not os.path.exists(MANDAFOODSFILE):
             # download here
             debug(" * download foodporn")
-            get_foodporn_json_cmd = "curl https://www.reddit.com/r/foodporn.json > %s" % MANDAFOODSFILE
-            os.system(get_foodporn_json_cmd)
+            req = requests.get(https://www.reddit.com/r/foodporn.json)
+            with open(MANDAFOODSFILE, 'rw') as output:
+                output.write(req.text)
+
+        else:
+            stat = os.stat(MANDAFOODSFILE)
+            json_date = datetime.fromtimestamp(stat.st_mtime)
+            now = datetime.now()
+            delta = now - json_date
+            if delta.days > 10:
+                debug(" * download foodporn")
+                req = requests.get(https://www.reddit.com/r/foodporn.json)
+                with open(MANDAFOODSFILE, 'rw') as output:
+                    output.write(req.text)
 
         try:
             debug(" * reading json")

@@ -17,6 +17,7 @@ import requests
 import bs4
 import telebot
 from datetime import date, datetime
+import threading
 
 # pyTelegramBotAPI
 # https://github.com/eternnoir/pyTelegramBotAPI
@@ -399,7 +400,7 @@ def StartUp():
             os.execl(python, python, *sys.argv)
 
         # Update the foodporn.json file
-        run_foodporn_update()
+        #run_foodporn_update()
 
 
 def GetGif(theme):
@@ -473,6 +474,35 @@ def shit_happens(chat_id, error):
     gif = get_random_link(FAILURES)
     send_animated_image_by_link_to_chat(chat_id, gif)
     send_message_to_chat(chat_id, str(error))
+
+def download_food():
+    req = requests.get("https://www.reddit.com/r/foodporn.json")
+    return req.text
+
+def GetFood():
+    file_exists = False
+    if not os.path.exists(MANDAFOODSFILE):
+        text = download_food()
+    else:
+        stat = os.stat(MANDAFOODSFILE)
+        json_date = datetime.fromtimestamp(stat.st_mtime)
+        now = datetime.now()
+        delta = now - json_date
+        if delta.days > 10:
+            debug(" * json outdated - downloading foodporn")
+            text = download_food()
+        else:
+            text = open(MANDAFOODSFILE).read()
+            file_exist = True
+    j = json.loads(text)
+    if 'error' in j:
+        if file_exists:
+            os.unlink(MANDAFOODSFILE)
+        GetFood()
+    else:
+        if not file_exists:
+            with open(MANDAFOODSFILE, 'wb') as output:
+                output.write(text)
 
 
 @bot.message_handler(commands=["oi", "hello", "helloworld", "oiamor", "teamo"])
@@ -1179,23 +1209,8 @@ def Comics(cmd):
 
         # Get the post list
         debug("foods")
-        if not os.path.exists(MANDAFOODSFILE):
-            # download here
-            debug(" * download foodporn")
-            req = requests.get("https://www.reddit.com/r/foodporn.json")
-            with open(MANDAFOODSFILE, 'rw') as output:
-                output.write(req.text)
-
-        else:
-            stat = os.stat(MANDAFOODSFILE)
-            json_date = datetime.fromtimestamp(stat.st_mtime)
-            now = datetime.now()
-            delta = now - json_date
-            if delta.days > 10:
-                debug(" * download foodporn")
-                req = requests.get("https://www.reddit.com/r/foodporn.json")
-                with open(MANDAFOODSFILE, 'rw') as output:
-                    output.write(req.text)
+        th = threading.Thread(target=GetFood)
+        th.start()
 
         try:
             debug(" * reading json")

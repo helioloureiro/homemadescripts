@@ -76,7 +76,7 @@ CONFIG = ".twitterc"
 HOME = os.environ.get('HOME')
 PIDFILE = "%s/.stallmanbot.pid" % HOME
 PAUTAS = "%s/canalunixloadon/pautas" % HOME
-IMGDIR = "%s/Pictures" % HOME
+IMGDIR = "%s/motivacional" % HOME
 SCRIPTHOME = "%s/homemadescripts" % HOME
 FOFODB = "%s/fofondex.db" % HOME
 MANDAFOODSFILE = "%s/foodporn.json" % HOME
@@ -1037,8 +1037,6 @@ def Distros(cmd):
     distro = distro.lower()
     #distro = re.sub(".*distro ", "", distro)
     distro = distro.split()[-1]
-    bot.send_message(cmd.chat.id, "Desabilitado no momento.")
-    return
     if distro:
         debug("Distro: %s" % distro)
         if os.path.exists("%s/%s.jpg" % (IMGDIR, distro)):
@@ -1046,8 +1044,9 @@ def Distros(cmd):
             bot.send_photo(cmd.chat.id, img)
             return
         else:
-            img = open("%s/Stallman_Chora.jpg" % IMGDIR, "rb")
-            bot.send_photo(cmd.chat.id, img)
+            if os.path.exists("%s/Stallman_Chora.jpg"):
+                img = open("%s/Stallman_Chora.jpg" % IMGDIR, "rb")
+                bot.send_photo(cmd.chat.id, img)
             bot.send_message(cmd.chat.id, "Distro não encontrada.  Agradecemos a compreensão (e use outra).")
             return
     if re.search("/ubuntu", cmd.text) or re.search("distro ubuntu", cmd.text):

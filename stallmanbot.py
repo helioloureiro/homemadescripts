@@ -513,7 +513,7 @@ def hello_world(cmd):
     if re.search("oiamor|teamo", cmd.text):
         fe_amo = GetGif("fe-amo")
         try:
-            bot.send_photo(cmd.chat.id, love)
+            bot.send_photo(cmd.chat.id, fe_amo)
         except:
             pass
         bot.reply_to(cmd, u"Te amo também.")

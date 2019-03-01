@@ -9,7 +9,6 @@ import time
 import shutil
 import random
 import pickle
-import mmap
 import json
 import syslog
 
@@ -71,7 +70,7 @@ fuda - Os males do software livre.
 hacked - Shame, shame, shame...
 """
 
-DEBUG = False
+DEBUG = True
 CONFIG = ".twitterc"
 HOME = os.environ.get('HOME')
 PIDFILE = "%s/.stallmanbot.pid" % HOME
@@ -81,96 +80,152 @@ SCRIPTHOME = "%s/homemadescripts" % HOME
 FOFODB = "%s/fofondex.db" % HOME
 MANDAFOODSFILE = "%s/foodporn.json" % HOME
 FOODPORNURL = "https://www.reddit.com/r/foodporn.json?sort=new"
-simple_lock = False # very simple lock way
+simple_lock = False  # very simple lock way
 botadm, cfg, key, configuration = None, None, None, None
 
-GIFS = { "no_wait" : [ "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.gif",
-                      "https://media.giphy.com/media/l3fzIJxUF2EpGqk48/giphy.gif",
-                      "https://media.giphy.com/media/hbqoS6tq5CMtq/giphy.gif",
-                      "https://media.giphy.com/media/l3fzQLOZjieBbUGv6/giphy.gif" ],
-        "popcorn" : [ "https://media.giphy.com/media/3owvKgvqkDWzQtv8UU/giphy.gif",
-                    "https://media.giphy.com/media/MSapGH8s2hoNG/giphy.gif",
-                    "https://media.giphy.com/media/51sOSwMffAAuY/giphy.gif",
-                     "https://media.giphy.com/media/TrDxCdtmdluP6/giphy.gif" ],
-        "coffee" : [ "https://media.giphy.com/media/3owvK3nt6hDUbcWiI0/giphy.gif",
-                    "https://media.giphy.com/media/DrJm6F9poo4aA/giphy.gif",
-                    "https://media.giphy.com/media/MKkpDUqXFaL7O/giphy.gif",
-                    "https://media.giphy.com/media/oZEBLugoTthxS/giphy.gif" ],
-        "shame" : [ "https://media.giphy.com/media/vX9WcCiWwUF7G/giphy.gif",
+GIFS = {
+        "no_wait": [
+                "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.gif",
+                "https://media.giphy.com/media/l3fzIJxUF2EpGqk48/giphy.gif",
+                "https://media.giphy.com/media/hbqoS6tq5CMtq/giphy.gif",
+                "https://media.giphy.com/media/l3fzQLOZjieBbUGv6/giphy.gif"
+                ],
+        "popcorn": [
+                "https://media.giphy.com/media/MSapGH8s2hoNG/giphy.gif",
+                "https://media.giphy.com/media/51sOSwMffAAuY/giphy.gif",
+                 "https://media.giphy.com/media/TrDxCdtmdluP6/giphy.gif"
+                 ],
+        "coffee": [
+                "https://media.giphy.com/media/3owvK3nt6hDUbcWiI0/giphy.gif",
+                "https://media.giphy.com/media/DrJm6F9poo4aA/giphy.gif",
+                "https://media.giphy.com/media/MKkpDUqXFaL7O/giphy.gif",
+                "https://media.giphy.com/media/oZEBLugoTthxS/giphy.gif"
+                ],
+        "shame": [
+                "https://media.giphy.com/media/vX9WcCiWwUF7G/giphy.gif",
                    "https://media.giphy.com/media/eP1fobjusSbu/giphy.gif",
                    "https://media.giphy.com/media/SSX4Sj7oB0cWQ/giphy.gif",
-                   "https://media.giphy.com/media/m6ljvZNi8xnvG/giphy.gif" ],
-        "boyola" : [ "https://media.giphy.com/media/3owvJYxTqRz6w5chwc/giphy.gif" ],
-        "approval" : [ "https://media.giphy.com/media/xSM46ernAUN3y/giphy.gif",
-                       "https://media.giphy.com/media/3ohhwp0HAJ2R49xNks/giphy.gif", # thumbs up
-                       "https://media.giphy.com/media/3owvK1HepTg3TnLRhS/giphy.gif" ],
-        "ban" : [ "https://media.giphy.com/media/xT5LMDzs9xYtHXeItG/giphy.gif",
-                 "https://media.giphy.com/media/H99r2HtnYs492/giphy.gif",
-                 "https://media.giphy.com/media/l2JebrcLzSVLwCYEM/giphy.gif",
-                 "https://media.giphy.com/media/10A60gknFNLUVq/giphy.gif" ],
-        "helio" : [ "https://media.giphy.com/media/l3fzBbBklSWVRPz9K/giphy.gif",
-                    "https://media.giphy.com/media/hbqoS6tq5CMtq/giphy.gif",
-                    "https://media.giphy.com/media/SYEskzoOgwxWM/giphy.gif",
-                    "https://media.giphy.com/media/MKkpDUqXFaL7O/giphy.gif",
-                    "https://media.giphy.com/media/KsW4LMQRO1YLS/giphy.gif",
-                    "https://media.giphy.com/media/qkXhEeRO3Rrt6/giphy.gif",
-                    "https://media.giphy.com/media/51sOSwMffAAuY/giphy.gif",
-                    "https://media.giphy.com/media/3owvKgvqkDWzQtv8UU/giphy.gif",
-                    "https://media.giphy.com/media/l3fzIJxUF2EpGqk48/giphy.gif",
-                    "https://media.giphy.com/media/3ohk2t7MVZln3z8rrW/giphy.gif",
-                    "https://media.giphy.com/media/3ohhwwnixgbdViKREI/giphy.gif", # kannelbulla
-                    "https://media.giphy.com/media/l378zoQ5oTatwi2li/giphy.gif", # eye sight
-                    "https://media.giphy.com/media/3ov9jNAyexHvu0Ela0/giphy.gif", # send bun
-                    "https://media.giphy.com/media/3ohhwp0HAJ2R49xNks/giphy.gif", # thumbs up
-                    "https://media.giphy.com/media/3ohhwneKeCkbALPcKk/giphy.gif", # tinder
-                    "https://media.giphy.com/media/xT9IgqIuvUoKD5oliw/giphy.gif", # irony
-                    "https://media.giphy.com/media/MSapGH8s2hoNG/giphy.gif" ],
-        "nudes" : [ "https://media.giphy.com/media/PpNTwxZyJUFby/giphy.gif",
-                   "https://media.giphy.com/media/q4cdfs7GcvzG0/giphy.gif",
-                   "https://media.giphy.com/media/ERay9nmFB027m/giphy.gif",
-                   "https://media.giphy.com/media/t7NsoBIxIT4mQ/giphy.gif",
-                   "https://media.giphy.com/media/Hbutx0s2ZYZyw/giphy.gif",
-                   "https://media.giphy.com/media/l3vQWJaua7jOns9dC/giphy.gif",
-                   "https://media.giphy.com/media/3o6ZsTf2gnGE5liGdi/giphy.gif",
-                   "https://media.giphy.com/media/NK2UQa6mbtrW0/giphy.gif",
-                   "https://media.giphy.com/media/l0HlK37zDy1JsJnji/giphy.gif",
-                   "https://media.giphy.com/media/3oz8xWkBckB1SbmAXC/giphy.gif",
-                   "https://media.giphy.com/media/MFFyKHqLNe9cQ/giphy.gif",
-                   "https://media.giphy.com/media/l2JdXY0zQv7uN0uVG/giphy.gif",
-                   "https://media.giphy.com/media/GqxwTEeHIeMo0/giphy.gif",
-                   "https://media.giphy.com/media/10yqoCYci3xxn2/giphy.gif",
-                   "https://media.giphy.com/media/hx9SHiDED2nv2/giphy.gif" ],
-        "aprigio" : [ "https://media.giphy.com/media/l3fzQbp5wdi2HiSCk/giphy.gif",
-                     "https://media.giphy.com/media/3o7aD1O0sr60srwU80/giphy.gif" ],
-        "treta" : [ "https://media.giphy.com/media/KsW4LMQRO1YLS/giphy.gif" ],
-        "anemonos" : [ "https://media.giphy.com/media/SYEskzoOgwxWM/giphy.gif" ],
-        "tasqueopariu" : [ "https://media.giphy.com/media/qkXhEeRO3Rrt6/giphy.gif" ],
-        "diego" : [ "https://media.giphy.com/media/3o7aDdlF3viwGzKJZ6/giphy.gif",
-                   "https://media.giphy.com/media/QN451Wg12SilkyRU3l/giphy.gif" ],
-        "patola" : [ "https://media.giphy.com/media/1gdwLUi5QUzKDUx7U8/giphy.gif",
-                    "https://media.giphy.com/media/1qefNEESPpMthOeEZ8/giphy.gif" ],
-        "spock" : [ "https://media.giphy.com/media/26vIdECBsGvzl9pxS/giphy.gif",
-                   "https://media.giphy.com/media/CSXoBa3YNXk0U/giphy.gif",
-                   "https://media.giphy.com/media/eSXWZ93nNrq00/giphy.gif",
-                   "https://media.giphy.com/media/AxgpnA3X092Zq/giphy.gif",
-                   "https://media.giphy.com/media/F2fv3bjPnYhKE/giphy.gif",
-                   "https://media.giphy.com/media/CSXoBa3YNXk0U/giphy.gif",
-                   "https://media.giphy.com/media/CidfkCKipW1sQ/giphy.gif",
+                   "https://media.giphy.com/media/m6ljvZNi8xnvG/giphy.gif"
                    ],
-        "bun" : [ "https://media.giphy.com/media/3ov9jNAyexHvu0Ela0/giphy.gif" ],
-        "coc" : [ "https://media.giphy.com/media/OT5oCJMFLq0wZ2xuX8/giphy.gif" ],
-        "mimimi" : [ "https://media.giphy.com/media/ylPWDQuapyexa/giphy.gif" ],
-        "nanga" : [ "https://media.giphy.com/media/RCBQSWiMPTQly/giphy.gif" ],
-        "tinder" : [ "https://media.giphy.com/media/3ohhwneKeCkbALPcKk/giphy.gif" ],
-        "wtf" : [ "https://media.giphy.com/media/l378zoQ5oTatwi2li/giphy.gif" ], # eye sight
-        "ironia" : [ "https://media.giphy.com/media/xT9IgqIuvUoKD5oliw/giphy.gif" ], # irony
-        "segundas" : [ "https://media.giphy.com/media/nDZ3OkpknpElZdseUb/giphy.gif" ],
-        "estudar" : [ "https://media.giphy.com/media/MSfMd1JFtnZfj644Tl/giphy.gif" ],
-        "truta" : [ "https://media.giphy.com/media/EBTvp73wY274d1peTg/giphy.gif" ],
-        "chora" : [ "https://img.devrant.com/devrant/rant/r_1195970_gW3o6.jpg" ],
-        "cloud" : [ "https://img.devrant.com/devrant/rant/r_257328_MK4Rv.jpg" ],
-        "non-free" : [ "https://img.devrant.com/devrant/rant/r_1857481_trzgo.jpg" ],
-        "fe-amo" : [ "https://dinofauro.com.br/loja/wp-content/uploads/2016/05/Caneca-Fe-amo-3.png" ]
+        "boyola": [
+                "https://media.giphy.com/media/3owvJYxTqRz6w5chwc/giphy.gif"
+                ],
+        "approval": [
+                "https://media.giphy.com/media/xSM46ernAUN3y/giphy.gif",
+                "https://media.giphy.com/media/3ohhwp0HAJ2R49xNks/giphy.gif",  # thumbs up
+                "https://media.giphy.com/media/3owvK1HepTg3TnLRhS/giphy.gif"
+                ],
+        "ban": [
+                "https://media.giphy.com/media/xT5LMDzs9xYtHXeItG/giphy.gif",
+                "https://media.giphy.com/media/H99r2HtnYs492/giphy.gif",
+                "https://media.giphy.com/media/l2JebrcLzSVLwCYEM/giphy.gif",
+                "https://media.giphy.com/media/10A60gknFNLUVq/giphy.gif"
+                ],
+        "helio": [
+            "https://media.giphy.com/media/l3fzBbBklSWVRPz9K/giphy.gif",  #colors
+            "https://media.giphy.com/media/hbqoS6tq5CMtq/giphy.gif",  #facepalm
+            "https://media.giphy.com/media/SYEskzoOgwxWM/giphy.gif",  #hacker
+            "https://media.giphy.com/media/MKkpDUqXFaL7O/giphy.gif",  #coffee
+            "https://media.giphy.com/media/KsW4LMQRO1YLS/giphy.gif",  #treta
+            "https://media.giphy.com/media/qkXhEeRO3Rrt6/giphy.gif",  #tasqueopariu
+            "https://media.giphy.com/media/51sOSwMffAAuY/giphy.gif",  #pipoca
+            "https://media.giphy.com/media/3ohhwwnixgbdViKREI/giphy.gif", # kannelbulla
+            "https://media.giphy.com/media/l378zoQ5oTatwi2li/giphy.gif", # eye sight
+            "https://media.giphy.com/media/3ov9jNAyexHvu0Ela0/giphy.gif", # send bun
+            "https://media.giphy.com/media/3ohhwp0HAJ2R49xNks/giphy.gif", # thumbs up
+            "https://media.giphy.com/media/3ohhwneKeCkbALPcKk/giphy.gif", # tinder
+            "https://media.giphy.com/media/xT9IgqIuvUoKD5oliw/giphy.gif", # irony
+            "https://media.giphy.com/media/MSapGH8s2hoNG/giphy.gif"
+                ],
+        "nudes": [
+            "https://media.giphy.com/media/PpNTwxZyJUFby/giphy.gif",
+            "https://media.giphy.com/media/q4cdfs7GcvzG0/giphy.gif",
+            "https://media.giphy.com/media/ERay9nmFB027m/giphy.gif",
+            "https://media.giphy.com/media/t7NsoBIxIT4mQ/giphy.gif",
+            "https://media.giphy.com/media/Hbutx0s2ZYZyw/giphy.gif",
+            "https://media.giphy.com/media/l3vQWJaua7jOns9dC/giphy.gif",
+            "https://media.giphy.com/media/3o6ZsTf2gnGE5liGdi/giphy.gif",
+            "https://media.giphy.com/media/NK2UQa6mbtrW0/giphy.gif",
+            "https://media.giphy.com/media/l0HlK37zDy1JsJnji/giphy.gif",
+            "https://media.giphy.com/media/3oz8xWkBckB1SbmAXC/giphy.gif",
+            "https://media.giphy.com/media/MFFyKHqLNe9cQ/giphy.gif",
+            "https://media.giphy.com/media/l2JdXY0zQv7uN0uVG/giphy.gif",
+            "https://media.giphy.com/media/GqxwTEeHIeMo0/giphy.gif",
+            "https://media.giphy.com/media/10yqoCYci3xxn2/giphy.gif",
+            "https://media.giphy.com/media/hx9SHiDED2nv2/giphy.gif"
+            ],
+        "aprigio": [
+            "https://media.giphy.com/media/l3fzQbp5wdi2HiSCk/giphy.gif",
+            "https://media.giphy.com/media/3o7aD1O0sr60srwU80/giphy.gif"
+            ],
+        "treta": [
+            "https://media.giphy.com/media/KsW4LMQRO1YLS/giphy.gif"
+            ],
+        "anemonos": [
+            "https://media.giphy.com/media/SYEskzoOgwxWM/giphy.gif"
+            ],
+        "tasqueopariu": [
+            "https://media.giphy.com/media/qkXhEeRO3Rrt6/giphy.gif"
+            ],
+        "diego": [
+            "https://media.giphy.com/media/3o7aDdlF3viwGzKJZ6/giphy.gif",
+            "https://media.giphy.com/media/QN451Wg12SilkyRU3l/giphy.gif"
+            ],
+        "patola": [
+            "https://media.giphy.com/media/1gdwLUi5QUzKDUx7U8/giphy.gif",
+            "https://media.giphy.com/media/1qefNEESPpMthOeEZ8/giphy.gif"
+            ],
+        "spock": [
+            "https://media.giphy.com/media/26vIdECBsGvzl9pxS/giphy.gif",
+            "https://media.giphy.com/media/CSXoBa3YNXk0U/giphy.gif",
+            "https://media.giphy.com/media/eSXWZ93nNrq00/giphy.gif",
+            "https://media.giphy.com/media/AxgpnA3X092Zq/giphy.gif",
+            "https://media.giphy.com/media/F2fv3bjPnYhKE/giphy.gif",
+            "https://media.giphy.com/media/CSXoBa3YNXk0U/giphy.gif",
+            "https://media.giphy.com/media/CidfkCKipW1sQ/giphy.gif",
+            ],
+        "bun": [
+            "https://media.giphy.com/media/3ov9jNAyexHvu0Ela0/giphy.gif"
+            ],
+        "coc": [
+            "https://media.giphy.com/media/OT5oCJMFLq0wZ2xuX8/giphy.gif"
+            ],
+        "mimimi": [
+            "https://media.giphy.com/media/ylPWDQuapyexa/giphy.gif"
+            ],
+        "nanga": [
+            "https://media.giphy.com/media/RCBQSWiMPTQly/giphy.gif"
+            ],
+        "tinder": [
+            "https://media.giphy.com/media/3ohhwneKeCkbALPcKk/giphy.gif"
+            ],
+        "wtf": [
+            "https://media.giphy.com/media/l378zoQ5oTatwi2li/giphy.gif"
+            ], # eye sight
+        "ironia": [
+            "https://media.giphy.com/media/xT9IgqIuvUoKD5oliw/giphy.gif"
+            ], # irony
+        "segundas": [
+            "https://media.giphy.com/media/nDZ3OkpknpElZdseUb/giphy.gif"
+            ],
+        "estudar": [
+            "https://media.giphy.com/media/MSfMd1JFtnZfj644Tl/giphy.gif"
+            ],
+        "truta": [
+            "https://media.giphy.com/media/EBTvp73wY274d1peTg/giphy.gif"
+            ],
+        "chora": [
+            "https://img.devrant.com/devrant/rant/r_1195970_gW3o6.jpg"
+            ],
+        "cloud": [
+            "https://img.devrant.com/devrant/rant/r_257328_MK4Rv.jpg"
+            ],
+        "non-free": [
+            "https://img.devrant.com/devrant/rant/r_1857481_trzgo.jpg"
+            ],
+        "fe-amo": [
+            "https://dinofauro.com.br/loja/wp-content/uploads/2016/05/Caneca-Fe-amo-3.png"
+            ]
         }
 
 GIFS["pipoca"] = GIFS["popcorn"]
@@ -184,17 +239,18 @@ FAILURES = [
     "https://media.giphy.com/media/5xaOcLyxnN1UxgqDTuU/giphy.gif",
     "https://media.giphy.com/media/vPH4IIua3umxG/giphy.gif",
     "https://media.giphy.com/media/8LkXSrAACvLAA/giphy.gif",
-    "https://media.giphy.com/media/nEovVMM8Z5H6U/giphy.gif" ]
+    "https://media.giphy.com/media/nEovVMM8Z5H6U/giphy.gif"
+    ]
 
 RESPONSES_TEXT = {
-    "starttime" : START_TIME,
-    "kkkk" : "Hilário.",
-    "hahaha" : "Hilário.",
-    "fonte" : """Estou aqui com 100% de acesso ao conteúdo em:
+    "starttime": START_TIME,
+    "kkkk": "Hilário.",
+    "hahaha": "Hilário.",
+    "fonte": """Estou aqui com 100% de acesso ao conteúdo em:
 
 https://github.com/helioloureiro/homemadescripts/blob/master/stallmanbot.py
 """,
-    "blob" : """
+    "blob": """
 Blob nosso que estais no kernel
 codificado seja o vosso nome.
 Venha a nós o vosso driver.
@@ -208,7 +264,7 @@ Mas livrai-nos do FUDA,
 
 Amuleke!
 """,
-    "emacs" : """
+    "emacs": """
 Linux nosso que estais no PC
 Bem compilado seja o vosso Kernel
 Venha a nós o vosso código
@@ -222,17 +278,17 @@ E livrai a todos da M$
 
 Amém.
 """,
-    "ping" : "ACK",
-    "version" : __version__,
-    "ultrafofo" : """#UltraFofos é o grupo super fofis de defensores de software livre.
+    "ping": "ACK",
+    "version": __version__,
+    "ultrafofo": """#UltraFofos é o grupo super fofis de defensores de software livre.
 Veja mais em: https://www.youtube.com/watch?v=eIRk38d32vA
 """,
-    "help" : """Precisa de ajuda?
+    "help": """Precisa de ajuda?
 Procure o CVV.
 
 http://www.cvv.org.br
 """,
-    "rtfm" : """Read The F*cking Manual.  Ou leia o Guia Foca GNU/Linux.
+    "rtfm": """Read The F*cking Manual.  Ou leia o Guia Foca GNU/Linux.
 
 http://www.guiafoca.org/
 """
@@ -247,7 +303,7 @@ RESPONSES_TEXT[u"ajuda"] = RESPONSES_TEXT["help"]
 RESPONSES_TEXT[u"ultrafofos"] = RESPONSES_TEXT["ultrafofo"]
 
 
-### Refactoring
+# Refactoring
 # Applying the concepts from clean code (thanks uncle Bob)
 def set_debug():
     global DEBUG
@@ -259,7 +315,10 @@ def set_debug():
 def debug(msg):
     if DEBUG and msg:
         try:
-            print(u"[%s] %s" % (time.ctime(), msg))
+            msg = "[%s] %s" % (time.ctime(), msg)
+            print(msg)
+            syslog.openlog("StallNoMan")
+            syslog.syslog(syslog.LOG_DEBUG, msg)
         except Exception as e:
             print(u"[%s] DEBUG ERROR: %s" % (time.ctime(), e))
 
@@ -285,9 +344,9 @@ def read_file(filename):
         with open(filename) as myfile:
             return myfile.read()
     except FileNotFoundError:
-            return None
-    except:
-        error("Failed to read file %s" % filename)
+        return None
+    except Exception as e:
+        error("Failed to read file %s: %s" % (filename, e))
         return None
 
 
@@ -334,7 +393,7 @@ def get_telegram_key(config_obj, parameter):
         print("Check your configuration file.")
         # keep going and just return null
     debug(" * value=%s" % value)
-    debug(" * Key acquired (%s=%s)." % (parameter, value) )
+    debug(" * Key acquired (%s=%s)." % (parameter, value))
     return value
 
 
@@ -405,7 +464,7 @@ def StartUp():
 
 
 def GetGif(theme):
-    if not theme in GIFS:
+    if theme not in GIFS:
         return None
     sizeof = len(GIFS[theme])
     if sizeof <= 1:
@@ -454,9 +513,9 @@ def send_animated_image_by_link_to_chat(chat_id, image_link):
     debug("send_animated_image_by_link_to_chat()")
     try:
         bot.send_document(chat_id, image_link)
-    except:
-        error("Failed to send image=%s to chat_id=%s" % \
-            (image_link, chat_id))
+    except Exception as e:
+        error("Failed to send image=%s to chat_id=%s: %s" % \
+            (image_link, chat_id, e))
 
 
 def send_message_to_chat(chat_id, message):
@@ -464,9 +523,9 @@ def send_message_to_chat(chat_id, message):
     debug("send_message_to_chat()")
     try:
         bot.send_message(chat_id, u"%s" % message)
-    except:
-        error("Failed to send message=%s to chat_id=%s" % \
-            (message, chat_id))
+    except Exception as e:
+        error("Failed to send message=%s to chat_id=%s: %s" % \
+            (message, chat_id, e))
 
 
 def shit_happens(chat_id, error):
@@ -514,7 +573,8 @@ def hello_world(cmd):
         fe_amo = GetGif("fe-amo")
         try:
             bot.send_photo(cmd.chat.id, fe_amo)
-        except:
+        except Exception as e:
+            error("hello_world() failed to send photo: %s" % e)
             pass
         bot.reply_to(cmd, u"Te amo também.")
         return
@@ -708,8 +768,8 @@ def Fortune(cmd):
         fortune = os.popen("/usr/games/fortune").read()
     try:
         bot.reply_to(cmd, "%s" % fortune)
-    except:
-        bot.reply_to(cmd, "Deu merda...")
+    except Exception as e:
+        bot.reply_to(cmd, "Deu merda... %s" % e)
 
 
 @bot.message_handler(commands=["hacked", "pwn3d"])
@@ -719,8 +779,8 @@ def Hacked(cmd):
         bot.reply_to(cmd, u"Helio is my master but Maycon is my hacker <3 (Hack N' Roll)")
         gif = "https://media.giphy.com/media/26ufcVAp3AiJJsrIs/giphy.gif"
         bot.send_document(cmd.chat.id, gif)
-    except:
-        bot.reply_to(cmd, "Deu merda...")
+    except Exception as e:
+        bot.reply_to(cmd, "Deu merda... %s" % e)
 
 
 @bot.message_handler(commands=["apt-get", "aptitude", "apt"])
@@ -742,8 +802,8 @@ def AptCmds(session):
         try:
             bot.reply_to(session,
                 "Palavra africana para: Eu não sei corrigir dependências.")
-        except:
-            bot.reply_to(session, "Deu merda...")
+        except Exception as e:
+            bot.reply_to(session, "Deu merda... %s" % e)
         return
     elif re.search("apt", session.text):
         debug("On apt")
@@ -786,8 +846,8 @@ O nome do sistema operacional é OSI/Linux e os blobs nos representam.""")
             bot.reply_to(cmd, u"https://www.youtube.com/watch?v=rX2Bw-mwnOM")
         elif semana == 6:
             bot.reply_to(cmd, u"Domingo é dia de compilar um kernel")
-    except:
-        bot.reply_to(cmd, "Deu merda...")
+    except Exception as e:
+        bot.reply_to(cmd, "Deu merda... %s" % e)
 
 
 @bot.message_handler(commands=["photo"])
@@ -1047,7 +1107,8 @@ def Distros(cmd):
             if os.path.exists("%s/Stallman_Chora.jpg"):
                 img = open("%s/Stallman_Chora.jpg" % IMGDIR, "rb")
                 bot.send_photo(cmd.chat.id, img)
-            bot.send_message(cmd.chat.id, "Distro não encontrada.  Agradecemos a compreensão (e use outra).")
+            bot.send_message(cmd.chat.id, "Distro %s não encontrada." % distro +
+                "  Agradecemos a compreensão (e use outra).")
             return
     if re.search("/ubuntu", cmd.text) or re.search("distro ubuntu", cmd.text):
         debug("ubuntu")
@@ -1219,8 +1280,8 @@ def Comics(cmd):
         try:
             debug(" * reading json")
             json_data = json.loads(open(MANDAFOODSFILE).read())
-        except:
-            debug(" * json failed: creating one")
+        except Exception as e:
+            debug(" * json failed: creating one: %s" % e)
             json_data = { "error" : 666, "message" : "error fazendo parsing do json" }
         if "error" in json_data:
             debug(" * found key error")
@@ -1505,7 +1566,7 @@ def FofoMetrics(cmd):
     if re.search("/scoreblob", cmd.text):
         try:
             text, person = cmd.text.split()
-        except:
+        except Exception as e:
             bot.send_message(cmd.chat.id,  u"Manda: /scoreblob @usuario")
             return
         debug(u"/scoreblob: %s" % person)
@@ -1583,7 +1644,7 @@ def Ban(session):
 def is_command(message):
     try:
         u_message_text = "%s" % message.text
-    except:
+    except Exception as e:
         return False
     return re.search("^/[A-Za-z].*", u_message_text)
 

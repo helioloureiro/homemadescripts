@@ -23,7 +23,7 @@ import threading
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Fri Mar  1 16:51:41 CET 2019"
+__version__ = "Fri Mar  1 20:40:07 CET 2019"
 
 START_TIME = time.ctime()
 
@@ -402,8 +402,10 @@ def get_foodporn_json():
     debug("get_foodporn_json()")
     request = requests.get(FOODPORNURL)
     if request.status_code != 200:
-        request = requests.get(FOODPORNURL)
-    return request.text
+        text = get_foodporn_json()
+    else:
+        text = requests.text
+    return text
 
 
 def dump_foodporn(json_data):
@@ -412,11 +414,62 @@ def dump_foodporn(json_data):
     save_file(json_data, MANDAFOODSFILE)
 
 
-def run_foodporn_update():
-    """Run the whole foodporn stuff"""
-    debug("run_foodporn_update()")
-    food_json = get_foodporn_json()
-    dump_foodporn(food_json)
+def is_foodporn_outdated(days=10):
+    """Check if modification time is too old or not."""
+    stat = os.stat(MANDAFOODSFILE)
+    foods_file_date = datetime.fromtimestamp(stat.st_mtime)
+    now = datetime.now()
+    delta = now - foods_file_date
+    if delta > days:
+        return True
+    return False
+
+
+def is_foodporn_empty():
+    """Check file size and returns true if empty."""
+    stat = os.stat(MANDAFOODSFILE)
+    if stat.st_size == 0:
+        return True
+    return False
+
+
+def GetFood():
+    """
+    Fetch foodporn json if current data is outdated (10 days)
+    and store into the json file for reading later.
+    This function is ready for threading.
+    """
+    debug("GetFood() started")
+    file_exists = False
+    text = None
+
+    if not os.path.exists(MANDAFOODSFILE):
+        debug(" * MANDAFOODSFILE doesn't exist")
+        text = get_foodporn_json()
+    else:
+        debug(" * MANDAFOODSFILE is there")
+        if is_foodporn_empty == 0:
+            debug(" * MANDAFOODSFILE is empty")
+            os.unlink(MANDAFOODSFILE)
+            text = get_foodporn_json()
+        else:
+            if is_foodporn_outdated():
+                debug(" * json outdated - downloading foodporn")
+                text = get_foodporn_json()
+            else:
+                text = open(MANDAFOODSFILE).read()
+                file_exists = True
+    j = json.loads(text)
+    if 'error' in j:
+        debug(" * error found on json parsing")
+        if file_exists:
+            os.unlink(MANDAFOODSFILE)
+        GetFood()
+    else:
+        debug(" * GetFood() is completed")
+        if not file_exists:
+            debug(" * Saving into MANDAFOODSFILE")
+            dump_foodporn(text)
 
 
 def get_answer(question):
@@ -497,9 +550,7 @@ get_global_keys()
 bot = telebot.TeleBot(key)
 
 
-### Bot callbacks below ###
-
-
+# Bot callbacks below #
 def get_random_link(links_array):
     """Return random line w/ link (expected array of links)"""
     debug("get_random_link()")
@@ -535,48 +586,6 @@ def shit_happens(chat_id, error):
     send_animated_image_by_link_to_chat(chat_id, gif)
     send_message_to_chat(chat_id, str(error))
 
-def download_food():
-    req = requests.get("https://www.reddit.com/r/foodporn.json")
-    return req.text
-
-def GetFood():
-    debug("GetFood() started")
-    file_exists = False
-    text = None
-
-    if not os.path.exists(MANDAFOODSFILE):
-        debug(" * MANDAFOODSFILE doesn't exist")
-        text = download_food()
-    else:
-        debug(" * MANDAFOODSFILE is there")
-        stat = os.stat(MANDAFOODSFILE)
-        if stat.st_size == 0:
-            debug(" * MANDAFOODSFILE is empty")
-            debug(" * json outdated - downloading foodporn")
-            os.unlink(MANDAFOODSFILE)
-            text = download_food()
-        else:
-            json_date = datetime.fromtimestamp(stat.st_mtime)
-            now = datetime.now()
-            delta = now - json_date
-            if delta.days > 10:
-                debug(" * json outdated - downloading foodporn")
-                text = download_food()
-            else:
-                text = open(MANDAFOODSFILE).read()
-                file_exists = True
-    j = json.loads(text)
-    if 'error' in j:
-        debug(" * error found on json parsing")
-        if file_exists:
-            os.unlink(MANDAFOODSFILE)
-        GetFood()
-    else:
-        debug(" * GetFood() is completed")
-        if not file_exists:
-            debug(" * Saving into MANDAFOODSFILE")
-            with open(MANDAFOODSFILE, 'w') as output:
-                output.write(text)
 
 
 @bot.message_handler(commands=["oi", "hello", "helloworld", "oiamor", "teamo"])

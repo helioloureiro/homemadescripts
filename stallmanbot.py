@@ -1299,7 +1299,7 @@ def Comics(cmd):
                 break
             time.sleep(1)
 
-        if not os.stat.exists(MANDAFOODSFILE):
+        if not os.path.exists(MANDAFOODSFILE):
             bot.send_message(cmd.chat.id, "Deu alguma zica sinistra e o"
                 " arquivo json não foi baixado do site.")
             return

@@ -540,27 +540,41 @@ def download_food():
     return req.text
 
 def GetFood():
+    debug("GetFood() started")
     file_exists = False
+    text = None
+
     if not os.path.exists(MANDAFOODSFILE):
+        debug(" * MANDAFOODSFILE doesn't exist")
         text = download_food()
     else:
+        debug(" * MANDAFOODSFILE is there")
         stat = os.stat(MANDAFOODSFILE)
-        json_date = datetime.fromtimestamp(stat.st_mtime)
-        now = datetime.now()
-        delta = now - json_date
-        if delta.days > 10:
+        if stat.st_size == 0:
+            debug(" * MANDAFOODSFILE is empty")
             debug(" * json outdated - downloading foodporn")
+            os.unlink(MANDAFOODSFILE)
             text = download_food()
         else:
-            text = open(MANDAFOODSFILE).read()
-            file_exists = True
+            json_date = datetime.fromtimestamp(stat.st_mtime)
+            now = datetime.now()
+            delta = now - json_date
+            if delta.days > 10:
+                debug(" * json outdated - downloading foodporn")
+                text = download_food()
+            else:
+                text = open(MANDAFOODSFILE).read()
+                file_exists = True
     j = json.loads(text)
     if 'error' in j:
+        debug(" * error found on json parsing")
         if file_exists:
             os.unlink(MANDAFOODSFILE)
         GetFood()
     else:
+        debug(" * GetFood() is completed")
         if not file_exists:
+            debug(" * Saving into MANDAFOODSFILE")
             with open(MANDAFOODSFILE, 'w') as output:
                 output.write(text)
 
@@ -1282,6 +1296,7 @@ def Comics(cmd):
             json_data = json.loads(open(MANDAFOODSFILE).read())
         except Exception as e:
             debug(" * json failed: creating one: %s" % e)
+            debug(" * thread is alive? %s" % th.isAlive())
             json_data = { "error" : 666, "message" : "error fazendo parsing do json" }
         if "error" in json_data:
             debug(" * found key error")

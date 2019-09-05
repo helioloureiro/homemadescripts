@@ -23,7 +23,7 @@ import threading
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Thu Sep  5 20:41:27 CEST 2019"
+__version__ = "Thu Sep  5 20:54:27 CEST 2019"
 
 START_TIME = time.ctime()
 

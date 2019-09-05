@@ -23,7 +23,7 @@ import threading
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Thu Sep  5 21:35:27 CEST 2019"
+__version__ = "Thu Sep  5 21:39:27 CEST 2019"
 
 START_TIME = time.ctime()
 
@@ -1253,7 +1253,7 @@ def Comics(cmd):
     elif re.search("/vidadesuporte", cmd.text):
         url = "http://vidadesuporte.com.br"
         html = GetContent(url)
-        img_link = GetImgUrl("600px", html)
+        img_link = GetImgUrl(" 100vw, 600px", html)
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
     elif re.search("/angulodevista", cmd.text):

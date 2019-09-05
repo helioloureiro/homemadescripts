@@ -23,7 +23,7 @@ import threading
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Fri Mar  1 20:40:07 CET 2019"
+__version__ = "Thu Sep  5 20:41:27 CEST 2019"
 
 START_TIME = time.ctime()
 
@@ -1202,6 +1202,13 @@ def Comics(cmd):
                     url = re.sub("^\/\/", "http://", tmp_img)
                     url = re.sub("^\/", "http://", url)
                     break
+        else re.search("http", url_img):
+            params = url_img.split()
+            for p in params:
+                if not re.search("^http", p):
+                    continue
+                url = p
+                break
         debug("GetImgUrl: %s" % url)
         return url
 
@@ -1219,38 +1226,12 @@ def Comics(cmd):
 
     debug(cmd.text)
     img = None
-    if re.search("/xkcd", cmd.text):
+    lif re.search("/xkcd", cmd.text):
         url = "http://xkcd.com"
-        req = requests.get(url)
-        body = req.text
-        buf = body.split("\n")
-        i = 0
-        url_img = None
-        for i in range(len(buf)):
-            line = buf[i]
-            if re.search("Image URL (for hotlinking/embedding):", line):
-                url_img = line.split()[-1]
-                break
-        tmp_img = None
-        if re.search("<img ", url_img):
-            params = url_img.split()
-            for p in params:
-                if re.search("src=", p):
-                    tmp_img = p.split("=")[-1]
-                    tmp_img = re.sub("\"", "", tmp_img)
-                    tmp_img = re.sub("^\/\/", "http://", tmp_img)
-                    break
-        else re.search("^http"):
-            tmp_img = url_img
-
-        if tmp_img:
-            debug("Tmp img: %s" % tmp_img)
-            req = requests.get(tmp_img, stream=True)
-            filename = os.path.basename(tmp_img)
-            img = "/tmp/%s" % filename
-            with open(img, 'wb') as out_file:
-                shutil.copyfileobj(req.raw, out_file)
-
+        html = GetContent(url)
+        img_link = GetImgUrl("Image URL (for hotlinking/embedding)", html)
+        debug("%s: %s" % (cmd.text, img_link))
+        img = GetImg(img_link)
     elif re.search("/dilbert", cmd.text):
         url = "http://www.dilbert.com"
         html = GetContent(url)

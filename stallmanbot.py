@@ -1228,8 +1228,8 @@ def Comics(cmd):
         url_img = None
         for i in range(len(buf)):
             line = buf[i]
-            if re.search("<div id=\"comic\">", line):
-                url_img = buf[i+1]
+            if re.search("Image URL (for hotlinking/embedding):", line):
+                url_img = line.split()[-1]
                 break
         tmp_img = None
         if re.search("<img ", url_img):
@@ -1240,6 +1240,9 @@ def Comics(cmd):
                     tmp_img = re.sub("\"", "", tmp_img)
                     tmp_img = re.sub("^\/\/", "http://", tmp_img)
                     break
+        else re.search("^http"):
+            tmp_img = url_img
+
         if tmp_img:
             debug("Tmp img: %s" % tmp_img)
             req = requests.get(tmp_img, stream=True)

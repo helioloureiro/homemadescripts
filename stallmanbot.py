@@ -1178,6 +1178,8 @@ def Comics(cmd):
         text = html retrieved from site
         step = if in the same line or next (+1, +2, etc)
         """
+        if text is None:
+            return None
         buf = text.split("\n")
         i = 0
         url_img = None
@@ -1217,7 +1219,7 @@ def Comics(cmd):
         return url
 
     def GetImg(url):
-        if not url:
+        if not url or url is None:
             return
         req = requests.get(url, stream=True)
         filename = os.path.basename(url)

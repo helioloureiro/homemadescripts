@@ -23,7 +23,7 @@ import threading
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Thu Sep  5 20:54:27 CEST 2019"
+__version__ = "Thu Sep  5 21:04:27 CEST 2019"
 
 START_TIME = time.ctime()
 
@@ -1185,6 +1185,7 @@ def Comics(cmd):
             line = buf[i]
             if re.search(pattern, line):
                 url_img = buf[i+step]
+                debug("GetImgUrl: found=%s" % url_img)
                 break
 
         if not url_img:
@@ -1193,14 +1194,17 @@ def Comics(cmd):
 
         url = None
         if re.search("<img ", url_img):
+            debug("GetImgUrl: matched on \"<img \": %s" % url_img)
             params = url_img.split()
             for p in params:
                 if re.search("src=", p):
+                    debug("GetImgUrl: matched on parameter: %s" % p)
                     #tmp_img = p.split("=")[-1]
                     tmp_img = re.sub("^src=", "", p)
                     tmp_img = re.sub("\"", "", tmp_img)
                     url = re.sub("^\/\/", "http://", tmp_img)
                     url = re.sub("^\/", "http://", url)
+                    debug("GetImgUrl: final match: %s" % url)
                     break
         elif re.search("http", url_img):
             params = url_img.split()

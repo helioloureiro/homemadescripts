@@ -1202,7 +1202,7 @@ def Comics(cmd):
                     url = re.sub("^\/\/", "http://", tmp_img)
                     url = re.sub("^\/", "http://", url)
                     break
-        else re.search("http", url_img):
+        elif re.search("http", url_img):
             params = url_img.split()
             for p in params:
                 if not re.search("^http", p):

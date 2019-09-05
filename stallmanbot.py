@@ -23,7 +23,7 @@ import threading
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Thu Sep  5 21:04:27 CEST 2019"
+__version__ = "Thu Sep  5 21:12:27 CEST 2019"
 
 START_TIME = time.ctime()
 
@@ -1166,8 +1166,8 @@ def Comics(cmd):
             domain = "%s//%s" % (proto, domain)
             #text = re.sub(" src=//", " src=%s/" % domain, text)
             #text = re.sub(" src=\"//", " src=\"%s/" % domain, text)
-            text = re.sub(" src=/", " src=%s/" % domain, text)
-            text = re.sub(" src=\"/", " src=\"%s/" % domain, text)
+            text = re.sub(" src=/[a-zA-Z0-9]", " src=%s/" % domain, text)
+            text = re.sub(" src=\"/[a-zA-Z0-9]", " src=\"%s/" % domain, text)
             #debug("GetContent: Full Text\n%s" % text)
             return text
         return None

@@ -1229,7 +1229,7 @@ def Comics(cmd):
     if re.search("/xkcd", cmd.text):
         url = "http://xkcd.com"
         html = GetContent(url)
-        img_link = GetImgUrl("Image URL (for hotlinking/embedding)", html)
+        img_link = GetImgUrl("Image URL \(for hotlinking\/embedding\)", html)
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
     elif re.search("/dilbert", cmd.text):

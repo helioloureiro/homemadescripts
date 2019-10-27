@@ -31,3 +31,5 @@ stallmanbot.py
   A firewall system to block youtube at fixed times for openwrt.
   It can be improved a lot.
 
+generateHash.py
+  A simple way to generate short hashes (10 characters at this moment.)

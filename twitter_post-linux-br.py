@@ -14,7 +14,7 @@ import telebot
 
 # pyTelegramBotAPI
 # https://github.com/eternnoir/pyTelegramBotAPI
-# pip3 install pyTelegramBotAPI==3.6.2
+# pip3 install pyTelegramBotAPI==3.6.7
 
 # python-twitter
 # pip3 install python-twitter==3.5

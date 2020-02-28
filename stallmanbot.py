@@ -752,6 +752,7 @@ def SysCmd(cmd):
     debug("Running: %s" % cmd.text)
     sanitize = re.sub(";.*", "", cmd.text)
     debug("sanitize_1: %s" % sanitize)
+    sanitize = sanitize[1:]
     sanitize = re.sub("|.*", "", sanitize)
     debug("sanitize_2: %s" % sanitize)
     sanitize = re.sub("@.*", "", sanitize)
@@ -779,7 +780,6 @@ def SysCmd(cmd):
             debug(e)
             bot.reply_to(cmd, e)
         return
-    sanitize = sanitize[1:]
     debug("Sanitized: %s" % sanitize)
     try:
         #resp = os.popen(sanitize[1:]).read()

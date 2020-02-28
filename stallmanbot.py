@@ -753,7 +753,7 @@ def SysCmd(cmd):
     sanitize = re.sub(";.*", "", cmd.text)
     debug("sanitize_1: %s" % sanitize)
     sanitize = sanitize[1:]
-    sanitize = re.sub("|.*", "", sanitize)
+    sanitize = re.sub("\|.*", "", sanitize)
     debug("sanitize_2: %s" % sanitize)
     sanitize = re.sub("@.*", "", sanitize)
     debug("sanitize_3: %s" % sanitize)

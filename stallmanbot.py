@@ -763,7 +763,7 @@ def sanitize(message):
     debug("sanitize_3: %s" % sanitize)
     sanitize = re.sub("&.*", "", sanitize)
     debug("sanitize_4: %s" % sanitize)
-    sanitize = re.sub("[^A-Za-z0-9\./-]", " ", sanitize)
+    sanitize = re.sub("[^A-Za-z0-9./-]", " ", sanitize)
     debug("sanitize_5: %s" % sanitize)
     sanitize = re.sub("sudo ", "", sanitize)
     debug("sanitize_6: %s" % sanitize)
@@ -1196,6 +1196,7 @@ def Distros(cmd):
     "tirinhadorex", "megazine"])
 def Comics(cmd):
     debug(cmd.text)
+
     def GetContent(url):
         if not url:
             return
@@ -1318,7 +1319,7 @@ def Comics(cmd):
         bot.send_message(cmd.chat.id, "No momento somente tem: /dilbert, /xkcd, /vidadeprogramador, /vidadesuporte")
         return
     elif re.search("nudes", cmd.text):
-        url = "https://rms.sexy"
+        url = "https://rms.sexy/?js#/img/"
         bot.send_message(cmd.chat.id, "Péra... já estou tirando a roupa e ligando a webcam...")
         html = GetContent(url)
         img_link = GetImgUrl("<a href=\"/\">", html)

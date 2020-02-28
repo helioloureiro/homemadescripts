@@ -23,7 +23,7 @@ import threading
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Thu Sep  5 21:39:27 CEST 2019"
+__version__ = "Fri Feb 28 13:43:12 CET 2020"
 
 START_TIME = time.ctime()
 
@@ -280,6 +280,7 @@ Amém.
 """,
     "ping": "ACK",
     "version": __version__,
+    "starttime": START_TIME,
     "ultrafofo": """#UltraFofos é o grupo super fofis de defensores de software livre.
 Veja mais em: https://www.youtube.com/watch?v=eIRk38d32vA
 """,

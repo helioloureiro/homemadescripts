@@ -751,6 +751,8 @@ def sanitize(message):
     debug("Called sanitize with: %s" % message)
     if len(message) < 2:
         return ""
+    for i in message:
+        debug("%s (%d)" % (i, ord(i)))
     if message[0] == '/':
         message = message[1:]
     sanitize = re.sub(";.*", "", message)

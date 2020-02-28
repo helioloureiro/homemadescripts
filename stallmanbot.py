@@ -751,10 +751,34 @@ def SysCmd(cmd):
 def SysCmd(cmd):
     debug("Running: %s" % cmd.text)
     sanitize = re.sub(";.*", "", cmd.text)
+    debug("sanitize_1: %s" % sanitize)
     sanitize = re.sub("|.*", "", sanitize)
+    debug("sanitize_2: %s" % sanitize)
     sanitize = re.sub("@.*", "", sanitize)
+    debug("sanitize_3: %s" % sanitize)
     sanitize = re.sub("&.*", "", sanitize)
+    debug("sanitize_4: %s" % sanitize)
     sanitize = re.sub("[^A-Za-z0-9\./-]", " ", sanitize)
+    debug("sanitize_5: %s" % sanitize)
+    sanitize = re.sub("sudo ", "", sanitize)
+    debug("sanitize_6: %s" % sanitize)
+    sanitize = re.sub("su ", "", sanitize)
+    debug("sanitize_7: %s" % sanitize)
+    sanitize = re.sub("&%d;&%d; " % (ord('s'), ord('u')), "", sanitize)
+    debug("sanitize_8: %s" % sanitize)
+    sanitize = re.sub("&%d;&%d;&%d;&%d; " %
+        (ord('s'), ord('u'), ord('d'), ord('o')),
+        "",
+        sanitize)
+    debug("sanitize_9: %s" % sanitize)
+    if len(sanitize) == 0:
+        debug("Sanitization removed everything.")
+        try:
+            bot.reply_to(cmd, "Sanitization cleaned too much...")
+        except Exception as e:
+            debug(e)
+            bot.reply_to(cmd, e)
+        return
     sanitize = sanitize[1:]
     debug("Sanitized: %s" % sanitize)
     try:
@@ -768,6 +792,7 @@ def SysCmd(cmd):
         else:
             bot.reply_to(cmd, "%s" % resp)
     except Exception as e:
+        debug(e)
         try:
             bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
         except Exception as z:

@@ -11,7 +11,7 @@ import random
 import pickle
 import json
 import syslog
-
+import subprocess
 import requests
 import bs4
 import telebot
@@ -755,13 +755,18 @@ def SysCmd(cmd):
     sanitize = re.sub("@.*", "", sanitize)
     sanitize = re.sub("&.*", "", sanitize)
     sanitize = re.sub("[^A-Za-z0-9\./-]", " ", sanitize)
+    sanitize = sanitize[1:]
     debug("Sanitized: %s" % sanitize)
     try:
-        resp = os.popen(sanitize[1:]).read()
+        #resp = os.popen(sanitize[1:]).read()
+        resp = subprocess.check_output(sanitize.split())
         debug("Popen response: %s" % resp)
         resp = re.sub("GNU", "OSI", resp)
         debug("Response: %s" % resp)
-        bot.reply_to(cmd, "%s" % resp)
+        if len(resp) == 0:
+            bot.reply_to(cmd, "Shell command returned empty...")
+        else:
+            bot.reply_to(cmd, "%s" % resp)
     except Exception as e:
         try:
             bot.send_message(cmd.chat.id, "Deu merda... %s" % e)

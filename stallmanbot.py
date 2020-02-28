@@ -747,13 +747,15 @@ def SysCmd(cmd):
         print(u"%s" % e)
 
 
-@bot.message_handler(commands=["uname", "uptime", "date", "df"])
-def SysCmd(cmd):
-    debug("Running: %s" % cmd.text)
-    sanitize = re.sub(";.*", "", cmd.text)
+def sanitize(message):
+    debug("Called sanitize with: %s" % message)
+    if len(message) < 2:
+        return ""
+    if message[0] == '/':
+        message = message[1:]
+    sanitize = re.sub(";.*", "", message)
     debug("sanitize_1: %s" % sanitize)
-    sanitize = sanitize[1:]
-    sanitize = re.sub("\|.*", "", sanitize)
+    sanitize = re.sub("|.*", "", sanitize)
     debug("sanitize_2: %s" % sanitize)
     sanitize = re.sub("@.*", "", sanitize)
     debug("sanitize_3: %s" % sanitize)
@@ -772,7 +774,14 @@ def SysCmd(cmd):
         "",
         sanitize)
     debug("sanitize_9: %s" % sanitize)
-    if len(sanitize) == 0:
+    return sanitize
+
+
+@bot.message_handler(commands=["uname", "uptime", "date", "df"])
+def SysCmd(cmd):
+    debug("Running: %s" % cmd.text)
+    cleanedMessage = sanitize(cmd.text)
+    if len(cleanedMessage) == 0:
         debug("Sanitization removed everything.")
         try:
             bot.reply_to(cmd, "Sanitization cleaned too much...")
@@ -780,10 +789,10 @@ def SysCmd(cmd):
             debug(e)
             bot.reply_to(cmd, e)
         return
-    debug("Sanitized: %s" % sanitize)
+    debug("Sanitized: %s" % cleanedMessage)
     try:
-        #resp = os.popen(sanitize[1:]).read()
-        resp = subprocess.check_output(sanitize.split())
+        # resp = os.popen(sanitize[1:]).read()
+        resp = subprocess.check_output(cleanedMessage.split())
         debug("Popen response: %s" % resp)
         resp = re.sub("GNU", "OSI", resp)
         debug("Response: %s" % resp)

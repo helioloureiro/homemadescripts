@@ -754,8 +754,10 @@ def SysCmd(cmd):
     sanitize = re.sub("@.*", "", sanitize)
     sanitize = re.sub("&.*", "", sanitize)
     sanitize = re.sub("[^A-Za-z0-9\./-]", " ", sanitize)
+    debug("Sanitized: %s" % sanitize)
     try:
         resp = os.popen(sanitize[1:]).read()
+        debug("Popen response: %s" % resp)
         resp = re.sub("GNU", "OSI", resp)
         debug("Response: %s" % resp)
         bot.reply_to(cmd, "%s" % resp)

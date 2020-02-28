@@ -1198,23 +1198,25 @@ def Comics(cmd):
     debug(cmd.text)
 
     def GetContent(url):
+        debug("GetContent() called")
         if not url:
             return
         req = requests.get(url)
         if req.status_code == 200:
             text = req.text
-            proto = url.split("//")[0]
+            proto, domain = url.split("://")
             debug("GetContent: proto=%s" % proto)
-            domain = url.split("//")[1]
             domain = re.sub("/.*", "", domain)
             debug("GetContent: domain=%s" % domain)
-            domain = "%s//%s" % (proto, domain)
+            domain = "%s://%s" % (proto, domain)
             #text = re.sub(" src=//", " src=%s/" % domain, text)
             #text = re.sub(" src=\"//", " src=\"%s/" % domain, text)
-            text = re.sub(" src=/[a-zA-Z0-9]", " src=%s/" % domain, text)
-            text = re.sub(" src=\"/[a-zA-Z0-9]", " src=\"%s/" % domain, text)
+            text = re.sub(" src=/", " src=%s/" % domain, text)
+            text = re.sub(" src=\"/", " src=\"%s/" % domain, text)
             #debug("GetContent: Full Text\n%s" % text)
             return text
+        else:
+            debug(" * return code error: %d" % req.status_code)
         return None
 
     def GetImgUrl(pattern, text, step=0):
@@ -1223,15 +1225,17 @@ def Comics(cmd):
         text = html retrieved from site
         step = if in the same line or next (+1, +2, etc)
         """
+        debug("GetImgUrl() called with pattern=%s and step=%d" %
+            (pattern, step) )
         if text is None:
             return None
         buf = text.split("\n")
         i = 0
         url_img = None
-        for i in range(len(buf)):
-            line = buf[i]
+        for lineNr in range(len(buf)):
+            line = buf[lineNr]
             if re.search(pattern, line):
-                url_img = buf[i+step]
+                url_img = buf[lineNr+step]
                 debug("GetImgUrl: found=%s" % url_img)
                 break
 

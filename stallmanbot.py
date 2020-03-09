@@ -303,6 +303,8 @@ RESPONSES_TEXT[u"pong"] = RESPONSES_TEXT["ping"]
 RESPONSES_TEXT[u"ajuda"] = RESPONSES_TEXT["help"]
 RESPONSES_TEXT[u"ultrafofos"] = RESPONSES_TEXT["ultrafofo"]
 
+LOGTAG = "StallNoMan"
+
 
 # Refactoring
 # Applying the concepts from clean code (thanks uncle Bob)
@@ -318,25 +320,25 @@ def debug(msg):
         try:
             msg = "[%s] %s" % (time.ctime(), msg)
             print(msg)
-            syslog.openlog("StallNoMan")
+            syslog.openlog(LOGTAG)
             syslog.syslog(syslog.LOG_DEBUG, msg)
         except Exception as e:
-            print(u"[%s] DEBUG ERROR: %s" % (time.ctime(), e))
+            print("[%s] DEBUG ERROR: %s" % (time.ctime(), e))
 
 
 def error(message):
     """Error handling for logs"""
-    errormsg = u"ERROR: %s" % message
+    errormsg = "ERROR: %s" % message
     debug(errormsg)
-    syslog.openlog("StallNoMan")
+    syslog.openlog(LOGTAG)
     syslog.syslog(syslog.LOG_ERR, errormsg)
 
 
 def log(message):
     """Syslog handling for logs"""
-    infomsg = u"%s" % message
+    infomsg = "%s" % message
     debug(infomsg)
-    syslog.openlog("StallNoMan")
+    syslog.openlog(LOGTAG)
     syslog.syslog(syslog.LOG_INFO, infomsg)
 
 
@@ -345,6 +347,7 @@ def read_file(filename):
         with open(filename) as myfile:
             return myfile.read()
     except FileNotFoundError:
+        error("File not found: %s" % filename)
         return None
     except Exception as e:
         error("Failed to read file %s: %s" % (filename, e))
@@ -544,12 +547,6 @@ def get_global_keys():
     botadm = get_telegram_key(cfg, "STALLBOTADM")
     allowed_users = get_telegram_key(cfg, "ALLOWEDUSERS")
 
-# avoiding nulls
-set_debug()
-debug("Starting bot for FreeSpeech")
-get_global_keys()
-bot = telebot.TeleBot(key)
-
 
 # Bot callbacks below #
 def get_random_link(links_array):
@@ -560,53 +557,49 @@ def get_random_link(links_array):
     return links_array[position]
 
 
-def send_animated_image_by_link_to_chat(chat_id, image_link):
+def send_animated_image_by_link_to_chat(obj, chat_id, image_link):
     """Send a specific animated gif to a chat"""
     debug("send_animated_image_by_link_to_chat()")
     try:
-        bot.send_document(chat_id, image_link)
+        obj.send_document(chat_id, image_link)
     except Exception as e:
         error("Failed to send image=%s to chat_id=%s: %s" % \
             (image_link, chat_id, e))
 
 
-def send_message_to_chat(chat_id, message):
+def send_message_to_chat(obj, chat_id, message):
     """Send a specific message to a chat"""
     debug("send_message_to_chat()")
     try:
-        bot.send_message(chat_id, u"%s" % message)
+        obj.send_message(chat_id, u"%s" % message)
     except Exception as e:
         error("Failed to send message=%s to chat_id=%s: %s" % \
             (message, chat_id, e))
 
 
-def shit_happens(chat_id, error):
+def shit_happens(obj, chat_id, error):
     """Send error back"""
     debug("shit_happens()")
     gif = get_random_link(FAILURES)
     send_animated_image_by_link_to_chat(chat_id, gif)
-    send_message_to_chat(chat_id, str(error))
+    send_message_to_chat(obj, chat_id, str(error))
 
 
-
-@bot.message_handler(commands=["oi", "hello", "helloworld", "oiamor", "teamo"])
-def hello_world(cmd):
+def hello_world(obj, cmd):
     debug("hello_world()")
     debug(cmd.text)
     if re.search("oiamor|teamo", cmd.text):
         fe_amo = GetGif("fe-amo")
         try:
-            bot.send_photo(cmd.chat.id, fe_amo)
+            obj.send_photo(cmd.chat.id, fe_amo)
         except Exception as e:
             error("hello_world() failed to send photo: %s" % e)
             pass
-        bot.reply_to(cmd, u"Te amo também.")
+        obj.reply_to(cmd, u"Te amo também.")
         return
-    send_message_to_chat(cmd.chat.id, "OSI world")
+    send_message_to_chat(obj, cmd.chat.id, "OSI world")
 
-
-@bot.message_handler(commands=["manda", "manga"])
-def Manda(cmd):
+def Manda(obj, cmd):
     debug(cmd.text)
     args = cmd.text.split()
     opts = GIFS.keys()
@@ -616,7 +609,7 @@ def Manda(cmd):
         for key in sorted(opts):
             item = telebot.types.KeyboardButton("/manda %s" % key)
             markup.add(item)
-        bot.reply_to(cmd, "Escolha a opção:", reply_markup=markup)
+        obj.reply_to(cmd, "Escolha a opção:", reply_markup=markup)
 
     if len(args) <= 1:
         try:
@@ -625,7 +618,7 @@ def Manda(cmd):
 
         except Exception as e:
             try:
-                bot.send_message(cmd.chat.id, u"Deu merda... %s" % e)
+                obj.send_message(cmd.chat.id, u"Deu merda... %s" % e)
             except Exception as z:
                 debug(u"%s" % z)
         return
@@ -638,16 +631,16 @@ def Manda(cmd):
         try:
             debug(u"Manda(): sending gif=%s" % gif)
             if re.search(".(jpg|jpeg|JPG|JPEG|png|PNG)$", gif):
-                bot.send_photo(cmd.chat.id, gif)
+                obj.send_photo(cmd.chat.id, gif)
             else:
-                bot.send_document(cmd.chat.id, gif)
+                obj.send_document(cmd.chat.id, gif)
         except Exception as e:
             try:
-                bot.send_message(cmd.chat.id, "<img src=\"%s\">"% gif)
+                obj.send_message(cmd.chat.id, "<img src=\"%s\">"% gif)
             except Exception as err2:
                 try:
-                    bot.send_message(cmd.chat.id, "Deu merda... %s" % err2)
-                    bot.send_message(cmd.chat.id, "Link: %s" % gif)
+                    obj.send_message(cmd.chat.id, "Deu merda... %s" % err2)
+                    obj.send_message(cmd.chat.id, "Link: %s" % gif)
                 except Exception as z:
                     print(u"%s" % z)
         debug(u"Manda(): end of for interaction - can go next")
@@ -656,36 +649,32 @@ def Manda(cmd):
     try:
         debug(u"Manda(): Removing buttons...")
         markup = telebot.types.ReplyKeyboardRemove(selective=True)
-        bot.send_message(cmd.chat.id, "", reply_markup=markup)
+        obj.send_message(cmd.chat.id, "", reply_markup=markup)
     except Exception as e:
         debug("Error at Manda(): %s" % e)
     debug(u"Manda(): end of function")
 
 
-@bot.message_handler(commands=["pipoca"])
-def PipocaGif(cmd):
+def PipocaGif(obj, cmd):
     gif = GetGif("popcorn")
     try:
-        bot.send_document(cmd.chat.id, gif)
+        obj.send_document(cmd.chat.id, gif)
     except Exception as e:
         try:
-            bot.send_message(cmd.chat.id, u"Deu merda... %s" % e)
+            obj.send_message(cmd.chat.id, u"Deu merda... %s" % e)
         except Exception as z:
             print(u"%s" % z)
     debug("tchau")
 
-
-@bot.message_handler(commands=["reload"])
-def Reload(cmd):
+def Reload(obj, cmd):
     global START_TIME
     debug(cmd.text)
     if not cmd.from_user.username == botadm:
-        bot.reply_to(cmd, "Só patrão pode isso.")
+        obj.reply_to(cmd, "Só patrão pode isso.")
         return
     try:
         debug(cmd)
-        bot.reply_to(cmd, "Reloading...")
-        START_TIME = time.ctime()
+        obj.reply_to(cmd, "Reloading...")
 
         if os.path.exists(SCRIPTHOME):
             os.chdir(SCRIPTHOME)
@@ -701,27 +690,26 @@ def Reload(cmd):
                 res = os.system("%s %s" % (sys.executable, sys.argv[0]))
                 if res != 0:
                     debug("Versão bugada")
-                    bot.send_message(cmd.chat.id, "Python crashed.  Vou carregar saporra não.  Vai que...")
+                    obj.send_message(cmd.chat.id, "Python crashed.  Vou carregar saporra não.  Vai que...")
                     return
                 debug("Updating bot...")
                 shutil.copy(botname, "%s/bin/%s" % (HOME, botname))
-                bot.send_message(cmd.chat.id, "Bot version updated.")
+                obj.send_message(cmd.chat.id, "Bot version updated.")
         # check first
         python = sys.executable
         os.execl(python, python, *sys.argv)
     except Exception as e:
         try:
-            bot.reply_to(cmd, u"Deu merda... %s" % e)
+            obj.reply_to(cmd, u"Deu merda... %s" % e)
         except Exception as z:
             print(u"%s" % z)
 
 
-@bot.message_handler(commands=["debug"])
-def ToggleDebug(cmd):
+def ToggleDebug(obj, cmd):
     global DEBUG
     debug(cmd.text)
     if not cmd.from_user.username == botadm:
-        bot.reply_to(cmd, "Só patrão pode isso.")
+        obj.reply_to(cmd, "Só patrão pode isso.")
         return
     try:
         debug(cmd)
@@ -731,18 +719,17 @@ def ToggleDebug(cmd):
         elif DEBUG is False:
             DEBUG = True
             status = "enabled"
-        bot.reply_to(cmd, "debug=%s" % status)
+        obj.reply_to(cmd, "debug=%s" % status)
     except Exception as e:
         print(u"%s" % e)
 
 
-@bot.message_handler(commands=["fuda"])
-def SysCmd(cmd):
+def fuda(obj, cmd):
     debug("Running: %s" % cmd.text)
     try:
         resp = u"FUDA: Fear, Uncertainty, Doubt and Anahuac.  " + \
             u"Os males do software livre atualmente."
-        bot.reply_to(cmd, "%s" % resp)
+        obj.reply_to(cmd, "%s" % resp)
     except Exception as e:
         print(u"%s" % e)
 
@@ -779,17 +766,16 @@ def sanitize(message):
     return sanitize
 
 
-@bot.message_handler(commands=["uname", "uptime", "date", "df"])
-def SysCmd(cmd):
+def SysCmd(obj, cmd):
     debug("Running: %s" % cmd.text)
     cleanedMessage = sanitize(cmd.text)
     if len(cleanedMessage) == 0:
         debug("Sanitization removed everything.")
         try:
-            bot.reply_to(cmd, "Sanitization cleaned too much...")
+            obj.reply_to(cmd, "Sanitization cleaned too much...")
         except Exception as e:
             debug(e)
-            bot.reply_to(cmd, e)
+            obj.reply_to(cmd, e)
         return
     debug("Sanitized: %s" % cleanedMessage)
     try:
@@ -799,149 +785,142 @@ def SysCmd(cmd):
         resp = re.sub("GNU", "OSI", resp)
         debug("Response: %s" % resp)
         if len(resp) == 0:
-            bot.reply_to(cmd, "Shell command returned empty...")
+            obj.reply_to(cmd, "Shell command returned empty...")
         else:
-            bot.reply_to(cmd, "%s" % resp)
+            obj.reply_to(cmd, "%s" % resp)
     except Exception as e:
         debug(e)
         try:
-            bot.send_message(cmd.chat.id, "Deu merda... %s" % e)
+            obj.send_message(cmd.chat.id, "Deu merda... %s" % e)
         except Exception as z:
             print(u"%s" % z)
     debug("done here")
 
 
-@bot.message_handler(commands=["reboot", "shutdown", "sudo", "su"])
-def Requer(cmd):
+def Requer(obj, cmd):
     debug(cmd.text)
     try:
         if re.search("sudo rm -rf /", cmd.text):
             gif = "https://media.giphy.com/media/7cxkulE62EV2/giphy.gif"
-            bot.send_document(cmd.chat.id, gif)
+            obj.send_document(cmd.chat.id, gif)
             return
-        bot.reply_to(cmd, "Ah lá... achando que é réquer.")
+        obj.reply_to(cmd, "Ah lá... achando que é réquer.")
     except Exception as e:
         try:
-            bot.reply_to(cmd, "Deu merda... %s" % e)
+            obj.reply_to(cmd, "Deu merda... %s" % e)
         except Exception as z:
             print(u"%s" % z)
 
 
-@bot.message_handler(commands=["fortune", "fortunes", "sorte"])
-def Fortune(cmd):
+def Fortune(obj, cmd):
     fortune = os.popen("/usr/games/fortune").read()
     # avoid big answers
     while (len(fortune) > 200):
         fortune = os.popen("/usr/games/fortune").read()
     try:
-        bot.reply_to(cmd, "%s" % fortune)
+        obj.reply_to(cmd, "%s" % fortune)
     except Exception as e:
-        bot.reply_to(cmd, "Deu merda... %s" % e)
+        obj.reply_to(cmd, "Deu merda... %s" % e)
 
 
-@bot.message_handler(commands=["hacked", "pwn3d"])
-def Hacked(cmd):
+def Hacked(obj, cmd):
     try:
-        bot.reply_to(cmd, u"This is the gallery of metions from those who dared to hack, and just made it true.")
-        bot.reply_to(cmd, u"Helio is my master but Maycon is my hacker <3 (Hack N' Roll)")
+        obj.reply_to(cmd, u"This is the gallery of metions from those who dared to hack, and just made it true.")
+        obj.reply_to(cmd, u"Helio is my master but Maycon is my hacker <3 (Hack N' Roll)")
         gif = "https://media.giphy.com/media/26ufcVAp3AiJJsrIs/giphy.gif"
-        bot.send_document(cmd.chat.id, gif)
+        obj.send_document(cmd.chat.id, gif)
     except Exception as e:
-        bot.reply_to(cmd, "Deu merda... %s" % e)
+        obj.reply_to(cmd, "Deu merda... %s" % e)
 
 
-@bot.message_handler(commands=["apt-get", "aptitude", "apt"])
-def AptCmds(session):
+def AptCmds(obj, session):
     debug(session.text)
     if re.search("apt-get", session.text):
         try:
-            bot.reply_to(session, "Esse bot tem poderes de super vaca.")
+            obj.reply_to(session, "Esse bot tem poderes de super vaca.")
             counter = random.randint(0,10)
             while counter:
                 counter -= 1
                 time.sleep(random.randint(0,10))
                 moo = "moo" + random.randint(0,10) * "o"
-                bot.send_message(session.chat.id, moo)
+                obj.send_message(session.chat.id, moo)
         except Exception as e:
-            bot.reply_to(session, "apt-get deu BSOD... %s" % e)
+            obj.reply_to(session, "apt-get deu BSOD... %s" % e)
         return
     elif re.search("aptitude", session.text):
         try:
-            bot.reply_to(session,
+            obj.reply_to(session,
                 "Palavra africana para: Eu não sei corrigir dependências.")
         except Exception as e:
-            bot.reply_to(session, "Deu merda... %s" % e)
+            obj.reply_to(session, "Deu merda... %s" % e)
         return
     elif re.search("apt", session.text):
         debug("On apt")
         try:
             debug("Post on session")
-            bot.reply_to(session,
+            obj.reply_to(session,
                 u"Palavra hipster para: Eu gosto de ver tudo colorido.")
         except Exception as e:
             debug(e)
-            bot.reply_to(session, "Deu merda... %s" % e)
+            obj.reply_to(session, "Deu merda... %s" % e)
         return
     debug("Asking about it on apt loop.")
-    bot.reply_to(session, u"Quê?")
+    obj.reply_to(session, u"Quê?")
 
 
-@bot.message_handler(commands=["dia", "bomdia"])
-def Dia(cmd):
+def Dia(obj, cmd):
     debug(cmd.text)
     try:
         hoje = date.today()
         semana = hoje.weekday()
 
         if re.search("bom", cmd.text):
-            bot.reply_to(cmd,
+            obj.reply_to(cmd,
             u"""Bom dia pra todos vocês que usam blobs, e pra quem usa GNU também.
 
 O nome do sistema operacional é OSI/Linux e os blobs nos representam.""")
 
         if semana == 0:
-            bot.reply_to(cmd, u"Segunda-Feira sempre tem alguem assim: https://www.youtube.com/watch?v=rp34FE01Q3M")
+            obj.reply_to(cmd, u"Segunda-Feira sempre tem alguem assim: https://www.youtube.com/watch?v=rp34FE01Q3M")
         elif semana == 1:
-            bot.reply_to(cmd, u"Terça Feira: https://www.youtube.com/watch?v=V7eR6wtjcxA")
+            obj.reply_to(cmd, u"Terça Feira: https://www.youtube.com/watch?v=V7eR6wtjcxA")
         elif semana == 2:
-            bot.reply_to(cmd, u"Quarta Feira")
+            obj.reply_to(cmd, u"Quarta Feira")
         elif semana == 3:
-            bot.reply_to(cmd, u"Quinta Feira")
+            obj.reply_to(cmd, u"Quinta Feira")
         elif semana == 4:
-            bot.reply_to(cmd, u"Sexta-Feira é o dia da Maldade: https://www.youtube.com/watch?v=qys5ObMiKDo")
+            obj.reply_to(cmd, u"Sexta-Feira é o dia da Maldade: https://www.youtube.com/watch?v=qys5ObMiKDo")
         elif semana == 5:
-            bot.reply_to(cmd, u"https://www.youtube.com/watch?v=rX2Bw-mwnOM")
+            obj.reply_to(cmd, u"https://www.youtube.com/watch?v=rX2Bw-mwnOM")
         elif semana == 6:
-            bot.reply_to(cmd, u"Domingo é dia de compilar um kernel")
+            obj.reply_to(cmd, u"Domingo é dia de compilar um kernel")
     except Exception as e:
-        bot.reply_to(cmd, "Deu merda... %s" % e)
+        obj.reply_to(cmd, "Deu merda... %s" % e)
 
 
-@bot.message_handler(commands=["photo"])
-def Photo(cmd):
+def Photo(obj, cmd):
     debug("Photo")
     year = time.strftime("%Y", time.localtime())
     month = time.strftime("%m", time.localtime())
     SAVEDIR = "%s/weather/%s/%s" % (os.environ.get('HOME'), year, month)
     if not os.path.exists(SAVEDIR):
         debug(u"Sem fotos")
-        bot.reply_to(cmd, u"Sem fotos no momento.")
+        obj.reply_to(cmd, u"Sem fotos no momento.")
         return
     photos = os.listdir(SAVEDIR)
     last_photo = sorted(photos)[-1]
     debug(u"Última foto: %s" % last_photo)
     tagname = os.path.basename(last_photo)
     try:
-        bot.reply_to(cmd, "Última foto: %s" % tagname)
+        obj.reply_to(cmd, "Última foto: %s" % tagname)
         ph = open("%s/%s" % (SAVEDIR, last_photo), 'rb')
-        bot.send_photo(cmd.chat.id, ph)
+        obj.send_photo(cmd.chat.id, ph)
         #bot.send_photo(cmd.chat.id,"FILEID")
     except Exception as e:
-        bot.reply_to(cmd, "Deu merda: %s" % e)
+        obj.reply_to(cmd, "Deu merda: %s" % e)
 
 
-@bot.message_handler(commands=["unixloadon", "pauta", "pautas", "addpauta", "novapauta", "testauser", "addsugestao"])
-def UnixLoadOn(cmd):
+def UnixLoadOn(obj, cmd):
     debug("Unix Load On")
     msg = None
     curdir = os.curdir
@@ -1123,7 +1102,7 @@ def UnixLoadOn(cmd):
 
     except Exception as e:
         try:
-            bot.reply_to(cmd, "Deu merda: %s" % e)
+            obj.reply_to(cmd, "Deu merda: %s" % e)
         except Exception as z:
             print(u"%s" % z)
 
@@ -1151,13 +1130,12 @@ def UnixLoadOn(cmd):
 
     for msg in msg_queue:
         try:
-            bot.send_message(cmd.chat.id, msg)
+            obj.send_message(cmd.chat.id, msg)
         except Exception as e:
-            bot.reply_to(cmd, "Deu merda: %s" % e)
+            obj.reply_to(cmd, "Deu merda: %s" % e)
 
 
-@bot.message_handler(commands=["distros", "distro", "ubuntu", "debian", "arch", "manjaro"])
-def Distros(cmd):
+def Distros(obj, cmd):
     debug(cmd.text)
     msg = None
     distro = cmd.text
@@ -1168,118 +1146,115 @@ def Distros(cmd):
         debug(" * distro: %s" % distro)
         if os.path.exists("%s/%s.jpg" % (IMGDIR, distro)):
             img = open("%s/%s.jpg" % (IMGDIR, distro), "rb")
-            bot.send_photo(cmd.chat.id, img)
+            obj.send_photo(cmd.chat.id, img)
             return
         else:
             debug(" * arquivo de imagem não encontrado em: %s/%s.jpg" % (IMGDIR, distro))
             if os.path.exists("%s/Stallman_Chora.jpg"):
                 img = open("%s/Stallman_Chora.jpg" % IMGDIR, "rb")
-                bot.send_photo(cmd.chat.id, img)
-            bot.send_message(cmd.chat.id, "Distro %s não encontrada." % distro +
+                obj.send_photo(cmd.chat.id, img)
+            obj.send_message(cmd.chat.id, "Distro %s não encontrada." % distro +
                 "  Agradecemos a compreensão (e use outra).")
             return
     if re.search("/ubuntu", cmd.text) or re.search("distro ubuntu", cmd.text):
         debug("ubuntu")
         img = open("%s/ubuntu.jpg" % IMGDIR, "rb")
-        bot.send_photo(cmd.chat.id, img)
+        obj.send_photo(cmd.chat.id, img)
         return
     elif cmd.text == "/distros":
-        bot.send_message(cmd.chat.id, "Distros: ubuntu e debian")
+        obj.send_message(cmd.chat.id, "Distros: ubuntu e debian")
         return
 
-    bot.send_message(cmd.chat.id, "Ainda não fiz...  Mas já está no backlog.")
+    obj.send_message(cmd.chat.id, "Ainda não fiz...  Mas já está no backlog.")
 
 
-@bot.message_handler(commands=["xkcd", "dilbert", "vidadeprogramador",
-    "tirinhas", "strips", "vidadesuporte", "angulodevista",
-    "mandanudes", "nudes", "mandafoods", "foods",
-    "tirinhadorex", "megazine"])
-def Comics(cmd):
-    debug(cmd.text)
+def GetContent(url):
+    debug("GetContent() called")
+    if not url:
+        return
+    req = requests.get(url)
+    if req.status_code == 200:
+        text = req.text
+        proto, domain = url.split("://")
+        debug("GetContent: proto=%s" % proto)
+        domain = re.sub("/.*", "", domain)
+        debug("GetContent: domain=%s" % domain)
+        domain = "%s://%s" % (proto, domain)
+        #text = re.sub(" src=//", " src=%s/" % domain, text)
+        #text = re.sub(" src=\"//", " src=\"%s/" % domain, text)
+        text = re.sub(" src=/", " src=%s/" % domain, text)
+        text = re.sub(" src=\"/", " src=\"%s/" % domain, text)
+        #debug("GetContent: Full Text\n%s" % text)
+        return text
+    else:
+        debug(" * return code error: %d" % req.status_code)
+    return ""
 
-    def GetContent(url):
-        debug("GetContent() called")
-        if not url:
-            return
-        req = requests.get(url)
-        if req.status_code == 200:
-            text = req.text
-            proto, domain = url.split("://")
-            debug("GetContent: proto=%s" % proto)
-            domain = re.sub("/.*", "", domain)
-            debug("GetContent: domain=%s" % domain)
-            domain = "%s://%s" % (proto, domain)
-            #text = re.sub(" src=//", " src=%s/" % domain, text)
-            #text = re.sub(" src=\"//", " src=\"%s/" % domain, text)
-            text = re.sub(" src=/", " src=%s/" % domain, text)
-            text = re.sub(" src=\"/", " src=\"%s/" % domain, text)
-            #debug("GetContent: Full Text\n%s" % text)
-            return text
-        else:
-            debug(" * return code error: %d" % req.status_code)
+
+def GetImgUrl(pattern, text, step=0):
+    """
+    pattern = string to find
+    text = html retrieved from site
+    step = if in the same line or next (+1, +2, etc)
+    """
+    debug("GetImgUrl() called with pattern=%s and step=%d" %
+        (pattern, step) )
+    if text is None:
+        return None
+    buf = text.split("\n")
+    i = 0
+    url_img = None
+    for lineNr in range(len(buf)):
+        line = buf[lineNr]
+        if re.search(pattern, line):
+            url_img = buf[lineNr+step]
+            debug("GetImgUrl: found=%s" % url_img)
+            break
+
+    if not url_img:
+        debug("GetImgUrl: no images links found")
         return None
 
-    def GetImgUrl(pattern, text, step=0):
-        """
-        pattern = string to find
-        text = html retrieved from site
-        step = if in the same line or next (+1, +2, etc)
-        """
-        debug("GetImgUrl() called with pattern=%s and step=%d" %
-            (pattern, step) )
-        if text is None:
-            return None
-        buf = text.split("\n")
-        i = 0
-        url_img = None
-        for lineNr in range(len(buf)):
-            line = buf[lineNr]
-            if re.search(pattern, line):
-                url_img = buf[lineNr+step]
-                debug("GetImgUrl: found=%s" % url_img)
+    url = None
+    if re.search("<img ", url_img):
+        debug("GetImgUrl: matched on \"<img \": %s" % url_img)
+        params = url_img.split()
+        for p in params:
+            if re.search("src=", p):
+                debug("GetImgUrl: matched on parameter: %s" % p)
+                # tmp_img = p.split("=")[-1]
+                tmp_img = re.sub("^src=", "", p)
+                tmp_img = re.sub("\"", "", tmp_img)
+                url = re.sub("^\/\/", "http://", tmp_img)
+                url = re.sub("^\/", "http://", url)
+                debug("GetImgUrl: final match: %s" % url)
                 break
+    elif re.search("http", url_img):
+        params = url_img.split()
+        for p in params:
+            if not re.search("^http", p):
+                continue
+            url = p
+            break
+    debug("GetImgUrl: %s" % url)
+    return url
 
-        if not url_img:
-            debug("GetImgUrl: no images links found")
-            return None
 
-        url = None
-        if re.search("<img ", url_img):
-            debug("GetImgUrl: matched on \"<img \": %s" % url_img)
-            params = url_img.split()
-            for p in params:
-                if re.search("src=", p):
-                    debug("GetImgUrl: matched on parameter: %s" % p)
-                    #tmp_img = p.split("=")[-1]
-                    tmp_img = re.sub("^src=", "", p)
-                    tmp_img = re.sub("\"", "", tmp_img)
-                    url = re.sub("^\/\/", "http://", tmp_img)
-                    url = re.sub("^\/", "http://", url)
-                    debug("GetImgUrl: final match: %s" % url)
-                    break
-        elif re.search("http", url_img):
-            params = url_img.split()
-            for p in params:
-                if not re.search("^http", p):
-                    continue
-                url = p
-                break
-        debug("GetImgUrl: %s" % url)
-        return url
+def GetImg(url):
+    if not url or url is None:
+        return
+    req = requests.get(url, stream=True)
+    filename = os.path.basename(url)
+    if not re.search(".gif|.jpg|.png", filename):
+        filename = "%s.gif" % filename
+    img = "/tmp/%s" % filename
+    with open(img, 'wb') as out_file:
+        shutil.copyfileobj(req.raw, out_file)
+    return img
 
-    def GetImg(url):
-        if not url or url is None:
-            return
-        req = requests.get(url, stream=True)
-        filename = os.path.basename(url)
-        if not re.search("\.gif|\.jpg|\.png", filename):
-            filename = "%s.gif" % filename
-        img = "/tmp/%s" % filename
-        with open(img, 'wb') as out_file:
-            shutil.copyfileobj(req.raw, out_file)
-        return img
 
-    debug(cmd.text)
+def Comics(cmd):
+    debug("Comics(): %s" % cmd.text)
     img = None
     if re.search("/xkcd", cmd.text):
         url = "http://xkcd.com"
@@ -1320,16 +1295,16 @@ def Comics(cmd):
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
     elif re.search("tirinhas|strips", cmd.text):
-        bot.send_message(cmd.chat.id, "No momento somente tem: /dilbert, /xkcd, /vidadeprogramador, /vidadesuporte")
+        obj.send_message(cmd.chat.id, "No momento somente tem: /dilbert, /xkcd, /vidadeprogramador, /vidadesuporte")
         return
     elif re.search("nudes", cmd.text):
         url = "https://rms.sexy/?js#/img/"
-        bot.send_message(cmd.chat.id, "Péra... já estou tirando a roupa e ligando a webcam...")
+        obj.send_message(cmd.chat.id, "Péra... já estou tirando a roupa e ligando a webcam...")
         html = GetContent(url)
         img_link = GetImgUrl("<a href=\"/\">", html)
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
-        bot.send_message(cmd.chat.id, "Diretamente de %s" % url)
+        obj.send_message(cmd.chat.id, "Diretamente de %s" % url)
     elif re.search("foods", cmd.text):
 
         # We'll grab the images from /r/foodporn JSON file.
@@ -1349,7 +1324,7 @@ def Comics(cmd):
             time.sleep(1)
 
         if not os.path.exists(MANDAFOODSFILE):
-            bot.send_message(cmd.chat.id, "Deu alguma zica sinistra e o"
+            obj.send_message(cmd.chat.id, "Deu alguma zica sinistra e o"
                 " arquivo json não foi baixado do site.")
             return
         try:
@@ -1361,7 +1336,7 @@ def Comics(cmd):
             json_data = { "error" : 666, "message" : "error fazendo parsing do json" }
         if "error" in json_data:
             debug(" * found key error")
-            bot.send_message(cmd.chat.id, u"Deu merda no Jasão: %s" % json_data["message"])
+            obj.send_message(cmd.chat.id, u"Deu merda no Jasão: %s" % json_data["message"])
             debug(" * removing file")
             os.unlink(MANDAFOODSFILE)
             return
@@ -1370,17 +1345,17 @@ def Comics(cmd):
         # Shuffling the posts
         post_number = random.randint(1, 25) # 0 is the pinned title post for the subreddit
         img_link = json_data["data"]["children"][post_number]["data"]["url"]
-        bot.send_message(cmd.chat.id, "Nham nham! 🍔")
+        obj.send_message(cmd.chat.id, "Nham nham! 🍔")
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
-        bot.send_message(cmd.chat.id, "Direto de https://www.reddit.com/r/foodporn")
+        obj.send_message(cmd.chat.id, "Direto de https://www.reddit.com/r/foodporn")
 
     if img:
         try:
             img_fd = open(img, 'rb')
-            bot.send_photo(cmd.chat.id, img_fd)
+            obj.send_photo(cmd.chat.id, img_fd)
         except Exception as e:
-            bot.send_message(cmd.chat.id, "Ooopsss... deu merda! %s" % e)
+            obj.send_message(cmd.chat.id, "Ooopsss... deu merda! %s" % e)
         os.unlink(img)
     elif re.search("megazine", cmd.text):
         megazines = [ "xkcd", "dilbert", "vidadeprogramador",
@@ -1390,38 +1365,10 @@ def Comics(cmd):
             cmd_new.text = "/%s" % zine
             Comics(cmd_new)
     else:
-        bot.send_message(cmd.chat.id, "É... foi não...")
-"""
-{'delete_chat_photo': None, 'migrate_to_chat_id': None, 'text': u'/reload',
-'sticker': None, 'pinned_message': None, 'forward_from_chat': None,
-'migrate_from_chat_id': None, 'video': None, 'left_chat_member': None,
-'chat': {'username': u'ultraOSI', 'first_name': None, 'last_name': None,
-'title': u'UltraOSI - Free Software e Opensource sem FUDA e com blobs :)',
-'all_members_are_administrators': None,
-'type': u'supergroup',
-'id': -1001109390847L},
-'group_chat_created': None,
-'new_chat_photo': None,
-'forward_date': None,
-'entities': [<telebot.types.MessageEntity instance at 0x74833c60>],
-'supergroup_chat_created': None, 'photo': None, 'document': None,
-'forward_from': None, 'location': None, 'edit_date': None,
-'content_type': 'text',
-'from_user': {'username': u'HelioLoureiro',
-'first_name': u'[Helio@blobeiro.eng.br]>',
-'last_name': None, 'id': 64457589},
-'date': 1487941240,
-'new_chat_member': None, 'voice': None, 'reply_to_message': None,
-'venue': None, 'message_id': 11569, 'caption': None, 'contact': None,
-'channel_chat_created': None, 'audio': None, 'new_chat_title': None}
-"""
-fofondex = {}
-start_time = time.time()
+        obj.send_message(cmd.chat.id, "É... foi não...")
 
 
-@bot.message_handler(commands=["fofometro", "fofondex", "resetfofos",
-    "blobometro", "blobondex", "scoreblob"])
-def FofoMetrics(cmd):
+def FofoMetrics(obj, cmd):
     debug(cmd.text)
     global fofondex, start_time
     #debug("Fofondex on call: %s" % fofondex)
@@ -1543,11 +1490,11 @@ def FofoMetrics(cmd):
 
     if re.search("/resetfofos", cmd.text):
         if user_name == botadm:
-            bot.send_message(cmd.chat.id, u"Limpando o fundum que está por aqui." \
+            obj.send_message(cmd.chat.id, u"Limpando o fundum que está por aqui." \
                 + u"  Vou até jogar creolina.")
             DataReset()
         else:
-            bot.send_message(cmd.chat.id, u"Vai aprender a sair do VI "\
+            obj.send_message(cmd.chat.id, u"Vai aprender a sair do VI "\
             + "antes de querer vir aqui me dar ordem.")
         return
 
@@ -1565,7 +1512,7 @@ def FofoMetrics(cmd):
 
         if re.search("arrumasaporra", cmd.text):
             if user_name == botadm:
-                bot.send_message(cmd.chat.id, u"Perdão patrão... Estava aqui " + \
+                obj.send_message(cmd.chat.id, u"Perdão patrão... Estava aqui " + \
                     u"compilando o emacs e me distraí.  Deixa eu fazer de novo.")
                 if re.search("blob", cmd.text):
                     pctg = RunTheDice(n=0)
@@ -1576,9 +1523,9 @@ def FofoMetrics(cmd):
                 #bot.send_message(cmd.chat.id, u"Inicializando com pctg=%d" % pctg)
                 fofondex[user_id] = InitializeUser(pctg=pctg)
             else:
-                bot.send_message(cmd.chat.id, u"Quem você pensa que é pra " + \
+                obj.send_message(cmd.chat.id, u"Quem você pensa que é pra " + \
                     u"falar comigo dessa maneira?  Sabe quem eu sou???")
-                bot.send_message(cmd.chat.id, u"Vou verificar de novo, " + \
+                obj.send_message(cmd.chat.id, u"Vou verificar de novo, " + \
                     u"mas só dessa vez.")
                 pctg = RunTheDice()
                 fofondex[user_id] = InitializeUser(pctg=pctg)
@@ -1593,15 +1540,15 @@ def FofoMetrics(cmd):
                 msg += u"aquele %d%s de linux-libre no kernel." % (pctg, '%',)
             debug(u'%s' % msg)
             DataWrite()
-            bot.send_message(cmd.chat.id, u'%s' % msg)
+            obj.send_message(cmd.chat.id, u'%s' % msg)
         except Exception as e:
-            bot.send_message(cmd.chat.id, "Deu ruim... %s" % e)
+            obj.send_message(cmd.chat.id, "Deu ruim... %s" % e)
         return
 
     if re.search("/(fof|blob)ondex", cmd.text):
         if len(list(fofondex)) == 0:
             msg = u"Ninguém ainda teve coragem de tentar esse UltraFofo."
-            bot.send_message(cmd.chat.id, u'%s' % msg)
+            obj.send_message(cmd.chat.id, u'%s' % msg)
             return
         msg = u"Ranking Dollyinho de #UltraFofos:\n"
         if re.search("blob", cmd.text):
@@ -1634,23 +1581,23 @@ def FofoMetrics(cmd):
             del ranking
         try:
             debug(u'%s' % msg)
-            bot.send_message(cmd.chat.id, u'%s' % msg)
+            obj.send_message(cmd.chat.id, u'%s' % msg)
         except Exception as e:
-            bot.send_message(cmd.chat.id, "Deu ruim... %s" % e)
+            obj.send_message(cmd.chat.id, "Deu ruim... %s" % e)
         return
 
     if re.search("/scoreblob", cmd.text):
         try:
             text, person = cmd.text.split()
         except Exception as e:
-            bot.send_message(cmd.chat.id,  u"Manda: /scoreblob @usuario")
+            obj.send_message(cmd.chat.id,  u"Manda: /scoreblob @usuario")
             return
         debug(u"/scoreblob: %s" % person)
-        bot.send_message(cmd.chat.id,  u"Em construção...")
+        obj.send_message(cmd.chat.id,  u"Em construção...")
 
 
-@bot.message_handler(commands=["motivationals", "motivational", "motivacional" ])
-def Motivational(cmd):
+
+def Motivational(obj, cmd):
     debug(cmd.text)
     MOTIVATIONALDIR = "%s/motivational" % (os.environ.get('HOME'))
     if(os.path.exists(MOTIVATIONALDIR) == False):
@@ -1663,13 +1610,12 @@ def Motivational(cmd):
         debug("Motivational picture: %s" % motivational)
     try:
         ph = open("%s/%s" % (MOTIVATIONALDIR, motivational), 'rb')
-        bot.send_photo(cmd.chat.id, ph)
+        obj.send_photo(cmd.chat.id, ph)
     except Exception as e:
-        bot.reply_to(cmd, "Deu merda: %s" % e)
+        obj.reply_to(cmd, "Deu merda: %s" % e)
 
 
-@bot.message_handler(commands=["oquee", "oqueé"])
-def DuckDuckGo(cmd):
+def DuckDuckGo(obj, cmd):
     debug(cmd.text)
     q = cmd.text.split()
     if len(q) == 1:
@@ -1686,16 +1632,15 @@ def DuckDuckGo(cmd):
         print(e) # get internal
         pass
     if not answer:
-        bot.reply_to(cmd, "Não tenho a menor idéia.  Tem de perguntar no google.")
+        obj.reply_to(cmd, "Não tenho a menor idéia.  Tem de perguntar no google.")
         return
     try:
-        bot.reply_to(cmd, answer)
+        obj.reply_to(cmd, answer)
     except Exception as e:
-        bot.reply_to(cmd, "Deu merda: %s" % e)
+        obj.reply_to(cmd, "Deu merda: %s" % e)
 
 
-@bot.message_handler(commands=["mimimi"])
-def Mimimizer(session):
+def Mimimizer(obj, session):
     debug(session.text)
     param = session.text.split()
     if len(param) <= 1:
@@ -1705,16 +1650,15 @@ def Mimimizer(session):
     resp = re.sub("A|E|O|U", "I", resp)
     resp = re.sub(u"á|é|ó|ú", u"í", resp)
     resp = re.sub(u"Á|É|Ó|Ú", u"Í", resp)
-    bot.reply_to(session, u"%s" % resp)
+    obj.reply_to(session, u"%s" % resp)
     # Falta implementar quem...
 
 
-@bot.message_handler(commands=["ban"])
-def Ban(session):
+def Ban(obj, session):
     debug(session.text)
-    bot.reply_to(session, "Deixa que eu pego ele na hora da saída.")
+    obj.reply_to(session, "Deixa que eu pego ele na hora da saída.")
     gif = "https://media.giphy.com/media/H99r2HtnYs492/giphy.gif"
-    bot.send_document(session.chat.id, gif)
+    obj.send_document(session.chat.id, gif)
     # Falta implementar quem...
 
 def is_command(message):
@@ -1725,7 +1669,6 @@ def is_command(message):
     return re.search("^/[A-Za-z].*", u_message_text)
 
 
-@bot.message_handler(func=is_command, content_types=['text'])
 def GenericMessageHandler(session):
     command = u"%s" % session.text[1:]
     command = command.split()[0]
@@ -1735,8 +1678,7 @@ def GenericMessageHandler(session):
         reply_text(bot, session, get_answer(command))
 
 
-@bot.message_handler(func=lambda m: True)
-def WhatEver(session):
+def WhatEver(obj, session):
     debug(session.text)
     if get_answer(session.text):
         reply_text(bot, session, get_answer(session.text))
@@ -1747,16 +1689,150 @@ def WhatEver(session):
     #bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")
 
 
+
+
+# avoiding nulls
 if __name__ == '__main__':
+    fofondex = {}
+    start_time = time.time()
+
     if sys.argv[-1] == "check":
         print("Ok")
         sys.exit(os.EX_OK)
+
+
+    set_debug()
+    debug("Starting bot")
+    get_global_keys()
+    bot = telebot.TeleBot(key)
+
+    @bot.message_handler(commands=["oi", "hello", "helloworld", "oiamor", "teamo"])
+    def handler(command):
+        hello_world(bot, command)
+
+    @bot.message_handler(commands=["manda", "manga"])
+    def handler(command):
+        Manda(bot, command)
+
+    @bot.message_handler(commands=["pipoca"])
+    def handler(command):
+        PipocaGif(bot, command)
+
+    @bot.message_handler(commands=["reload"])
+    def handler(command):
+        Reload(bot, command)
+
+    @bot.message_handler(commands=["debug"])
+    def handler(command):
+        ToggleDebug(bot, command)
+
+    @bot.message_handler(commands=["fuda"])
+    def handler(command):
+        fuda(bot, command)
+
+    @bot.message_handler(commands=["uname", "uptime", "date", "df"])
+    def handler(command):
+        SysCmd(bot, command)
+
+    @bot.message_handler(commands=["reboot", "shutdown", "sudo", "su"])
+    def handler(command):
+        Requer(bot, command)
+
+    @bot.message_handler(commands=["fortune", "fortunes", "sorte"])
+    def handler(command):
+        Fortune(bot, command)
+
+    @bot.message_handler(commands=["hacked", "pwn3d"])
+    def handler(command):
+        Hacked(bot, command)
+
+    @bot.message_handler(commands=["apt-get", "aptitude", "apt"])
+    def handler(command):
+        AptCmds(bot, command)
+
+    @bot.message_handler(commands=["dia", "bomdia"])
+    def handler(command):
+        Dia(bot, command)
+
+    @bot.message_handler(commands=["photo"])
+    def handler(command):
+        Photo(bot, command)
+
+    @bot.message_handler(commands=["unixloadon", "pauta", "pautas", "addpauta", "novapauta", "testauser", "addsugestao"])
+    def handler(command):
+        UnixLoadOn(bot, command)
+
+    @bot.message_handler(commands=["distros", "distro", "ubuntu", "debian", "arch", "manjaro"])
+    def handler(command):
+        Distros(bot, command)
+
+    @bot.message_handler(commands=["xkcd", "dilbert", "vidadeprogramador",
+        "tirinhas", "strips", "vidadesuporte", "angulodevista",
+        "mandanudes", "nudes", "mandafoods", "foods",
+        "tirinhadorex", "megazine"])
+    def handler(command):
+        Comics(bot, command)
+
+    @bot.message_handler(commands=["fofometro", "fofondex", "resetfofos",
+        "blobometro", "blobondex", "scoreblob"])
+    def handler(command):
+        FofoMetrics(bot, command)
+
+    @bot.message_handler(commands=["motivationals", "motivational", "motivacional" ])
+    def handler(command):
+        Motivational(bot, command)
+
+    @bot.message_handler(commands=["oquee", "oqueé"])
+    def handler(command):
+        DuckDuckGo(bot, command)
+
+    @bot.message_handler(commands=["mimimi"])
+    def handler(command):
+        Mimimizer(bot, command)
+
+    @bot.message_handler(commands=["ban"])
+    def handler(command):
+        Ban(bot, command)
+
+    @bot.message_handler(func=is_command, content_types=['text'])
+    def handler(command):
+        GenericMessageHandler(bot, command)
+
+    @bot.message_handler(func=lambda m: True)
+    def handler(command):
+        WhatEver(bot, command)
+
     try:
         debug("Main()")
         main()
         debug("Polling...")
         bot.polling()
     except Exception as e:
-        print(e)
-        debug(e)
+        print("ERROR:" + e)
+        debug("ERROR:" + e)
     os.unlink(PIDFILE)
+
+"""
+{'delete_chat_photo': None, 'migrate_to_chat_id': None, 'text': u'/reload',
+'sticker': None, 'pinned_message': None, 'forward_from_chat': None,
+'migrate_from_chat_id': None, 'video': None, 'left_chat_member': None,
+'chat': {'username': u'ultraOSI', 'first_name': None, 'last_name': None,
+'title': u'UltraOSI - Free Software e Opensource sem FUDA e com blobs :)',
+'all_members_are_administrators': None,
+'type': u'supergroup',
+'id': -1001109390847L},
+'group_chat_created': None,
+'new_chat_photo': None,
+'forward_date': None,
+'entities': [<telebot.types.MessageEntity instance at 0x74833c60>],
+'supergroup_chat_created': None, 'photo': None, 'document': None,
+'forward_from': None, 'location': None, 'edit_date': None,
+'content_type': 'text',
+'from_user': {'username': u'HelioLoureiro',
+'first_name': u'[Helio@blobeiro.eng.br]>',
+'last_name': None, 'id': 64457589},
+'date': 1487941240,
+'new_chat_member': None, 'voice': None, 'reply_to_message': None,
+'venue': None, 'message_id': 11569, 'caption': None, 'contact': None,
+'channel_chat_created': None, 'audio': None, 'new_chat_title': None}
+"""

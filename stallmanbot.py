@@ -68,6 +68,7 @@ fontes - Pra ter livre acesso ao conteúdo.
 oiamor - Também te amo.
 fuda - Os males do software livre.
 hacked - Shame, shame, shame...
+corona - status do corona virus
 """
 
 DEBUG = True
@@ -1689,6 +1690,67 @@ def WhatEver(obj, session):
     #bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")
 
 
+def getJSON(url):
+    req = requests.get(url)
+    if req.status_code != 200:
+        raise Exception("Failed to fetch data from:", url)
+    return json.loads(req.text)
+
+
+def CoronaVirus(obj, session):
+    WORLD = "https://corona.lmao.ninja/all"
+    BR = "https://corona.lmao.ninja/countries/brazil"
+    SE = "https://corona.lmao.ninja/countries/sweden"
+    ALL = "https://corona.lmao.ninja/countries"
+
+    """
+    Output: {"country":"Sweden","cases":1190,"todayCases":69,"deaths":7,"todayDeaths":0,"recovered":1,"critical":12}
+    """
+    response =  "##################################\n"
+    response += "# Corona Virus ao redor do mundo #\n"
+    response += "##################################\n"
+
+    myJSON = getJSON(WORLD)
+
+    response += " Casos no total: %s\n" % myJSON["cases"]
+    response += " Casos somente hoje: %s\n" % myJSON["todayCases"]
+    response += " Mortes no total: %s\n" % myJSON["deaths"]
+    response += " Mortes somente hoje: %s\n" % myJSON["todayDeaths"]
+    response += " Recuperados no total: %s\n" % myJSON["recovered"]
+    response += " Em estado crítico no total: %s\n" % myJSON["critical"]
+
+    reply_text(obj, session, response)
+
+    response =  "##################################\n"
+    response += "#     Corona Virus no Brasil     #\n"
+    response += "##################################\n"
+
+    myJSON = getJSON(BR)
+
+    response += " Casos no total: %s\n" % myJSON["cases"]
+    response += " Casos somente hoje: %s\n" % myJSON["todayCases"]
+    response += " Mortes no total: %s\n" % myJSON["deaths"]
+    response += " Mortes somente hoje: %s\n" % myJSON["todayDeaths"]
+    response += " Recuperados no total: %s\n" % myJSON["recovered"]
+    response += " Em estado crítico no total: %s\n" % myJSON["critical"]
+
+    reply_text(obj, session, response)
+
+
+    response =  "##################################\n"
+    response += "#     Corona Virus na Suécia     #\n"
+    response += "##################################\n"
+
+    myJSON = getJSON(SE)
+
+    response += " Casos no total: %s\n" % myJSON["cases"]
+    response += " Casos somente hoje: %s\n" % myJSON["todayCases"]
+    response += " Mortes no total: %s\n" % myJSON["deaths"]
+    response += " Mortes somente hoje: %s\n" % myJSON["todayDeaths"]
+    response += " Recuperados no total: %s\n" % myJSON["recovered"]
+    response += " Em estado crítico no total: %s\n" % myJSON["critical"]
+
+    reply_text(obj, session, response)
 
 
 # avoiding nulls
@@ -1793,6 +1855,10 @@ if __name__ == '__main__':
     @bot.message_handler(commands=["ban"])
     def handler(command):
         Ban(bot, command)
+
+    @bot.message_handler(commands=["corona, coronavirus"])
+    def handler(command):
+        CoronaVirus(bot, command)
 
     @bot.message_handler(func=is_command, content_types=['text'])
     def handler(command):

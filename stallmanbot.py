@@ -1708,7 +1708,7 @@ def generateReport(url):
     response =  "##################################\n"
     if "country" in myJSON:
         countryName = myJSON["country"]
-    response += "# Corona Virus ao redor em {countryName} #\n"
+    response += f"# Corona Virus ao redor em {countryName} #\n"
     response += "##################################\n"
 
 

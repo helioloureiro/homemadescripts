@@ -317,15 +317,15 @@ def set_debug():
             DEBUG = True
 
 
-def debug(msg):
+def debug(*msg):
     if DEBUG and msg:
         try:
-            msg = "[%s] %s" % (time.ctime(), str(msg))
-            print(msg)
+            timestamp = "[%s]" % time.ctime()
+            print(timestamp, msg)
             syslog.openlog(LOGTAG)
             syslog.syslog(syslog.LOG_DEBUG, msg)
         except Exception as e:
-            print("[%s] DEBUG ERROR: %s" % (time.ctime(), str(e)))
+            print(f"{timestamp} DEBUG ERROR:", e)
 
 
 def error(message):
@@ -1881,7 +1881,6 @@ if __name__ == '__main__':
         bot.polling()
     except Exception as e:
         print("ERROR:", e)
-        debug("ERROR:" + str(e))
     os.unlink(PIDFILE)
 
 """

@@ -1705,13 +1705,14 @@ def generateReport(url):
     myJSON(url)
     countryName = os.path.basename(url)
 
+    myJSON = getJSON(url)
+    
     response =  "##################################\n"
     if "country" in myJSON:
         countryName = myJSON["country"]
     response += "# Corona Virus ao redor em {countryName} #\n"
     response += "##################################\n"
 
-    myJSON = getJSON(WORLD)
 
     if "cases" in myJSON:
         response += " Casos no total: %s\n" % myJSON["cases"]

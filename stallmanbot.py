@@ -319,11 +319,12 @@ def set_debug():
 
 def debug(*msg):
     if DEBUG and msg:
+        timestamp = "[%s]" % time.ctime()
+        allText = " ".join(str(x) for x in msg)
         try:
-            timestamp = "[%s]" % time.ctime()
             print(timestamp, *msg)
             syslog.openlog(LOGTAG)
-            syslog.syslog(syslog.LOG_DEBUG, *msg)
+            syslog.syslog(syslog.LOG_DEBUG, allText)
         except Exception as e:
             print(f"{timestamp} DEBUG ERROR:", e)
 

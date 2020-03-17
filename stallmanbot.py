@@ -1856,7 +1856,7 @@ if __name__ == '__main__':
     def handler(command):
         Ban(bot, command)
 
-    @bot.message_handler(commands=["corona, coronavirus"])
+    @bot.message_handler(commands=["corona", "coronavirus"])
     def handler(command):
         CoronaVirus(bot, command)
 

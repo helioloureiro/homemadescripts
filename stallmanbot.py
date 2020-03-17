@@ -321,9 +321,9 @@ def debug(*msg):
     if DEBUG and msg:
         try:
             timestamp = "[%s]" % time.ctime()
-            print(timestamp, msg)
+            print(timestamp, *msg)
             syslog.openlog(LOGTAG)
-            syslog.syslog(syslog.LOG_DEBUG, msg)
+            syslog.syslog(syslog.LOG_DEBUG, *msg)
         except Exception as e:
             print(f"{timestamp} DEBUG ERROR:", e)
 
@@ -1859,7 +1859,7 @@ if __name__ == '__main__':
     def handler(command):
         Ban(bot, command)
 
-    @bot.message_handler(commands=["corona"])
+    @bot.message_handler(commands=["corona", "coronavirus"])
     def handler(command):
         CoronaVirus(bot, command)
 

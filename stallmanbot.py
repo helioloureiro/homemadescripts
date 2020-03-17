@@ -1692,7 +1692,7 @@ def WhatEver(obj, session):
 
 
 def getJSON(url):
-    debug("getJON() url=" % url)
+    debug(f"getJON() url={url}")
     req = requests.get(url)
     if req.status_code != 200:
         raise Exception("Failed to fetch data from:", url)

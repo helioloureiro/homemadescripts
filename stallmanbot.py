@@ -1702,11 +1702,9 @@ def getJSON(url):
 
 def generateReport(url):
     debug(f"generateReport(): country={url}")
-    myJSON(url)
     countryName = os.path.basename(url)
-
     myJSON = getJSON(url)
-    
+
     response =  "##################################\n"
     if "country" in myJSON:
         countryName = myJSON["country"]

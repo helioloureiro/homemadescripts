@@ -1672,13 +1672,13 @@ def is_command(message):
     return re.search("^/[A-Za-z].*", u_message_text)
 
 
-def GenericMessageHandler(session):
+def GenericMessageHandler(obj, session):
     command = u"%s" % session.text[1:]
     command = command.split()[0]
     command = command.split("@")[0]
     debug(u"Generic calling for %s" % command)
     if get_answer(command):
-        reply_text(bot, session, get_answer(command))
+        reply_text(obj, session, get_answer(command))
 
 
 def WhatEver(obj, session):

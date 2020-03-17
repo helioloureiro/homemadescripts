@@ -1729,20 +1729,31 @@ def generateReport(url):
 
 def CoronaVirus(obj, session):
     debug(session.text)
-    WORLD = "https://corona.lmao.ninja/all"
-    BR = "https://corona.lmao.ninja/countries/brazil"
-    SE = "https://corona.lmao.ninja/countries/sweden"
-    BG = "https://corona.lmao.ninja/countries/belgium"
-    UK = "https://corona.lmao.ninja/countries/uk"
-    IT = "https://corona.lmao.ninja/countries/italy"
-    GE = "https://corona.lmao.ninja/countries/germany"
-    ALL_COUNTRIES = "https://corona.lmao.ninja/countries"
+    countries = {
+    "WORLD" : {"url" : "https://corona.lmao.ninja/all"},
+    "BR" : {"url" : "https://corona.lmao.ninja/countries/brazil"},
+    "SE" :  {"url" : "https://corona.lmao.ninja/countries/sweden"},
+    "BE" :  {"url" : "https://corona.lmao.ninja/countries/belgium"},
+    "UK" :  {"url" : "https://corona.lmao.ninja/countries/uk"},
+    "IT" : {"url" : "https://corona.lmao.ninja/countries/italy"},
+    "DE" :  {"url" : "https://corona.lmao.ninja/countries/germany"},
+    "CH" : {"url" : "https://corona.lmao.ninja/countries/switzerland"},
+    "ALL_COUNTRIES" :  {"https://corona.lmao.ninja/countries"}
+    }
 
     """
     Output: {"country":"Sweden","cases":1190,"todayCases":69,"deaths":7,"todayDeaths":0,"recovered":1,"critical":12}
     """
-    for country in [ WORLD, BR, SE, BG, UK, IT, GE ]:
-        response = generateReport(country)
+    command = session.text
+    regions = command.split()[1:]
+    if len(regions) == 0:
+        regions = [ "WORLD" ]
+    for countryID in regions:
+        if country in countries:
+            url = countries[countryID]["url"]
+        else:
+            url = countries["WORLD"]["url"]
+        response = generateReport(url)
         debug(response)
         reply_text(obj, session, response)
 

@@ -1749,7 +1749,7 @@ def CoronaVirus(obj, session):
     if len(regions) == 0:
         regions = [ "WORLD" ]
     for countryID in regions:
-        if country in countries:
+        if countryID in countries:
             url = countries[countryID]["url"]
         else:
             url = countries["WORLD"]["url"]

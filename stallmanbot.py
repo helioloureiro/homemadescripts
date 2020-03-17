@@ -1691,6 +1691,7 @@ def WhatEver(obj, session):
 
 
 def getJSON(url):
+    debug("getJON() url=" % url)
     req = requests.get(url)
     if req.status_code != 200:
         raise Exception("Failed to fetch data from:", url)
@@ -1860,7 +1861,7 @@ if __name__ == '__main__':
     def handler(command):
         Ban(bot, command)
 
-    @bot.message_handler(commands=["corona", "coronavirus"])
+    @bot.message_handler(commands=["corona"])
     def handler(command):
         CoronaVirus(bot, command)
 

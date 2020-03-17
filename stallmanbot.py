@@ -1700,61 +1700,52 @@ def getJSON(url):
     return json.loads(req.text)
 
 
+def generateReport(url):
+    debug(f"generateReport(): country={url}")
+    myJSON(url)
+    countryName = os.path.basename(url)
+
+    response =  "##################################\n"
+    if "country" in myJSON:
+        countryName = myJSON["country"]
+    response += "# Corona Virus ao redor em {countryName} #\n"
+    response += "##################################\n"
+
+    myJSON = getJSON(WORLD)
+
+    if "cases" in myJSON:
+        response += " Casos no total: %s\n" % myJSON["cases"]
+    if "todayCases" in myJSON:
+        response += " Casos somente hoje: %s\n" % myJSON["todayCases"]
+    if "deaths" in myJSON:
+        response += " Mortes no total: %s\n" % myJSON["deaths"]
+    if "todayDeaths" in myJSON:
+        response += " Mortes somente hoje: %s\n" % myJSON["todayDeaths"]
+    if "recovered" in myJSON:
+        response += " Recuperados no total: %s\n" % myJSON["recovered"]
+    if "critical" in myJSON:
+        response += " Em estado crítico no total: %s\n" % myJSON["critical"]
+
+    return response
+
 def CoronaVirus(obj, session):
     debug(session.text)
     WORLD = "https://corona.lmao.ninja/all"
     BR = "https://corona.lmao.ninja/countries/brazil"
     SE = "https://corona.lmao.ninja/countries/sweden"
-    ALL = "https://corona.lmao.ninja/countries"
+    BG = "https://corona.lmao.ninja/countries/belgium"
+    UK = "https://corona.lmao.ninja/countries/uk"
+    IT = "https://corona.lmao.ninja/countries/italy"
+    GE = "https://corona.lmao.ninja/countries/germany"
+    ALL_COUNTRIES = "https://corona.lmao.ninja/countries"
 
     """
     Output: {"country":"Sweden","cases":1190,"todayCases":69,"deaths":7,"todayDeaths":0,"recovered":1,"critical":12}
     """
-    response =  "##################################\n"
-    response += "# Corona Virus ao redor do mundo #\n"
-    response += "##################################\n"
-
-    myJSON = getJSON(WORLD)
-
-    response += " Casos no total: %s\n" % myJSON["cases"]
-    response += " Mortes no total: %s\n" % myJSON["deaths"]
-    response += " Recuperados no total: %s\n" % myJSON["recovered"]
-
-    debug(response)
-    reply_text(obj, session, response)
-
-    response =  "##################################\n"
-    response += "#     Corona Virus no Brasil     #\n"
-    response += "##################################\n"
-
-    myJSON = getJSON(BR)
-
-    response += " Casos no total: %s\n" % myJSON["cases"]
-    response += " Casos somente hoje: %s\n" % myJSON["todayCases"]
-    response += " Mortes no total: %s\n" % myJSON["deaths"]
-    response += " Mortes somente hoje: %s\n" % myJSON["todayDeaths"]
-    response += " Recuperados no total: %s\n" % myJSON["recovered"]
-    response += " Em estado crítico no total: %s\n" % myJSON["critical"]
-
-    debug(response)
-    reply_text(obj, session, response)
-
-
-    response =  "##################################\n"
-    response += "#     Corona Virus na Suécia     #\n"
-    response += "##################################\n"
-
-    myJSON = getJSON(SE)
-
-    response += " Casos no total: %s\n" % myJSON["cases"]
-    response += " Casos somente hoje: %s\n" % myJSON["todayCases"]
-    response += " Mortes no total: %s\n" % myJSON["deaths"]
-    response += " Mortes somente hoje: %s\n" % myJSON["todayDeaths"]
-    response += " Recuperados no total: %s\n" % myJSON["recovered"]
-    response += " Em estado crítico no total: %s\n" % myJSON["critical"]
-
-    debug(response)
-    reply_text(obj, session, response)
+    for country in [ WORLD, BR, SE, BG, UK, IT, GE ]:
+        response = generateReport(country)
+        debug(response)
+        reply_text(obj, session, response)
 
 
 # avoiding nulls

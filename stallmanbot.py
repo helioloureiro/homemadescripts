@@ -1716,11 +1716,8 @@ def CoronaVirus(obj, session):
     myJSON = getJSON(WORLD)
 
     response += " Casos no total: %s\n" % myJSON["cases"]
-    response += " Casos somente hoje: %s\n" % myJSON["todayCases"]
     response += " Mortes no total: %s\n" % myJSON["deaths"]
-    response += " Mortes somente hoje: %s\n" % myJSON["todayDeaths"]
     response += " Recuperados no total: %s\n" % myJSON["recovered"]
-    response += " Em estado crítico no total: %s\n" % myJSON["critical"]
 
     debug(response)
     reply_text(obj, session, response)

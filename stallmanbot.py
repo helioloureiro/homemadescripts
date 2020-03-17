@@ -69,6 +69,7 @@ oiamor - Também te amo.
 fuda - Os males do software livre.
 hacked - Shame, shame, shame...
 corona - status do corona virus
+version - versão do bot
 """
 
 DEBUG = True
@@ -319,12 +320,12 @@ def set_debug():
 def debug(msg):
     if DEBUG and msg:
         try:
-            msg = "[%s] %s" % (time.ctime(), msg)
+            msg = "[%s] %s" % (time.ctime(), str(msg))
             print(msg)
             syslog.openlog(LOGTAG)
             syslog.syslog(syslog.LOG_DEBUG, msg)
         except Exception as e:
-            print("[%s] DEBUG ERROR: %s" % (time.ctime(), e))
+            print("[%s] DEBUG ERROR: %s" % (time.ctime(), str(e)))
 
 
 def error(message):
@@ -1879,8 +1880,8 @@ if __name__ == '__main__':
         debug("Polling...")
         bot.polling()
     except Exception as e:
-        print("ERROR:" + e)
-        debug("ERROR:" + e)
+        print("ERROR:", e)
+        debug("ERROR:" + str(e))
     os.unlink(PIDFILE)
 
 """

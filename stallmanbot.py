@@ -1698,6 +1698,7 @@ def getJSON(url):
 
 
 def CoronaVirus(obj, session):
+    debug(session.text)
     WORLD = "https://corona.lmao.ninja/all"
     BR = "https://corona.lmao.ninja/countries/brazil"
     SE = "https://corona.lmao.ninja/countries/sweden"
@@ -1719,6 +1720,7 @@ def CoronaVirus(obj, session):
     response += " Recuperados no total: %s\n" % myJSON["recovered"]
     response += " Em estado crítico no total: %s\n" % myJSON["critical"]
 
+    debug(response)
     reply_text(obj, session, response)
 
     response =  "##################################\n"
@@ -1734,6 +1736,7 @@ def CoronaVirus(obj, session):
     response += " Recuperados no total: %s\n" % myJSON["recovered"]
     response += " Em estado crítico no total: %s\n" % myJSON["critical"]
 
+    debug(response)
     reply_text(obj, session, response)
 
 
@@ -1750,6 +1753,7 @@ def CoronaVirus(obj, session):
     response += " Recuperados no total: %s\n" % myJSON["recovered"]
     response += " Em estado crítico no total: %s\n" % myJSON["critical"]
 
+    debug(response)
     reply_text(obj, session, response)
 
 

@@ -1762,8 +1762,9 @@ def generateReport(country=None):
         myJSON = getCountryCoronaData(country, dataJSON)
     else:
         myJSON = generateWorldCoronaData(dataJSON)
+        country = myJSON["country"]
     response =  "##################################\n"
-    response += f"# Corona Virus em {countryName} #\n"
+    response += f"# Corona Virus em {country} #\n"
     response += "##################################\n"
 
 
@@ -1824,7 +1825,7 @@ def CoronaVirus(obj, session):
         reply_text(obj, session, response)
 
     for countryName in countries:
-        response = generateReport(countryName)
+        response = generateReport(country=countryName)
         debug(response)
         reply_text(obj, session, response)
 

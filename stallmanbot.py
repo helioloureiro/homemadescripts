@@ -1801,7 +1801,7 @@ def fetchCoronaData():
             with open(OUTPUT) as dataJSON:
                 return json.loads(dataJSON.read())
 
-    req = request.get(URL)
+    req = requests.get(URL)
     if req.status_code != 200:
         raise Exception(f"Failed to fetch data from {URL} (status={req.status_code})")
     with open(OUTPUT, 'w') as dataJSON:

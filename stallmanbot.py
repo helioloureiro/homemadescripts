@@ -1754,8 +1754,9 @@ def generateWorldCoronaData(dataJSON):
         casesPerOneMillion)
     return json.loads(result)
 
-def generateReport(country=None, dataJSON):
+def generateReport(country=None):
     debug(f"generateReport(): country={country}")
+    dataJSON = fetchCoronaData()
 
     if country is not None:
         myJSON = getCountryCoronaData(country, dataJSON)
@@ -1807,6 +1808,7 @@ def fetchCoronaData():
         dataJSON.write(req.text)
         dataJSON.write("\n")
     return json.loads(req.text)
+
 
 def CoronaVirus(obj, session):
     debug(session.text)

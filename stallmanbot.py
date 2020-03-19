@@ -1692,23 +1692,77 @@ def WhatEver(obj, session):
     #bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")
 
 
-def getJSON(url):
-    debug(f"getJON() url={url}")
-    req = requests.get(url)
-    if req.status_code != 200:
-        raise Exception("Failed to fetch data from:", url)
-    return json.loads(req.text)
+def getCountryCoronaData(country, dataJSON):
+    debug("getCountryCoronaData()")
+    debug(f" * Country: {country}")
+    for countryJSON in dataJSON:
+        if not "country" in countryJSON:
+            continue
+        if countryJSON["country"] == country:
+            return countryJSON
+    return None
 
 
-def generateReport(url):
-    debug(f"generateReport(): country={url}")
-    countryName = os.path.basename(url)
-    myJSON = getJSON(url)
+def generateWorldCoronaData(dataJSON):
+    debug("generateWorldCoronaData()")
+    """
+    {"country":"China","cases":80928,"todayCases":34,"deaths":3245,"todayDeaths":8,"recovered":70420,"active":7263,"critical":2274,"casesPerOneMillion":56}
+    """
+    cases = 0
+    todayCases = 0
+    deaths = 0
+    todayDeaths = 0
+    recovered = 0
+    active = 0
+    critical = 0
+    casesPerOneMillion = 0
+    for data in dataJSON:
+        if "cases" in data:
+            cases += int(data["cases"])
+        if "todayCases" in data:
+            todayCases += int(data["todayCases"])
+        if "deaths" in data:
+            deaths += int(data["deaths"])
+        if "todayDeaths" in data:
+            todayDeaths += int(data["todayDeaths"])
+        if "recovered" in data:
+            recovered += int(data["recovered"])
+        if "active" in data:
+            active += int(data["active"])
+        if "critical" in data:
+            critical += int(data["critical"])
+        if "casesPerOneMillion" in data:
+            casesPerOneMillion += int(data["casesPerOneMillion"])
+    result = """{
+        "country":"World",
+        "cases":%d,
+        "todayCases":%d,
+        "deaths":%d,
+        "todayDeaths":%d,
+        "recovered":%d,
+        "active":%d,
+        "critical":%d,
+        "casesPerOneMillion":%d
+        }""" % (
+        cases,
+        todayCases,
+        deaths,
+        todayDeaths,
+        recovered,
+        active,
+        critical,
+        casesPerOneMillion)
+    return json.loads(result)
 
+def generateReport(country=None, dataJSON):
+    debug(f"generateReport(): country={country}")
+
+    if country is not None:
+        myJSON = getCountryCoronaData(country, dataJSON)
+    else:
+        myJSON = generateWorldCoronaData(dataJSON)
     response =  "##################################\n"
-    if "country" in myJSON:
-        countryName = myJSON["country"]
-    response += f"# Corona Virus ao redor em {countryName} #\n"
+    response += f"# Corona Virus em {countryName} #\n"
     response += "##################################\n"
 
 
@@ -1724,36 +1778,51 @@ def generateReport(url):
         response += " Recuperados no total: %s\n" % myJSON["recovered"]
     if "critical" in myJSON:
         response += " Em estado crítico no total: %s\n" % myJSON["critical"]
+    if "casesPerOneMillion" in myJSON:
+        response += " Casos a cada milhão: %s\n" % myJSON["casesPerOneMillion"]
 
     return response
 
+
+def fetchCoronaData():
+    debug("fetchCoronaData()")
+    URL = "https://coronavirus-19-api.herokuapp.com/countries"
+    OUTPUT = "/tmp/corona-data.json"
+
+    if os.path.exists(OUTPUT):
+        fileStat = os.fstat(OUTPUT)
+        mtime = fileStat.st_mtime
+        currentTime = time.time()
+
+        oneDayinSeconds = 24 * 60 * 60
+        delta = currentTime - mtime
+        if delta < oneDayinSeconds:
+            with open(OUTPUT) as dataJSON:
+                return json.loads(dataJSON.read())
+
+    req = request.get(URL)
+    if req.status_code != 200:
+        raise Exception(f"Failed to fetch data from {URL} (status={req.status_code})")
+    with open(OUTPUT, 'w') as dataJSON:
+        dataJSON.write(req.text)
+        dataJSON.write("\n")
+    return json.loads(req.text)
+
 def CoronaVirus(obj, session):
     debug(session.text)
-    countries = {
-    "WORLD" : {"url" : "https://corona.lmao.ninja/all"},
-    "BR" : {"url" : "https://corona.lmao.ninja/countries/brazil"},
-    "SE" :  {"url" : "https://corona.lmao.ninja/countries/sweden"},
-    "BE" :  {"url" : "https://corona.lmao.ninja/countries/belgium"},
-    "UK" :  {"url" : "https://corona.lmao.ninja/countries/uk"},
-    "IT" : {"url" : "https://corona.lmao.ninja/countries/italy"},
-    "DE" :  {"url" : "https://corona.lmao.ninja/countries/germany"},
-    "CH" : {"url" : "https://corona.lmao.ninja/countries/switzerland"},
-    "ALL_COUNTRIES" :  {"https://corona.lmao.ninja/countries"}
-    }
-
+    dataJSON = fetchCoronaData()
     """
     Output: {"country":"Sweden","cases":1190,"todayCases":69,"deaths":7,"todayDeaths":0,"recovered":1,"critical":12}
     """
     command = session.text
-    regions = command.split()[1:]
-    if len(regions) == 0:
-        regions = [ "WORLD" ]
-    for countryID in regions:
-        if countryID in countries:
-            url = countries[countryID]["url"]
-        else:
-            url = countries["WORLD"]["url"]
-        response = generateReport(url)
+    countries = command.split()[1:]
+    if len(countries) == 0:
+        response = generateReport()
+        debug(response)
+        reply_text(obj, session, response)
+
+    for countryName in countries:
+        response = generateReport(countryName)
         debug(response)
         reply_text(obj, session, response)
 

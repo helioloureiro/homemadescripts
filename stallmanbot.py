@@ -1791,7 +1791,7 @@ def fetchCoronaData():
     OUTPUT = "/tmp/corona-data.json"
 
     if os.path.exists(OUTPUT):
-        fileStat = os.fstat(OUTPUT)
+        fileStat = os.stat(OUTPUT)
         mtime = fileStat.st_mtime
         currentTime = time.time()
 

@@ -1691,7 +1691,7 @@ def WhatEver(obj, session):
         return
     #bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")
 
-        
+
 def clean_up_country(country):
         return country.stip().lower()
 
@@ -1768,6 +1768,10 @@ def generateReport(country=None):
     else:
         myJSON = generateWorldCoronaData(dataJSON)
         country = myJSON["country"]
+
+    if myJSON is None:
+        return None
+    
     response =  "##################################\n"
     response += f"# Corona Virus em {country} #\n"
     response += "##################################\n"

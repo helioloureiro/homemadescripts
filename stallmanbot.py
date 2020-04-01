@@ -1693,7 +1693,7 @@ def WhatEver(obj, session):
 
 
 def clean_up_country(country):
-        return country.stip().lower()
+        return country.strip().lower()
 
 
 def getCountryCoronaData(country, dataJSON):
@@ -1771,7 +1771,7 @@ def generateReport(country=None):
 
     if myJSON is None:
         return None
-    
+
     response =  "##################################\n"
     response += f"# Corona Virus em {country} #\n"
     response += "##################################\n"

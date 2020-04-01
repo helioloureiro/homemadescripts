@@ -1847,9 +1847,10 @@ def CoronaVirus(obj, session):
         else:
             debug("No matchig country")
             availableCountries = getAvailableCountries()
-            reply_text(obj, session, "Países: " + ",".join(availableCountries))
-
-
+            reply_text(obj,
+                session,
+                "Países: " + ", ".join(sorted(availableCountries)))
+                
 
 # avoiding nulls
 if __name__ == '__main__':

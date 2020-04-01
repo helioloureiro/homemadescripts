@@ -1366,7 +1366,7 @@ def Comics(obj, cmd):
         cmd_new = cmd
         for zine in megazines:
             cmd_new.text = "/%s" % zine
-            Comics(cmd_new)
+            Comics(obj, cmd_new)
     else:
         obj.send_message(cmd.chat.id, "É... foi não...")
 

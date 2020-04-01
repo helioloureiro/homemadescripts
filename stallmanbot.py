@@ -1787,14 +1787,20 @@ def generateReport(country=None):
     return response
 
 
+def getFileMtime(fileName):
+    fileStat = os.stat(fileName)
+    mtime = fileStat.st_mtime
+    return mtime
+
+CORONAJSON = "/tmp/corona-data.json"
+
 def fetchCoronaData():
     debug("fetchCoronaData()")
     URL = "https://coronavirus-19-api.herokuapp.com/countries"
-    OUTPUT = "/tmp/corona-data.json"
+    OUTPUT = CORONAJSON
 
     if os.path.exists(OUTPUT):
-        fileStat = os.stat(OUTPUT)
-        mtime = fileStat.st_mtime
+        mtime = getFileMtime(OUTPUT)
         currentTime = time.time()
 
         sixHours = 6 * 60 * 60
@@ -1836,6 +1842,10 @@ def CoronaVirus(obj, session):
         if response is not None:
             debug(response)
             reply_text(obj, session, response)
+            jsonMtime = getFileMtime(CORONAJSON)
+            reply_text(obj,
+                session,
+                "Dados atualizados em: " + time.ctime(jsonMtime))
         else:
             debug("No matchig country")
             availableCountries = getAvailableCountries()

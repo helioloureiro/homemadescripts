@@ -1256,7 +1256,7 @@ def GetImg(url):
     return img
 
 
-def Comics(cmd):
+def Comics(obj, cmd):
     debug("Comics(): %s" % cmd.text)
     img = None
     if re.search("/xkcd", cmd.text):
@@ -1850,7 +1850,7 @@ def CoronaVirus(obj, session):
             reply_text(obj,
                 session,
                 "Países: " + ", ".join(sorted(availableCountries)))
-                
+
 
 # avoiding nulls
 if __name__ == '__main__':

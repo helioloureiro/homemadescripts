@@ -1811,9 +1811,15 @@ def fetchCoronaData():
     return json.loads(req.text)
 
 
+def getAvailableCountries():
+    dataJSON = fetchCoronaData()
+    countries = []
+    for data in dataJSON:
+        countries.append(data["country"])
+    return countries
+
 def CoronaVirus(obj, session):
     debug(session.text)
-    dataJSON = fetchCoronaData()
     """
     Output: {"country":"Sweden","cases":1190,"todayCases":69,"deaths":7,"todayDeaths":0,"recovered":1,"critical":12}
     """
@@ -1826,8 +1832,14 @@ def CoronaVirus(obj, session):
 
     for countryName in countries:
         response = generateReport(country=countryName)
-        debug(response)
-        reply_text(obj, session, response)
+        if response is not None:
+            debug(response)
+            reply_text(obj, session, response)
+        else:
+            debug("No matchig country")
+            availableCountries = getAvailableCountries()
+            reply_text(obj, session, "Países: " + ",".join(availableCountries))
+
 
 
 # avoiding nulls

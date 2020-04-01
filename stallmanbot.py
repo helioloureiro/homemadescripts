@@ -1797,9 +1797,9 @@ def fetchCoronaData():
         mtime = fileStat.st_mtime
         currentTime = time.time()
 
-        oneDayinSeconds = 24 * 60 * 60
+        sixHours = 6 * 60 * 60
         delta = currentTime - mtime
-        if delta < oneDayinSeconds:
+        if delta < sixHours:
             with open(OUTPUT) as dataJSON:
                 return json.loads(dataJSON.read())
 

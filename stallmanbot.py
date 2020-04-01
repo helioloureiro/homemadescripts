@@ -1691,14 +1691,19 @@ def WhatEver(obj, session):
         return
     #bot.reply_to(session, u"Dude... entendi foi é porra nenhuma.")
 
+        
+def clean_up_country(country):
+        return country.stip().lower()
+
 
 def getCountryCoronaData(country, dataJSON):
     debug("getCountryCoronaData()")
     debug(f" * Country: {country}")
+    country_for_search = clean_up_country(country)
     for countryJSON in dataJSON:
-        if not "country" in countryJSON:
+        if "country" not in countryJSON:
             continue
-        if countryJSON["country"] == country:
+        if clean_up_country(countryJSON["country"]) == country_for_search:
             return countryJSON
     return None
 

@@ -45,7 +45,6 @@ xkcd - Sua dose diária de humor ácido do xkcd.
 dilbert - Sua dose diária de humor corporativo.
 vidadeprogramador - Sua dose diária de Alonzo.
 vidadesuporte - Sua dose diária de chamados no helpdesk.
-angulodevista - Sua dose diária de vida. Infelizmente.
 tirinhadorex - Tirinhas meio emo.
 fofometro - Quão fofo você é? Tente.
 fofondex - Ranking de fofura.
@@ -1283,13 +1282,6 @@ def Comics(obj, cmd):
         img_link = GetImgUrl(" 100vw, 600px", html)
         debug("%s: %s" % (cmd.text, img_link))
         img = GetImg(img_link)
-    elif re.search("/angulodevista", cmd.text):
-        # curl -s --user-agent "Mozilla/5.0" http://angulodevista.com/ | grep "div class=\"field field-name-field-image"
-        url = "http://angulodevista.com/"
-        html = GetContent(url)
-        img_link = GetImgUrl("div class=\"field field-name-field-image", html)
-        debug("%s: %s" % (cmd.text, img_link))
-        img = GetImg(img_link)
     elif re.search("/tirinhadorex", cmd.text):
         # curl http://tirinhasdorex.com/ | grep "<p><img class=\"aligncenter size-full wp-image-"
         url = "http://tirinhasdorex.com/"
@@ -1362,7 +1354,7 @@ def Comics(obj, cmd):
         os.unlink(img)
     elif re.search("megazine", cmd.text):
         megazines = [ "xkcd", "dilbert", "vidadeprogramador",
-    "vidadesuporte", "angulodevista", "tirinhadorex" ]
+    "vidadesuporte", "tirinhadorex" ]
         cmd_new = cmd
         for zine in megazines:
             cmd_new.text = "/%s" % zine
@@ -1928,7 +1920,7 @@ if __name__ == '__main__':
         Distros(bot, command)
 
     @bot.message_handler(commands=["xkcd", "dilbert", "vidadeprogramador",
-        "tirinhas", "strips", "vidadesuporte", "angulodevista",
+        "tirinhas", "strips", "vidadesuporte",
         "mandanudes", "nudes", "mandafoods", "foods",
         "tirinhadorex", "megazine"])
     def handler(command):

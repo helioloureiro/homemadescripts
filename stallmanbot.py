@@ -1001,12 +1001,17 @@ def UnixLoadOn(obj, cmd):
 
         content = pauta_body.split("\n\n")
 
-        req = requests.get(url)
+        h = { "user-agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36" }
+        # Just for TheRegister
+        if re.search("theregister.com", url):
+                h = { "user-agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36 Suck This You Bastards Blocking module requests" }
+        req = requests.get(url, headers=h)
         html = None
         if req.status_code == 200:
             html = req.text
         else:
-            return "Falha lendo arquivo de pauta (webserver retornou %d)." % req.status_code
+            return "Falha lendo arquivo de pauta (webserver retornou %d: %s)." \
+                % (req.status_code, req.text)
 
         if html is not None:
             soup = bs4.BeautifulSoup(html, "html")

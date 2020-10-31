@@ -1010,8 +1010,8 @@ def UnixLoadOn(obj, cmd):
         pauta_commit_push(last_pauta)
 
     def generate_serial(filename=None):
-        # generate for next month
-        timestamp = str(time.strftime("%Y%m00", time.localtime(time.time() + 30 * 24 * 60 * 60)))
+        # it it will be in coming 15 days
+        timestamp = str(time.strftime("%Y%m%d", time.localtime(time.time() + 15 * 24 * 60 * 60)))
         if filename is not None:
             time_string = filename.split(".")[0]
             if time_string[0] != '2' or len(time_string) < 7:
@@ -1035,8 +1035,8 @@ def UnixLoadOn(obj, cmd):
                 dest.write(buf)
 
     def create_pauta():
-        last_pauta = get_last_pauta()
-        new_pauta = "%s.md" % generate_serial(last_pauta)
+        # Next 15 days
+        new_pauta = "%s.md" % generate_serial()
         copy_template(new_pauta)
         pauta_commit_push(new_pauta, "Adicionando nova pauta.")
 

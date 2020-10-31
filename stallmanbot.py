@@ -978,16 +978,24 @@ def UnixLoadOn(obj, cmd):
         current_time = time.ctime()
         os.system("git add %s" % pauta_name)
         if message is None:
-            os.system("git commit -m \"Adding pauta  content at %s\" %s" % (current_time, pauta_name))
+            res = os.system("git commit -m \"Adding pauta  content at %s\" %s" % (current_time, pauta_name))
+            if res != 0:
+                return "git commit falhou"
         else:
-            os.system("git commit -m \"%s\" %s" % (message, pauta_name))
-        os.system("git push")
+            res = os.system("git commit -m \"%s\" %s" % (message, pauta_name))
+            if res != 0:
+                return "git commit falhou"
+        res = os.system("git push")
+        if res != 0:
+            return "git push falhou"
+        return None
 
 
     def add_pauta(command):
+        debug("Adding to pauta")
         url = command.split()[-1]
         if not re.search("^http", url):
-            return
+            return "URL não sem http no início.  Ignorada."
         last_pauta = get_last_pauta()
         pauta_body = read_pauta(last_pauta)
 
@@ -997,17 +1005,22 @@ def UnixLoadOn(obj, cmd):
         html = None
         if req.status_code == 200:
             html = req.text
+        else:
+            return "Falha lendo arquivo de pauta (webserver retornou %d)." % req.status_code
 
         if html is not None:
             soup = bs4.BeautifulSoup(html, "html")
             title = sanitize(soup.title.text)
             md_text = "* [%s](%s)" % (title, url)
             content[0] += "\n%s" % md_text
+        else:
+            return "Falha lendo arquivo de pauta (corpo do html vazio)."
         body = "\n\n".join(content)
 
         with open(last_pauta, 'w') as fd:
             fd.write(body)
-        pauta_commit_push(last_pauta)
+        msg = pauta_commit_push(last_pauta)
+        return msg
 
     def generate_serial(filename=None):
         # it it will be in coming 15 days
@@ -1080,8 +1093,9 @@ def UnixLoadOn(obj, cmd):
 
         elif re.search("^/addpauta", cmd.text):
             if is_allowed(cmd.from_user.username):
-                add_pauta(cmd.text)
-                msg = "Link adicionado com sucesso.  Use /pauta pra ler o conteúdo."
+                msg = add_pauta(cmd.text)
+                if msg is None:
+                    msg = "Link adicionado com sucesso.  Use /pauta pra ler o conteúdo."
             else:
                 msg = "Sem permissão pra enviar novas entradas."
 

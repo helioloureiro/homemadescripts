@@ -1010,22 +1010,20 @@ def UnixLoadOn(obj, cmd):
         pauta_commit_push(last_pauta)
 
     def generate_serial(filename=None):
-        if filename is None:
-            # generate for next month
-            timestamp = str(time.strftime("%Y%m0", time.localtime(time.time() + 30 * 24 * 60 * 60)))
-        else:
+        # generate for next month
+        timestamp = str(time.strftime("%Y%m00", time.localtime(time.time() + 30 * 24 * 60 * 60)))
+        if filename is not None:
             time_string = filename.split(".")[0]
-            if time_string[0] != 2 or len(time_string) < 7:
-                timestap =generate_serial()
+            if time_string[0] != '2' or len(time_string) < 7:
+                return timestamp
+            year = time_string[:4]
+            month = time_string[4:6]
+            if int(month) == 12:
+                year = str(int(year) + 1)
+                month = "01"
             else:
-                year = time_string[:4]
-                month = time_string[4:6]
-                if int(month) == 12:
-                    year = str(int(year) + 1)
-                    month = "01"
-                else:
-                    month = "%02d" % (int(month) + 1)
-                timestamp = "%s%s" % (year, month)
+                month = "%02d" % (int(month) + 1)
+            timestamp = "%s%s" % (year, month)
         return timestamp
 
     def copy_template(filename):

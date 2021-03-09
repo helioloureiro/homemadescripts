@@ -1001,7 +1001,7 @@ def UnixLoadOn(obj, cmd):
 
         content = pauta_body.split("\n\n")
 
-        h = { "user-agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36" }
+        h = { "user-agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu" }
         # Just for TheRegister
         if re.search("theregister.com", url):
                 h = { "user-agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36 Suck This You Bastards Blocking module requests" }

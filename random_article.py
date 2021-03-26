@@ -62,6 +62,8 @@ def get_final_article() -> str:
         if not re.search("\*", line):
             continue
         article.append(line)
+    if len(article) == 0:
+        raise Exception("No articles found.")
     final_article = get_random_article(article)
     print("Article selected:", final_article)
     return final_article
@@ -77,16 +79,13 @@ def get_link(article: str) -> str:
     return article
 
 def start():
-
+    "src: https://www.programcreek.com/python/example/103649/http.server.BaseHTTPRequestHandler"
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
             self.send_response(200)
-            # self.send_header('Access-Control-Allow-Origin', 'https://pewu.github.io')
             self.send_header("Content-type", "text/html")
             self.end_headers()
-            # print(dir(self))
             client_ip, client_port = self.client_address
-            reqline = self.requestline
             reqpath = self.path.rstrip()
             print(f"request from {client_ip}:{client_port} for {reqpath}")
             get_new_article_button = """
@@ -96,10 +95,6 @@ def start():
             </form>
             </center>
             """
-            print("reqpath:", reqpath)
-            print("sizeof reqpath:", len(reqpath))
-            print("reqpath first char:", reqpath[0])
-            print("reqpath last char:", reqpath[-1])
             if reqpath == "/newarticle?":
                 article = get_final_article()
                 title = get_title(article)

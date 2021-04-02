@@ -5,6 +5,7 @@ import re
 import random
 from typing import List
 from  http.server import BaseHTTPRequestHandler, HTTPServer
+import argparse
 
 SITE = "https://github.com"
 SITE_RAW = "https://raw.githubusercontent.com"
@@ -78,7 +79,7 @@ def get_link(article: str) -> str:
     article = re.sub("\).*", "", article)
     return article
 
-def start():
+def start_webserver():
     "src: https://www.programcreek.com/python/example/103649/http.server.BaseHTTPRequestHandler"
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
@@ -111,6 +112,7 @@ def start():
             self.wfile.write(content)
 
     # Bind to the local address only.
+    print("Starting webserver on port 8080")
     server_address = ('127.0.0.1', 8080)
     httpd = HTTPServer(server_address, Handler)
     try:
@@ -120,4 +122,10 @@ def start():
 
 
 if __name__ == '__main__':
-    start()
+    parser = argparse.ArgumentParser(description="It gets a random article to be read on Unix Load On")
+    parser.add_argument("--web", action="store_true", help="It starts web interface (port 8080)")
+    args = parser.parse_args()
+    if args.web: 
+        start_webserver()
+    else:
+        print(get_final_article())

@@ -11,6 +11,8 @@ SITE = "https://github.com"
 SITE_RAW = "https://raw.githubusercontent.com"
 SITE_PATH = "/helioloureiro/canalunixloadon/tree/master/pautas"
 
+save_output = False
+
 def get_html(url: str) -> str:
     req = requests.get(url)
     if req.status_code != 200:
@@ -124,8 +126,11 @@ def start_webserver():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="It gets a random article to be read on Unix Load On")
     parser.add_argument("--web", action="store_true", help="It starts web interface (port 8080)")
+    parser.add_argument("--output", action="store_true", help="It enables to save results.")
     args = parser.parse_args()
-    if args.web: 
+    if args.output:
+        save_output = True
+    if args.web:
         start_webserver()
     else:
         print(get_final_article())

@@ -6,12 +6,14 @@ import random
 from typing import List
 from  http.server import BaseHTTPRequestHandler, HTTPServer
 import argparse
+import time
 
 SITE = "https://github.com"
 SITE_RAW = "https://raw.githubusercontent.com"
 SITE_PATH = "/helioloureiro/canalunixloadon/tree/master/pautas"
 
 save_output = False
+output_filename = None
 
 def get_html(url: str) -> str:
     req = requests.get(url)
@@ -81,12 +83,23 @@ def get_link(article: str) -> str:
     article = re.sub("\).*", "", article)
     return article
 
+def get_output_filename() -> str:
+    if globals()["output_filename"] is None:
+        output_filename = time.strftime("random_article_output-%Y-%m-%d-%H:%M:%S.log")
+        globals()["output_filename"] = output_filename
+    return output_filename
+
+def save_line(article: str) -> None:
+    if globals()["save_output"] is True:
+        with open(output_filename, "a") as output:
+            output.write(article + "\n")
+
 def start_webserver():
     "src: https://www.programcreek.com/python/example/103649/http.server.BaseHTTPRequestHandler"
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
             self.send_response(200)
-            self.send_header("Content-type", "text/html")
+            self.send_header("Content-type", "text/html;charset=utf-8")
             self.end_headers()
             client_ip, client_port = self.client_address
             reqpath = self.path.rstrip()
@@ -100,6 +113,7 @@ def start_webserver():
             """
             if reqpath == "/newarticle?":
                 article = get_final_article()
+                save_line(article)
                 title = get_title(article)
                 link = get_link(article)
                 print("title:", title)
@@ -129,7 +143,8 @@ if __name__ == '__main__':
     parser.add_argument("--output", action="store_true", help="It enables to save results.")
     args = parser.parse_args()
     if args.output:
-        save_output = True
+        print("output saving to:", get_output_filename())
+        globals()["save_output"] = True
     if args.web:
         start_webserver()
     else:

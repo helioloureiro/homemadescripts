@@ -58,18 +58,22 @@ Array = List[str]
 def get_random_article(article_array: Array) -> str:
     return random.choice(article_array)
 
-def get_final_article() -> str:
-    article = []
+def get_articles() -> Array:
+    articles = []
     latest_article = get_latest()
     print(SITE_RAW + latest_article)
     body = get_html(unblob(SITE_RAW + latest_article))
     for line in body.split("\n"):
         if not re.search("\*", line):
             continue
-        article.append(line)
-    if len(article) == 0:
+        articles.append(line)
+    if len(articles) == 0:
         raise Exception("No articles found.")
-    final_article = get_random_article(article)
+    return articles
+
+def get_final_article() -> str:
+    articles = get_articles()
+    final_article = get_random_article(articles)
     print("Article selected:", final_article)
     return final_article
 
@@ -94,10 +98,13 @@ def save_line(article: str) -> None:
         with open(output_filename, "a") as output:
             output.write(article + "\n")
 
+articles_done = []
+articles_array = []
 def start_webserver():
     "src: https://www.programcreek.com/python/example/103649/http.server.BaseHTTPRequestHandler"
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
+            global articles_done, article_array
             self.send_response(200)
             self.send_header("Content-type", "text/html;charset=utf-8")
             self.end_headers()
@@ -112,16 +119,30 @@ def start_webserver():
             </center>
             """
             if reqpath == "/newarticle?":
-                article = get_final_article()
-                save_line(article)
-                title = get_title(article)
-                link = get_link(article)
-                print("title:", title)
-                print("article:", article)
-                response = f"""<title>{title}</title>
-                <h1>Title: <a href="{link}">{title}</a></h1><br>
-                <h2>Link: <a href="{link}">{link}</a></h2> """ + \
-                get_new_article_button
+                global articles_array, articles_done
+                if len(articles_array) == 0:
+                    articles_array = get_articles()
+                    print("Nr de artigos:", len(articles_array))
+
+                if len(articles_array) != len(articles_done):
+                    article_selected = None
+                    while True:
+                        article_selected = get_random_article(articles_array)
+                        if not article_selected in articles_done:
+                            articles_done.append(article_selected)
+                            break
+                    save_line(article_selected)
+                    title = get_title(article_selected)
+                    link = get_link(article_selected)
+                    print("title:", title)
+                    print("article:", article_selected)
+                    response = f"""<title>{title}</title>
+                    <h1>Title: <a href="{link}">{title}</a></h1><br>
+                    <h2>Link: <a href="{link}">{link}</a></h2> """ + \
+                    get_new_article_button
+                    print("Artigos lidos:", len(articles_done))
+                else:
+                    response = "<h1>Todos os artigos já foram lidos</h1>"
             else:
                 response = get_new_article_button
             content = bytes(response.encode("utf-8"))

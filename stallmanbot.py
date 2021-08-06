@@ -990,7 +990,7 @@ def UnixLoadOn(obj, cmd):
         debug("Adding to pauta")
         url = text.split()[-1]
         if not re.search("^http", url):
-            return "URL não sem http no início.  Ignorada."
+            return "URL não tem http no início.  Ignorada."
         last_pauta = get_last_pauta()
         pauta_body = read_pauta(last_pauta)
 

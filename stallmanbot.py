@@ -991,9 +991,9 @@ def UnixLoadOn(obj, cmd):
         return None
 
 
-    def add_pauta(command):
+    def add_pauta(text, username=None):
         debug("Adding to pauta")
-        url = command.split()[-1]
+        url = text.split()[-1]
         if not re.search("^http", url):
             return "URL não sem http no início.  Ignorada."
         last_pauta = get_last_pauta()
@@ -1016,7 +1016,10 @@ def UnixLoadOn(obj, cmd):
         if html is not None:
             soup = bs4.BeautifulSoup(html, "html")
             title = sanitize(soup.title.text)
-            md_text = "* [%s](%s)" % (title, url)
+            if username is not None:
+                md_text = "* [%s - by %s](%s)" % (title, username, url)
+            else:
+                md_text = "* [%s](%s)" % (title, url)
             content[0] += "\n%s" % md_text
         else:
             return "Falha lendo arquivo de pauta (corpo do html vazio)."
@@ -1098,14 +1101,23 @@ def UnixLoadOn(obj, cmd):
 
         elif re.search("^/addpauta", cmd.text):
             if is_allowed(cmd.from_user.username):
-                msg = add_pauta(cmd.text)
+                if cmd.reply_to_message:
+                    msg = add_pauta(f"addpauta {cmd.reply_to_message.text}",
+                        cmd.from_user.username)
+                else:
+                    msg = add_pauta(cmd.text,
+                        cmd.from_user.username)
                 if msg is None:
                     msg = "Link adicionado com sucesso.  Use /pauta pra ler o conteúdo."
             else:
                 msg = "Sem permissão pra enviar novas entradas."
 
         elif re.search("^/addsugestao", cmd.text):
-            msg = add_sugestao(cmd.text, cmd.from_user.username)
+            if cmd.reply_to_message:
+                text = cmd.reply_to_message.text
+            else:
+                text = cmd.text
+            msg = add_sugestao(text, cmd.from_user.username)
 
         elif re.search("^/novapauta", cmd.text):
             if is_allowed(cmd.from_user.username):

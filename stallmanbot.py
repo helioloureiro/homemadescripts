@@ -1769,19 +1769,19 @@ def generateReport(country=None):
 
 
     if "cases" in myJSON:
-        response += " Casos no total: " + myJSON["cases"] + "\n"
+        response += " Casos no total: " + str(myJSON["cases"]) + "\n"
     if "todayCases" in myJSON:
-        response += " Casos somente hoje: " + myJSON["todayCases"] + "\n"
+        response += " Casos somente hoje: " + str(myJSON["todayCases"]) + "\n"
     if "deaths" in myJSON:
-        response += " Mortes no total: " + myJSON["deaths"] + "\n"
+        response += " Mortes no total: " + str(myJSON["deaths"]) + "\n"
     if "todayDeaths" in myJSON:
-        response += " Mortes somente hoje: " + myJSON["todayDeaths"] + "\n"
+        response += " Mortes somente hoje: " + str(myJSON["todayDeaths"]) + "\n"
     if "recovered" in myJSON:
-        response += " Recuperados no total: " + myJSON["recovered"] + "\n"
+        response += " Recuperados no total: " + str(myJSON["recovered"]) + "\n"
     if "critical" in myJSON:
-        response += " Em estado crítico no total: " + myJSON["critical"] + "\n"
+        response += " Em estado crítico no total: " + str(myJSON["critical"]) + "\n"
     if "casesPerOneMillion" in myJSON:
-        response += " Casos a cada milhão: " + myJSON["casesPerOneMillion"] + "\n"
+        response += " Casos a cada milhão: " + str(myJSON["casesPerOneMillion"]) + "\n"
 
     return response
 
@@ -1956,7 +1956,7 @@ if __name__ == '__main__':
     def handler(command):
         Ban(bot, command)
 
-    @bot.message_handler(commands=["corona", "coronavirus"])
+    @bot.message_handler(commands=["corona", "coronavirus", "covid", "covid19"])
     def handler(command):
         CoronaVirus(bot, command)
 

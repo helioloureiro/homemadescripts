@@ -1112,14 +1112,14 @@ def UnixLoadOn(obj, cmd):
             else:
                 msg = "Sem permissão pra enviar novas entradas."
 
-        elif re.search("^/addsugestao", cmd.text):
+        elif re.search("^/(add|)sugestao", cmd.text):
             if cmd.reply_to_message:
                 text = cmd.reply_to_message.text
             else:
                 text = cmd.text
             msg = add_sugestao(text, cmd.from_user.username)
 
-        elif re.search("^/novapauta", cmd.text):
+        elif re.search("^/(nova|new)pauta", cmd.text):
             if is_allowed(cmd.from_user.username):
                 create_pauta()
                 msg = read_pauta()

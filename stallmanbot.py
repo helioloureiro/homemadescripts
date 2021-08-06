@@ -74,12 +74,12 @@ version - versão do bot
 DEBUG = True
 CONFIG = ".twitterc"
 HOME = os.environ.get('HOME')
-PIDFILE = "%s/.stallmanbot.pid" % HOME
-PAUTAS = "%s/canalunixloadon/pautas" % HOME
-IMGDIR = "%s/motivational" % HOME
-SCRIPTHOME = "%s/homemadescripts" % HOME
-FOFODB = "%s/fofondex.db" % HOME
-MANDAFOODSFILE = "%s/foodporn.json" % HOME
+PIDFILE = f"{HOME}/.stallmanbot.pid"
+PAUTAS = f"{HOME}/canalunixloadon/pautas"
+IMGDIR = f"{HOME}/motivational"
+SCRIPTHOME = f"{HOME}/homemadescripts"
+FOFODB = f"{HOME}/fofondex.db"
+MANDAFOODSFILE = f"{HOME}/foodporn.json"
 FOODPORNURL = "https://www.reddit.com/r/foodporn.json?sort=new"
 simple_lock = False  # very simple lock way
 botadm, cfg, key, configuration = None, None, None, None
@@ -318,7 +318,7 @@ def set_debug():
 
 def debug(*msg):
     if DEBUG and msg:
-        timestamp = "[%s]" % time.ctime()
+        timestamp = f"[{time.ctime()}]"
         allText = " ".join(str(x) for x in msg)
         try:
             print(timestamp, *msg)
@@ -330,7 +330,7 @@ def debug(*msg):
 
 def error(message):
     """Error handling for logs"""
-    errormsg = "ERROR: %s" % message
+    errormsg = f"ERROR: {message}"
     debug(errormsg)
     syslog.openlog(LOGTAG)
     syslog.syslog(syslog.LOG_ERR, errormsg)
@@ -338,7 +338,7 @@ def error(message):
 
 def log(message):
     """Syslog handling for logs"""
-    infomsg = "%s" % message
+    infomsg = f"{message}"
     debug(infomsg)
     syslog.openlog(LOGTAG)
     syslog.syslog(syslog.LOG_INFO, infomsg)
@@ -349,10 +349,10 @@ def read_file(filename):
         with open(filename) as myfile:
             return myfile.read()
     except FileNotFoundError:
-        error("File not found: %s" % filename)
+        error(f"File not found: {filename}")
         return None
     except Exception as e:
-        error("Failed to read file %s: %s" % (filename, e))
+        error(f"Failed to read file {filename}: {e}")
         return None
 
 
@@ -362,8 +362,8 @@ def check_if_run():
     if pid is None:
         return
     if int(pid) > 0 and int(pid) != current_pid:
-        if os.path.exists("/proc/%d" % int(pid)):
-            log("[%s] Already running - keepalive done." % time.ctime())
+        if os.path.exists(f"/proc/{int(pid)}"):
+            log(f"[{time.ctime()}] Already running - keepalive done.")
             sys.exit(os.EX_OK)
 
 
@@ -377,9 +377,9 @@ def read_configuration(config_file):
     """ Read configuration file and return object
     with config attributes"""
     cfg = configparser.ConfigParser()
-    debug("Reading configuration: %s" % config_file)
+    debug(f"Reading configuration: {config_file}")
     if not os.path.exists(config_file):
-        error("Failed to find configuration file %s" % config_file)
+        error(f"Failed to find configuration file {config_file}")
         sys.exit(os.EX_CONFIG)
     with open(config_file) as fd:
         cfg.read_file(fd)
@@ -395,11 +395,11 @@ def get_telegram_key(config_obj, parameter):
     try:
         value = config_obj.get(config_section, parameter)
     except configparser.NoOptionError:
-        print("No %s session found to retrieve settings." % config_section)
+        print(f"No {config_section} section found to retrieve settings.")
         print("Check your configuration file.")
         # keep going and just return null
-    debug(" * value=%s" % value)
-    debug(" * Key acquired (%s=%s)." % (parameter, value))
+    debug(f" * value={value}")
+    debug(f" * Key acquired ({parameter}={value}).")
     return value
 
 
@@ -490,7 +490,7 @@ def reply_text(obj, session, text):
     try:
         obj.reply_to(session, text)
     except Exception as e:
-        error("%s" % e)
+        error(e)
 
 
 def StartUp():
@@ -502,19 +502,17 @@ def StartUp():
         os.system(oscmd)
         botname = "stallmanbot.py"
         debug(oscmd)
-        # For debugging outside of the Raspberry Pi
-        # oscmd = "diff -q %s %s/homemadescripts/%s" % (botname, HOME, botname)
-        # Original Raspberry Pi command
-        oscmd = "diff -q %s %s/bin/%s" % (botname, HOME, botname)
+
+        oscmd = f"diff -q {botname} {HOME}/bin/{botname}"
         res = os.system(oscmd)
         if res:
             # new version detected
-            res = os.system("%s %s check" % (sys.executable, sys.argv[0]))
+            res = os.system(f"{sys.executable} {sys.argv[0]} check")
             if res != 0:
                 debug("Versão bugada")
                 sys.exit(os.EX_OSERR)
             debug("Updating bot...")
-            shutil.copy(botname, "%s/bin/%s" % (HOME, botname))
+            shutil.copy(botname, f"{HOME}/bin/{botname}")
             debug("Bot version updated.")
             # check first
             debug("Calling restart")
@@ -535,7 +533,7 @@ def GetGif(theme):
 def main():
     """Main settings"""
     check_if_run()
-    save_file("%d\n" % os.getpid(), PIDFILE)
+    save_file(f"{os.getpid()}\n", PIDFILE)
     StartUp()
 
 
@@ -543,7 +541,7 @@ def get_global_keys():
     """Read globa settings like telegram key API"""
     debug("get_global_keys()")
     global botadm, key, allowed_users
-    configuration = "%s/%s" % (os.environ.get('HOME'), CONFIG)
+    configuration = f"{os.environ.get('HOME')}/{CONFIG}"
     cfg = read_configuration(configuration)
     key = get_telegram_key(cfg, "STALLBOT")
     botadm = get_telegram_key(cfg, "STALLBOTADM")
@@ -565,18 +563,16 @@ def send_animated_image_by_link_to_chat(obj, chat_id, image_link):
     try:
         obj.send_document(chat_id, image_link)
     except Exception as e:
-        error("Failed to send image=%s to chat_id=%s: %s" % \
-            (image_link, chat_id, e))
+        error(f"Failed to send image={image_link} to chat_id={chat_id}: {e}")
 
 
 def send_message_to_chat(obj, chat_id, message):
     """Send a specific message to a chat"""
     debug("send_message_to_chat()")
     try:
-        obj.send_message(chat_id, u"%s" % message)
+        obj.send_message(chat_id, f"{message}")
     except Exception as e:
-        error("Failed to send message=%s to chat_id=%s: %s" % \
-            (message, chat_id, e))
+        error(f"Failed to send message={message} to chat_id={chat_id}: {e}")
 
 
 def shit_happens(obj, chat_id, error):
@@ -595,7 +591,7 @@ def hello_world(obj, cmd):
         try:
             obj.send_photo(cmd.chat.id, fe_amo)
         except Exception as e:
-            error("hello_world() failed to send photo: %s" % e)
+            error(f"hello_world() failed to send photo: {e}")
             pass
         obj.reply_to(cmd, u"Te amo também.")
         return
@@ -609,7 +605,7 @@ def Manda(obj, cmd):
     def GenerateButtons(chat_id):
         markup = telebot.types.ReplyKeyboardMarkup(row_width=2, one_time_keyboard=True, selective=True)
         for key in sorted(opts):
-            item = telebot.types.KeyboardButton("/manda %s" % key)
+            item = telebot.types.KeyboardButton(f"/manda {key}")
             markup.add(item)
         obj.reply_to(cmd, "Escolha a opção:", reply_markup=markup)
 
@@ -620,40 +616,40 @@ def Manda(obj, cmd):
 
         except Exception as e:
             try:
-                obj.send_message(cmd.chat.id, u"Deu merda... %s" % e)
+                obj.send_message(cmd.chat.id, f"Deu merda: {e}")
             except Exception as z:
-                debug(u"%s" % z)
+                debug(z)
         return
     for theme in args[1:]:
-        debug(u"Manda(): theme=%s" % theme)
+        debug(f"Manda(): theme={theme}")
         gif = GetGif(theme)
         if gif is None:
             GenerateButtons(cmd.chat.id)
             return
         try:
-            debug(u"Manda(): sending gif=%s" % gif)
+            debug(f"Manda(): sending gif={gif}")
             if re.search(".(jpg|jpeg|JPG|JPEG|png|PNG)$", gif):
                 obj.send_photo(cmd.chat.id, gif)
             else:
                 obj.send_document(cmd.chat.id, gif)
         except Exception as e:
             try:
-                obj.send_message(cmd.chat.id, "<img src=\"%s\">"% gif)
+                obj.send_message(cmd.chat.id, f"<img src=\"{gif}\">")
             except Exception as err2:
                 try:
-                    obj.send_message(cmd.chat.id, "Deu merda... %s" % err2)
-                    obj.send_message(cmd.chat.id, "Link: %s" % gif)
+                    obj.send_message(cmd.chat.id, f"Deu merda: {err2}")
+                    obj.send_message(cmd.chat.id, f"Link: {gif}")
                 except Exception as z:
-                    print(u"%s" % z)
-        debug(u"Manda(): end of for interaction - can go next")
-    debug(u"Manda(): end of loop for")
+                    print(z)
+        debug("Manda(): end of for interaction - can go next")
+    debug("Manda(): end of loop for")
     # remove button if there
     try:
         debug(u"Manda(): Removing buttons...")
         markup = telebot.types.ReplyKeyboardRemove(selective=True)
         obj.send_message(cmd.chat.id, "", reply_markup=markup)
     except Exception as e:
-        debug("Error at Manda(): %s" % e)
+        debug(f"Error at Manda(): {e}")
     debug(u"Manda(): end of function")
 
 
@@ -663,9 +659,9 @@ def PipocaGif(obj, cmd):
         obj.send_document(cmd.chat.id, gif)
     except Exception as e:
         try:
-            obj.send_message(cmd.chat.id, u"Deu merda... %s" % e)
+            obj.send_message(cmd.chat.id, f"Deu merda: {e}")
         except Exception as z:
-            print(u"%s" % z)
+            print(z)
     debug("tchau")
 
 def Reload(obj, cmd):
@@ -685,26 +681,26 @@ def Reload(obj, cmd):
             os.system(oscmd)
             botname = "stallmanbot.py"
             debug(oscmd)
-            oscmd = "diff -q %s %s/bin/%s" % (botname, HOME, botname)
+            oscmd = f"diff -q {botname} {HOME}/bin/{botname}"
             res = os.system(oscmd)
             if res:
                 # new version detected
-                res = os.system("%s %s" % (sys.executable, sys.argv[0]))
+                res = os.system(f"{sys.executable} {sys.argv[0]}")
                 if res != 0:
                     debug("Versão bugada")
                     obj.send_message(cmd.chat.id, "Python crashed.  Vou carregar saporra não.  Vai que...")
                     return
                 debug("Updating bot...")
-                shutil.copy(botname, "%s/bin/%s" % (HOME, botname))
+                shutil.copy(botname, f"{HOME}/bin/{botname}")
                 obj.send_message(cmd.chat.id, "Bot version updated.")
         # check first
         python = sys.executable
         os.execl(python, python, *sys.argv)
     except Exception as e:
         try:
-            obj.reply_to(cmd, u"Deu merda... %s" % e)
+            obj.reply_to(cmd, f"Deu merda: {e}")
         except Exception as z:
-            print(u"%s" % z)
+            print(z)
 
 
 def ToggleDebug(obj, cmd):
@@ -721,55 +717,54 @@ def ToggleDebug(obj, cmd):
         elif DEBUG is False:
             DEBUG = True
             status = "enabled"
-        obj.reply_to(cmd, "debug=%s" % status)
+        obj.reply_to(cmd, f"debug={status}")
     except Exception as e:
-        print(u"%s" % e)
+        print(e)
 
 
 def fuda(obj, cmd):
-    debug("Running: %s" % cmd.text)
+    debug(f"Running: {cmd.text}")
     try:
-        resp = u"FUDA: Fear, Uncertainty, Doubt and Anahuac.  " + \
-            u"Os males do software livre atualmente."
-        obj.reply_to(cmd, "%s" % resp)
+        resp = "FUDA: Fear, Uncertainty, Doubt and Anahuac.  " + \
+            "Os males do software livre atualmente."
+        obj.reply_to(cmd, resp)
     except Exception as e:
-        print(u"%s" % e)
+        print(e)
 
 
 def sanitize(message):
-    debug("Called sanitize with: %s" % message)
+    debug(f"Called sanitize with: {message}")
     if len(message) < 2:
         return ""
     for i in message:
-        debug("%s (%d)" % (i, ord(i)))
+        debug(f"{i} ({ord(i)})")
     if message[0] == '/':
         message = message[1:]
     sanitize = re.sub(";.*", "", message)
-    debug("sanitize_1: %s" % sanitize)
+    debug(f"sanitize_1: {sanitize}")
     sanitize = re.sub("|.*", "", sanitize)
-    debug("sanitize_2: %s" % sanitize)
+    debug(f"sanitize_2: {sanitize}")
     sanitize = re.sub("@.*", "", sanitize)
-    debug("sanitize_3: %s" % sanitize)
+    debug(f"sanitize_3: {sanitize}")
     sanitize = re.sub("&.*", "", sanitize)
-    debug("sanitize_4: %s" % sanitize)
+    debug(f"sanitize_4: {sanitize}")
     sanitize = re.sub("[^A-Za-z0-9./-]", " ", sanitize)
-    debug("sanitize_5: %s" % sanitize)
+    debug(f"sanitize_5: {sanitize}")
     sanitize = re.sub("sudo ", "", sanitize)
-    debug("sanitize_6: %s" % sanitize)
+    debug(f"sanitize_6: {sanitize}")
     sanitize = re.sub("su ", "", sanitize)
-    debug("sanitize_7: %s" % sanitize)
-    sanitize = re.sub("&%d;&%d; " % (ord('s'), ord('u')), "", sanitize)
-    debug("sanitize_8: %s" % sanitize)
-    sanitize = re.sub("&%d;&%d;&%d;&%d; " %
-        (ord('s'), ord('u'), ord('d'), ord('o')),
+    debug(f"sanitize_7: {sanitize}")
+    sanitize = re.sub(f"&{ord('s')};&{ord('u')}; ", "", sanitize)
+    debug(f"sanitize_8: {sanitize}")
+    sanitize = re.sub(f"&{ord('s')};&{ord('u')};&{ord('d')};&{ord('o')}; ",
         "",
         sanitize)
-    debug("sanitize_9: %s" % sanitize)
+    debug(f"sanitize_9: {sanitize}")
     return sanitize
 
 
 def SysCmd(obj, cmd):
-    debug("Running: %s" % cmd.text)
+    debug(f"Running: {cmd.text}")
     cleanedMessage = sanitize(cmd.text)
     if len(cleanedMessage) == 0:
         debug("Sanitization removed everything.")
@@ -779,23 +774,23 @@ def SysCmd(obj, cmd):
             debug(e)
             obj.reply_to(cmd, e)
         return
-    debug("Sanitized: %s" % cleanedMessage)
+    debug(f"Sanitized: {cleanedMessage}")
     try:
         # resp = os.popen(sanitize[1:]).read()
         resp = subprocess.check_output(cleanedMessage.split())
-        debug("Popen response: %s" % resp)
+        debug(f"Popen response: {resp}")
         resp = re.sub("GNU", "OSI", resp)
-        debug("Response: %s" % resp)
+        debug(f"Response: {resp}")
         if len(resp) == 0:
             obj.reply_to(cmd, "Shell command returned empty...")
         else:
-            obj.reply_to(cmd, "%s" % resp)
+            obj.reply_to(cmd, resp)
     except Exception as e:
         debug(e)
         try:
-            obj.send_message(cmd.chat.id, "Deu merda... %s" % e)
+            obj.send_message(cmd.chat.id, f"Deu merda: {e}")
         except Exception as z:
-            print(u"%s" % z)
+            print(z)
     debug("done here")
 
 
@@ -809,9 +804,9 @@ def Requer(obj, cmd):
         obj.reply_to(cmd, "Ah lá... achando que é réquer.")
     except Exception as e:
         try:
-            obj.reply_to(cmd, "Deu merda... %s" % e)
+            obj.reply_to(cmd, f"Deu merda: {e}")
         except Exception as z:
-            print(u"%s" % z)
+            print(z)
 
 
 def Fortune(obj, cmd):
@@ -820,9 +815,9 @@ def Fortune(obj, cmd):
     while (len(fortune) > 200):
         fortune = os.popen("/usr/games/fortune").read()
     try:
-        obj.reply_to(cmd, "%s" % fortune)
+        obj.reply_to(cmd, fortune)
     except Exception as e:
-        obj.reply_to(cmd, "Deu merda... %s" % e)
+        obj.reply_to(cmd, f"Deu merda: {e}")
 
 
 def Hacked(obj, cmd):
@@ -832,7 +827,7 @@ def Hacked(obj, cmd):
         gif = "https://media.giphy.com/media/26ufcVAp3AiJJsrIs/giphy.gif"
         obj.send_document(cmd.chat.id, gif)
     except Exception as e:
-        obj.reply_to(cmd, "Deu merda... %s" % e)
+        obj.reply_to(cmd, f"Deu merda: {e}")
 
 
 def AptCmds(obj, session):
@@ -847,14 +842,14 @@ def AptCmds(obj, session):
                 moo = "moo" + random.randint(0,10) * "o"
                 obj.send_message(session.chat.id, moo)
         except Exception as e:
-            obj.reply_to(session, "apt-get deu BSOD... %s" % e)
+            obj.reply_to(session, f"apt-get deu BSOD: {e}")
         return
     elif re.search("aptitude", session.text):
         try:
             obj.reply_to(session,
                 "Palavra africana para: Eu não sei corrigir dependências.")
         except Exception as e:
-            obj.reply_to(session, "Deu merda... %s" % e)
+            obj.reply_to(session, f"Deu merda: {e}")
         return
     elif re.search("apt", session.text):
         debug("On apt")
@@ -864,7 +859,7 @@ def AptCmds(obj, session):
                 u"Palavra hipster para: Eu gosto de ver tudo colorido.")
         except Exception as e:
             debug(e)
-            obj.reply_to(session, "Deu merda... %s" % e)
+            obj.reply_to(session, f"Deu merda: {e}")
         return
     debug("Asking about it on apt loop.")
     obj.reply_to(session, u"Quê?")
@@ -883,43 +878,43 @@ def Dia(obj, cmd):
 O nome do sistema operacional é OSI/Linux e os blobs nos representam.""")
 
         if semana == 0:
-            obj.reply_to(cmd, u"Segunda-Feira sempre tem alguem assim: https://www.youtube.com/watch?v=rp34FE01Q3M")
+            obj.reply_to(cmd, "Segunda-Feira sempre tem alguem assim: https://www.youtube.com/watch?v=rp34FE01Q3M")
         elif semana == 1:
-            obj.reply_to(cmd, u"Terça Feira: https://www.youtube.com/watch?v=V7eR6wtjcxA")
+            obj.reply_to(cmd, "Terça Feira: https://www.youtube.com/watch?v=V7eR6wtjcxA")
         elif semana == 2:
-            obj.reply_to(cmd, u"Quarta Feira")
+            obj.reply_to(cmd, "Quarta Feira")
         elif semana == 3:
-            obj.reply_to(cmd, u"Quinta Feira")
+            obj.reply_to(cmd, "Quinta Feira")
         elif semana == 4:
-            obj.reply_to(cmd, u"Sexta-Feira é o dia da Maldade: https://www.youtube.com/watch?v=qys5ObMiKDo")
+            obj.reply_to(cmd, "Sexta-Feira é o dia da Maldade: https://www.youtube.com/watch?v=qys5ObMiKDo")
         elif semana == 5:
-            obj.reply_to(cmd, u"https://www.youtube.com/watch?v=rX2Bw-mwnOM")
+            obj.reply_to(cmd, "https://www.youtube.com/watch?v=Wo53BmNhjiE")
         elif semana == 6:
-            obj.reply_to(cmd, u"Domingo é dia de compilar um kernel")
+            obj.reply_to(cmd, "Domingo é dia de compilar um kernel: https://www.youtube.com/watch?v=D3-vBBQKOYU")
     except Exception as e:
-        obj.reply_to(cmd, "Deu merda... %s" % e)
+        obj.reply_to(cmd, "Deu merda: {e}")
 
 
 def Photo(obj, cmd):
     debug("Photo")
     year = time.strftime("%Y", time.localtime())
     month = time.strftime("%m", time.localtime())
-    SAVEDIR = "%s/weather/%s/%s" % (os.environ.get('HOME'), year, month)
+    SAVEDIR = f"{os.environ.get('HOME')}/weather/{year}/{month}"
     if not os.path.exists(SAVEDIR):
-        debug(u"Sem fotos")
-        obj.reply_to(cmd, u"Sem fotos no momento.")
+        debug("Sem fotos")
+        obj.reply_to(cmd, "Sem fotos no momento.")
         return
     photos = os.listdir(SAVEDIR)
     last_photo = sorted(photos)[-1]
-    debug(u"Última foto: %s" % last_photo)
+    debug(f"Última foto: {last_photo}")
     tagname = os.path.basename(last_photo)
     try:
-        obj.reply_to(cmd, "Última foto: %s" % tagname)
-        ph = open("%s/%s" % (SAVEDIR, last_photo), 'rb')
+        obj.reply_to(cmd, f"Última foto: {tagname}")
+        ph = open(f"{SAVEDIR}/{last_photo}", 'rb')
         obj.send_photo(cmd.chat.id, ph)
         #bot.send_photo(cmd.chat.id,"FILEID")
     except Exception as e:
-        obj.reply_to(cmd, "Deu merda: %s" % e)
+        obj.reply_to(cmd, f"Deu merda: {e}")
 
 
 def UnixLoadOn(obj, cmd):
@@ -955,7 +950,7 @@ def UnixLoadOn(obj, cmd):
             last_pauta = get_last_pauta()
         else:
             last_pauta = filename
-        msg = open("%s/%s" % (PAUTAS, last_pauta)).read()
+        msg = open(f"{PAUTAS}/{last_pauta}").read()
         #msg = "work in progress"
         return msg
 
@@ -976,13 +971,13 @@ def UnixLoadOn(obj, cmd):
     def pauta_commit_push(pauta_name, message=None):
         os.chdir(PAUTAS)
         current_time = time.ctime()
-        os.system("git add %s" % pauta_name)
+        os.system(f"git add {pauta_name}")
         if message is None:
-            res = os.system("git commit -m \"Adding pauta  content at %s\" %s" % (current_time, pauta_name))
+            res = os.system(f"git commit -m \"Adding pauta  content at {current_time}\" {pauta_name}")
             if res != 0:
                 return "git commit falhou"
         else:
-            res = os.system("git commit -m \"%s\" %s" % (message, pauta_name))
+            res = os.system(f"git commit -m \"{message}\" {pauta_name}")
             if res != 0:
                 return "git commit falhou"
         res = os.system("git push")
@@ -1010,17 +1005,17 @@ def UnixLoadOn(obj, cmd):
         if req.status_code == 200:
             html = req.text
         else:
-            return "Falha lendo arquivo de pauta (webserver retornou %d: %s)." \
-                % (req.status_code, req.text)
+            return "Falha lendo arquivo de pauta " + \
+                f"(webserver retornou {req.status_code}: {req.text})."
 
         if html is not None:
             soup = bs4.BeautifulSoup(html, "html")
             title = sanitize(soup.title.text)
             if username is not None:
-                md_text = "* [%s - by %s](%s)" % (title, username, url)
+                md_text = f"* [{title} - by {username}]({url})"
             else:
-                md_text = "* [%s](%s)" % (title, url)
-            content[0] += "\n%s" % md_text
+                md_text = f"* [{title}]({url})"
+            content[0] += f"\n{md_text}"
         else:
             return "Falha lendo arquivo de pauta (corpo do html vazio)."
         body = "\n\n".join(content)
@@ -1081,7 +1076,7 @@ def UnixLoadOn(obj, cmd):
             if re.search("Sugestões via telegram", content[i]):
                 position = i
                 break
-        content[position] += "\n%s | author=%s" % (msg, user)
+        content[position] += f"\n{msg} | author={user}"
         body = "\n\n".join(content)
 
         with open(last_pauta, 'w') as fd:
@@ -1127,15 +1122,15 @@ def UnixLoadOn(obj, cmd):
                 msg = "Sem permissão pra enviar novas entradas."
         elif re.search("^/testauser", cmd.text):
             if is_allowed(cmd.from_user.username):
-                msg = "Usuário %s é autorizado." % cmd.from_user.username
+                msg = f"Usuário {cmd.from_user.username} é autorizado."
             else:
-                msg = "Usuário %s não tem autorização pra enviar posts." % cmd.from_user.username
+                msg = f"Usuário {cmd.from_user.username} não tem autorização pra enviar posts."
 
     except Exception as e:
         try:
-            obj.reply_to(cmd, "Deu merda: %s" % e)
+            obj.reply_to(cmd, f"Deu merda: {e}")
         except Exception as z:
-            print(u"%s" % z)
+            print(z)
 
     os.chdir(curdir)
     if not msg:
@@ -1163,7 +1158,7 @@ def UnixLoadOn(obj, cmd):
         try:
             obj.send_message(cmd.chat.id, msg)
         except Exception as e:
-            obj.reply_to(cmd, "Deu merda: %s" % e)
+            obj.reply_to(cmd, f"Deu merda: {e}")
 
 
 def Distros(obj, cmd):
@@ -1174,22 +1169,22 @@ def Distros(obj, cmd):
     #distro = re.sub(".*distro ", "", distro)
     distro = distro.split()[-1]
     if distro:
-        debug(" * distro: %s" % distro)
-        if os.path.exists("%s/%s.jpg" % (IMGDIR, distro)):
-            img = open("%s/%s.jpg" % (IMGDIR, distro), "rb")
+        debug(f" * distro: {distro}")
+        if os.path.exists(f"{IMGDIR}/{distro}.jpg"):
+            img = open(f"{IMGDIR}/{distro}.jpg", "rb")
             obj.send_photo(cmd.chat.id, img)
             return
         else:
-            debug(" * arquivo de imagem não encontrado em: %s/%s.jpg" % (IMGDIR, distro))
-            if os.path.exists("%s/Stallman_Chora.jpg"):
-                img = open("%s/Stallman_Chora.jpg" % IMGDIR, "rb")
+            debug(f" * arquivo de imagem não encontrado em: {IMGDIR}/{distro}.jpg")
+            if os.path.exists(f"{IMGDIR}/Stallman_Chora.jpg"):
+                img = open(f"{IMGDIR}/Stallman_Chora.jpg", "rb")
                 obj.send_photo(cmd.chat.id, img)
-            obj.send_message(cmd.chat.id, "Distro %s não encontrada." % distro +
+            obj.send_message(cmd.chat.id, f"Distro {distro} não encontrada." +
                 "  Agradecemos a compreensão (e use outra).")
             return
     if re.search("/ubuntu", cmd.text) or re.search("distro ubuntu", cmd.text):
         debug("ubuntu")
-        img = open("%s/ubuntu.jpg" % IMGDIR, "rb")
+        img = open(f"{IMGDIR}/ubuntu.jpg", "rb")
         obj.send_photo(cmd.chat.id, img)
         return
     elif cmd.text == "/distros":
@@ -1207,18 +1202,15 @@ def GetContent(url):
     if req.status_code == 200:
         text = req.text
         proto, domain = url.split("://")
-        debug("GetContent: proto=%s" % proto)
+        debug(f"GetContent: proto={proto}")
         domain = re.sub("/.*", "", domain)
-        debug("GetContent: domain=%s" % domain)
-        domain = "%s://%s" % (proto, domain)
-        #text = re.sub(" src=//", " src=%s/" % domain, text)
-        #text = re.sub(" src=\"//", " src=\"%s/" % domain, text)
-        text = re.sub(" src=/", " src=%s/" % domain, text)
-        text = re.sub(" src=\"/", " src=\"%s/" % domain, text)
-        #debug("GetContent: Full Text\n%s" % text)
+        debug(f"GetContent: domain={domain}")
+        domain = f"{proto}://{domain}"
+        text = re.sub(" src=/", f" src={domain}/", text)
+        text = re.sub(" src=\"/", f" src=\"{domain}/", text)
         return text
     else:
-        debug(" * return code error: %d" % req.status_code)
+        debug(f" * return code error: {req.status_code}")
     return ""
 
 
@@ -1228,8 +1220,7 @@ def GetImgUrl(pattern, text, step=0):
     text = html retrieved from site
     step = if in the same line or next (+1, +2, etc)
     """
-    debug("GetImgUrl() called with pattern=%s and step=%d" %
-        (pattern, step) )
+    debug(f"GetImgUrl() called with pattern={pattern} and step={step}")
     if text is None:
         return None
     buf = text.split("\n")
@@ -1239,7 +1230,7 @@ def GetImgUrl(pattern, text, step=0):
         line = buf[lineNr]
         if re.search(pattern, line):
             url_img = buf[lineNr+step]
-            debug("GetImgUrl: found=%s" % url_img)
+            debug(f"GetImgUrl: found={url_img}")
             break
 
     if not url_img:
@@ -1248,17 +1239,17 @@ def GetImgUrl(pattern, text, step=0):
 
     url = None
     if re.search("<img ", url_img):
-        debug("GetImgUrl: matched on \"<img \": %s" % url_img)
+        debug(f"GetImgUrl: matched on \"<img \": {url_img}")
         params = url_img.split()
         for p in params:
             if re.search("src=", p):
-                debug("GetImgUrl: matched on parameter: %s" % p)
+                debug(f"GetImgUrl: matched on parameter: {p}")
                 # tmp_img = p.split("=")[-1]
                 tmp_img = re.sub("^src=", "", p)
                 tmp_img = re.sub("\"", "", tmp_img)
                 url = re.sub("^\/\/", "http://", tmp_img)
                 url = re.sub("^\/", "http://", url)
-                debug("GetImgUrl: final match: %s" % url)
+                debug(f"GetImgUrl: final match: {url}")
                 break
     elif re.search("http", url_img):
         params = url_img.split()
@@ -1267,7 +1258,7 @@ def GetImgUrl(pattern, text, step=0):
                 continue
             url = p
             break
-    debug("GetImgUrl: %s" % url)
+    debug(f"GetImgUrl: {url}")
     return url
 
 
@@ -1277,46 +1268,46 @@ def GetImg(url):
     req = requests.get(url, stream=True)
     filename = os.path.basename(url)
     if not re.search(".gif|.jpg|.png", filename):
-        filename = "%s.gif" % filename
-    img = "/tmp/%s" % filename
+        filename = f"{filename}.gif"
+    img = f"/tmp/{filename}"
     with open(img, 'wb') as out_file:
         shutil.copyfileobj(req.raw, out_file)
     return img
 
 
 def Comics(obj, cmd):
-    debug("Comics(): %s" % cmd.text)
+    debug(f"Comics(): {cmd.text}")
     img = None
     if re.search("/xkcd", cmd.text):
         url = "http://xkcd.com"
         html = GetContent(url)
         img_link = GetImgUrl("Image URL \(for hotlinking\/embedding\)", html)
-        debug("%s: %s" % (cmd.text, img_link))
+        debug(f"{cmd.text}: {img_link}")
         img = GetImg(img_link)
     elif re.search("/dilbert", cmd.text):
         url = "http://www.dilbert.com"
         html = GetContent(url)
         img_link = GetImgUrl("img class=\"img-responsive img-comic\"", html)
-        debug("%s: %s" % (cmd.text, img_link))
+        debug(f"{cmd.text}: {img_link}")
         img = GetImg(img_link)
     elif re.search("/vidadeprogramador", cmd.text):
         url = "http://vidadeprogramador.com.br"
         html = GetContent(url)
         img_link = GetImgUrl("div class=\"tirinha\"", html)
-        debug("%s: %s" % (cmd.text, img_link))
+        debug(f"{cmd.text}: {img_link}")
         img = GetImg(img_link)
     elif re.search("/vidadesuporte", cmd.text):
         url = "http://vidadesuporte.com.br"
         html = GetContent(url)
         img_link = GetImgUrl(" 100vw, 600px", html)
-        debug("%s: %s" % (cmd.text, img_link))
+        debug(f"{cmd.text}: {img_link}")
         img = GetImg(img_link)
     elif re.search("/tirinhadorex", cmd.text):
         # curl http://tirinhasdorex.com/ | grep "<p><img class=\"aligncenter size-full wp-image-"
         url = "http://tirinhasdorex.com/"
         html = GetContent(url)
         img_link = GetImgUrl("<p><img class=\"aligncenter size-full wp-image-", html)
-        debug("%s: %s" % (cmd.text, img_link))
+        debug(f"{cmd.text}: {img_link}")
         img = GetImg(img_link)
     elif re.search("tirinhas|strips", cmd.text):
         obj.send_message(cmd.chat.id, "No momento somente tem: /dilbert, /xkcd, /vidadeprogramador, /vidadesuporte")
@@ -1326,9 +1317,9 @@ def Comics(obj, cmd):
         obj.send_message(cmd.chat.id, "Péra... já estou tirando a roupa e ligando a webcam...")
         html = GetContent(url)
         img_link = GetImgUrl("<a href=\"/\">", html)
-        debug("%s: %s" % (cmd.text, img_link))
+        debug(f"{cmd.text}: {img_link}")
         img = GetImg(img_link)
-        obj.send_message(cmd.chat.id, "Diretamente de %s" % url)
+        obj.send_message(cmd.chat.id, f"Diretamente de {url}")
     elif re.search("foods", cmd.text):
 
         # We'll grab the images from /r/foodporn JSON file.
@@ -1355,12 +1346,13 @@ def Comics(obj, cmd):
             debug(" * reading json")
             json_data = json.loads(open(MANDAFOODSFILE).read())
         except Exception as e:
-            debug(" * json failed: creating one: %s" % e)
-            debug(" * thread is alive? %s" % th.isAlive())
+            debug(f" * json failed: creating one: {e}")
+            debug(f" * thread is alive? {th.isAlive()}")
             json_data = { "error" : 666, "message" : "error fazendo parsing do json" }
         if "error" in json_data:
             debug(" * found key error")
-            obj.send_message(cmd.chat.id, u"Deu merda no Jasão: %s" % json_data["message"])
+            mydata = json_data["message"]
+            obj.send_message(cmd.chat.id, f"Deu merda no Jasão: {mydata}")
             debug(" * removing file")
             os.unlink(MANDAFOODSFILE)
             return
@@ -1370,7 +1362,7 @@ def Comics(obj, cmd):
         post_number = random.randint(1, 25) # 0 is the pinned title post for the subreddit
         img_link = json_data["data"]["children"][post_number]["data"]["url"]
         obj.send_message(cmd.chat.id, "Nham nham! 🍔")
-        debug("%s: %s" % (cmd.text, img_link))
+        debug(f"{cmd.text}: {img_link}")
         img = GetImg(img_link)
         obj.send_message(cmd.chat.id, "Direto de https://www.reddit.com/r/foodporn")
 
@@ -1379,14 +1371,14 @@ def Comics(obj, cmd):
             img_fd = open(img, 'rb')
             obj.send_photo(cmd.chat.id, img_fd)
         except Exception as e:
-            obj.send_message(cmd.chat.id, "Ooopsss... deu merda! %s" % e)
+            obj.send_message(cmd.chat.id, f"Ooopsss... deu merda! {e}")
         os.unlink(img)
     elif re.search("megazine", cmd.text):
         megazines = [ "xkcd", "dilbert", "vidadeprogramador",
     "vidadesuporte", "tirinhadorex" ]
         cmd_new = cmd
         for zine in megazines:
-            cmd_new.text = "/%s" % zine
+            cmd_new.text = f"/{zine}"
             Comics(obj, cmd_new)
     else:
         obj.send_message(cmd.chat.id, "É... foi não...")
@@ -1395,7 +1387,6 @@ def Comics(obj, cmd):
 def FofoMetrics(obj, cmd):
     debug(cmd.text)
     global fofondex, start_time
-    #debug("Fofondex on call: %s" % fofondex)
     user_name = cmd.from_user.username
     user_id = cmd.from_user.id
     user_1stname = cmd.from_user.first_name
@@ -1403,9 +1394,9 @@ def FofoMetrics(obj, cmd):
     user = user_name  # backward compatibility
     if not user_name:  # got None
         if not user_1stname:
-            user_name = "Anonimo da Internet (%s)" % user_id
+            user_name = f"Anônimo da Internet ({user_id})"
         else:
-            user_name = "%s (%s)" % (user_1stname, user_id)
+            user_name = f"{user_1stname} ({user_id})"
     if not user_1stname:
         user_1stname = user_name
     """"
@@ -1422,8 +1413,6 @@ def FofoMetrics(obj, cmd):
         global simple_lock, fofondex
         # if data, skip to read since it is updated via memory
         if len(fofondex.keys()) > 0:
-            #debug(" * It has data, so don't need to read.")
-            #debug(" * Fofondex here: %s" % fofondex)
             return
         while simple_lock:
             time.sleep(random.random())
@@ -1435,18 +1424,14 @@ def FofoMetrics(obj, cmd):
             pass
         simple_lock = False
         if not fofondex:
-            #debug("Using empty fofondex.")
             fofondex = {}
-        #debug(" * DataRead.fofondex: %s" % fofondex)
 
     def DataWrite():
         debug("DataWrite")
         global simple_lock, fofondex, start_time
         current_time = time.time()
-        #debug(" * Fofondex here: %s" % fofondex)
         # just save data if time > 5 minutes to preserve disk
         if (current_time - start_time < 5 * 60):
-            #debug("Skipping write (timer < 5 minutes).")
             return
         else:
             start_time = current_time
@@ -1458,8 +1443,6 @@ def FofoMetrics(obj, cmd):
                 #debug(" * DataWrite: removing database from disk.")
                 os.unlink(FOFODB)
             else:
-                #debug(" * DataWrite: pickle.dump()")
-                #debug(" * DataWrite: data saved => %s" % fofondex)
                 pickle.dump(fofondex, open(FOFODB, "wb"))
         except IOError:
             debug("Failed to save DB")
@@ -1470,10 +1453,8 @@ def FofoMetrics(obj, cmd):
     def DataReset():
         global fofondex
         debug("DataReset")
-        #debug("Before: %s" % fofondex)
         fofondex = {}
         DataWrite()
-        #debug("After: %s" % fofondex)
 
     def RunTheDice(n=None):
         debug("RunTheDice")
@@ -1532,7 +1513,6 @@ def FofoMetrics(obj, cmd):
             pctg = RunTheDice()
             fofondex[user_id] = InitializeUser()
             DataWrite()
-        #debug(" * Fofondex top: %s" % fofondex)
 
         if re.search("arrumasaporra", cmd.text):
             if user_name == botadm:
@@ -1540,11 +1520,8 @@ def FofoMetrics(obj, cmd):
                     u"compilando o emacs e me distraí.  Deixa eu fazer de novo.")
                 if re.search("blob", cmd.text):
                     pctg = RunTheDice(n=0)
-                    #bot.send_message(cmd.chat.id, u"Seu valor é=%d" % pctg)
                 elif re.search("fofo", cmd.text):
                     pctg = RunTheDice(100)
-                    #bot.send_message(cmd.chat.id, u"Seu valor é=%d" % pctg)
-                #bot.send_message(cmd.chat.id, u"Inicializando com pctg=%d" % pctg)
                 fofondex[user_id] = InitializeUser(pctg=pctg)
             else:
                 obj.send_message(cmd.chat.id, u"Quem você pensa que é pra " + \
@@ -1556,23 +1533,23 @@ def FofoMetrics(obj, cmd):
 
         pctg = fofondex[user_id]['foforate']
         try:
-            #debug(" * Fofondex before publishing: %s" % fofondex)
-            msg = u"Hoje %s tem %d%s de ultrafofura mas " % (user_name, pctg, '%')
-            msg += u"aquele %d%s de blob binário no kernel." % (100 - pctg, '%',)
+            msg = f"Hoje {user_name} tem {pctg}% de ultrafofura mas "
+            gtcp = 100 - pctg
+            msg += f"aquele {gtcp}% de blob binário no kernel."
             if re.search("blob", cmd.text):
-                msg = u"Hoje %s tem %d%s de blobice mas " % (user_name, 100 - pctg, '%')
-                msg += u"aquele %d%s de linux-libre no kernel." % (pctg, '%',)
-            debug(u'%s' % msg)
+                msg = f"Hoje {user_name} tem {gtcp}% de blobice mas "
+                msg += f"aquele {pctg}% de linux-libre no kernel."
+            debug(msg)
             DataWrite()
-            obj.send_message(cmd.chat.id, u'%s' % msg)
+            obj.send_message(cmd.chat.id, msg)
         except Exception as e:
-            obj.send_message(cmd.chat.id, "Deu ruim... %s" % e)
+            obj.send_message(cmd.chat.id, f"Deu ruim: {e}")
         return
 
     if re.search("/(fof|blob)ondex", cmd.text):
         if len(list(fofondex)) == 0:
             msg = u"Ninguém ainda teve coragem de tentar esse UltraFofo."
-            obj.send_message(cmd.chat.id, u'%s' % msg)
+            obj.send_message(cmd.chat.id, msg)
             return
         msg = u"Ranking Dollyinho de #UltraFofos:\n"
         if re.search("blob", cmd.text):
@@ -1594,20 +1571,21 @@ def FofoMetrics(obj, cmd):
             for u in sorted(ranking, key=ranking.get, reverse=True):
                 pct = fofondex[u]['foforate']
                 u_name = fofondex[u]['user_name']
-                msg += u"%d) %s: %d%s\n" % (i, u_name, pct, '%')
+                msg += f"{i}) {u_name}: {pct}%\n"
                 i += 1
         elif re.search("blob", cmd.text):
             for u in sorted(ranking, key=ranking.get, reverse=False):
                 pct = fofondex[u]['foforate']
                 u_name = fofondex[u]['user_name']
-                msg += u"%d) %s: %d%s\n" % (i, u_name, 100 - pct, '%')
+                tcp = 100 - pct
+                msg += f"{i}) {u_name}: {tcp}%\n"
                 i += 1
             del ranking
         try:
-            debug(u'%s' % msg)
-            obj.send_message(cmd.chat.id, u'%s' % msg)
+            debug(msg)
+            obj.send_message(cmd.chat.id, msg)
         except Exception as e:
-            obj.send_message(cmd.chat.id, "Deu ruim... %s" % e)
+            obj.send_message(cmd.chat.id, f"Deu ruim: {e}")
         return
 
     if re.search("/scoreblob", cmd.text):
@@ -1616,14 +1594,14 @@ def FofoMetrics(obj, cmd):
         except Exception as e:
             obj.send_message(cmd.chat.id,  u"Manda: /scoreblob @usuario")
             return
-        debug(u"/scoreblob: %s" % person)
+        debug(f"/scoreblob: {person}")
         obj.send_message(cmd.chat.id,  u"Em construção...")
 
 
 
 def Motivational(obj, cmd):
     debug(cmd.text)
-    MOTIVATIONALDIR = "%s/motivational" % (os.environ.get('HOME'))
+    MOTIVATIONALDIR = f"{os.environ.get('HOME')}/motivational"
     if(os.path.exists(MOTIVATIONALDIR) == False):
         os.system('cd && git clone https://github.com/jeanlandim/motivational')
 
@@ -1631,12 +1609,12 @@ def Motivational(obj, cmd):
     motivational = ""
     while not re.search("(jpg|png|gif)", motivational):
         motivational = random.choice(photos)
-        debug("Motivational picture: %s" % motivational)
+        debug(f"Motivational picture: {motivational}")
     try:
-        ph = open("%s/%s" % (MOTIVATIONALDIR, motivational), 'rb')
+        ph = open(f"{MOTIVATIONALDIR}/{motivational}", 'rb')
         obj.send_photo(cmd.chat.id, ph)
     except Exception as e:
-        obj.reply_to(cmd, "Deu merda: %s" % e)
+        obj.reply_to(cmd, f"Deu merda: {e}")
 
 
 def DuckDuckGo(obj, cmd):
@@ -1645,8 +1623,8 @@ def DuckDuckGo(obj, cmd):
     if len(q) == 1:
         return
     question = "+".join(q[1:])
-    debug("Question=%s" % question)
-    req = requests.get("https://duckduckgo.com/html/?q=%s" % question)
+    debug(f"Question={question}")
+    req = requests.get(f"https://duckduckgo.com/html/?q={question}")
     answer = None
     html = bp.BeautifulSoup(req.text)
     responses = html.findAll("div", id="zero_click_abstract")
@@ -1661,7 +1639,7 @@ def DuckDuckGo(obj, cmd):
     try:
         obj.reply_to(cmd, answer)
     except Exception as e:
-        obj.reply_to(cmd, "Deu merda: %s" % e)
+        obj.reply_to(cmd, f"Deu merda: {e}")
 
 
 def Mimimizer(obj, session):
@@ -1672,9 +1650,9 @@ def Mimimizer(obj, session):
     resp = " ".join(param[1:])
     resp = re.sub("a|e|o|u", "i", resp)
     resp = re.sub("A|E|O|U", "I", resp)
-    resp = re.sub(u"á|é|ó|ú", u"í", resp)
-    resp = re.sub(u"Á|É|Ó|Ú", u"Í", resp)
-    obj.reply_to(session, u"%s" % resp)
+    resp = re.sub("á|é|ó|ú", "í", resp)
+    resp = re.sub("Á|É|Ó|Ú", "Í", resp)
+    obj.reply_to(session, resp)
     # Falta implementar quem...
 
 
@@ -1687,17 +1665,17 @@ def Ban(obj, session):
 
 def is_command(message):
     try:
-        u_message_text = "%s" % message.text
+        u_message_text = message.text
     except Exception as e:
         return False
     return re.search("^/[A-Za-z].*", u_message_text)
 
 
 def GenericMessageHandler(obj, session):
-    command = u"%s" % session.text[1:]
+    command = session.text[1:]
     command = command.split()[0]
     command = command.split("@")[0]
-    debug(u"Generic calling for %s" % command)
+    debug(f"Generic calling for {command}")
     if get_answer(command):
         reply_text(obj, session, get_answer(command))
 
@@ -1759,25 +1737,17 @@ def generateWorldCoronaData(dataJSON):
             critical += int(data["critical"])
         if "casesPerOneMillion" in data:
             casesPerOneMillion += int(data["casesPerOneMillion"])
-    result = """{
+    result = f"""{
         "country":"World",
-        "cases":%d,
-        "todayCases":%d,
-        "deaths":%d,
-        "todayDeaths":%d,
-        "recovered":%d,
-        "active":%d,
-        "critical":%d,
-        "casesPerOneMillion":%d
-        }""" % (
-        cases,
-        todayCases,
-        deaths,
-        todayDeaths,
-        recovered,
-        active,
-        critical,
-        casesPerOneMillion)
+        "cases":{cases},
+        "todayCases":{todayCases},
+        "deaths":{deaths},
+        "todayDeaths":{todayDeaths},
+        "recovered":{recovered},
+        "active":{active},
+        "critical":{critical},
+        "casesPerOneMillion":{casesPerOneMillion}
+        }"""
     return json.loads(result)
 
 def generateReport(country=None):
@@ -1799,19 +1769,19 @@ def generateReport(country=None):
 
 
     if "cases" in myJSON:
-        response += " Casos no total: %s\n" % myJSON["cases"]
+        response += " Casos no total: " + myJSON["cases"] + "\n"
     if "todayCases" in myJSON:
-        response += " Casos somente hoje: %s\n" % myJSON["todayCases"]
+        response += " Casos somente hoje: " + myJSON["todayCases"] + "\n"
     if "deaths" in myJSON:
-        response += " Mortes no total: %s\n" % myJSON["deaths"]
+        response += " Mortes no total: " + myJSON["deaths"] + "\n"
     if "todayDeaths" in myJSON:
-        response += " Mortes somente hoje: %s\n" % myJSON["todayDeaths"]
+        response += " Mortes somente hoje: " + myJSON["todayDeaths"] + "\n"
     if "recovered" in myJSON:
-        response += " Recuperados no total: %s\n" % myJSON["recovered"]
+        response += " Recuperados no total: " + myJSON["recovered"] + "\n"
     if "critical" in myJSON:
-        response += " Em estado crítico no total: %s\n" % myJSON["critical"]
+        response += " Em estado crítico no total: " + myJSON["critical"] + "\n"
     if "casesPerOneMillion" in myJSON:
-        response += " Casos a cada milhão: %s\n" % myJSON["casesPerOneMillion"]
+        response += " Casos a cada milhão: " + myJSON["casesPerOneMillion"] + "\n"
 
     return response
 

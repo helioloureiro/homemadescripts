@@ -778,7 +778,7 @@ def SysCmd(obj, cmd):
     try:
         # resp = os.popen(sanitize[1:]).read()
         resp = subprocess.check_output(cleanedMessage.split())
-        resp = str(resp)
+        resp = resp.decode('utf-8')
         debug(f"Popen response: {resp}")
         resp = re.sub("GNU", "OSI", resp)
         debug(f"Response: {resp}")

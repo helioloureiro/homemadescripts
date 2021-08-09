@@ -742,7 +742,7 @@ def sanitize(message):
         message = message[1:]
     sanitize = re.sub(";.*", "", message)
     debug(f"sanitize_1: {sanitize}")
-    sanitize = re.sub("|.*", "", sanitize)
+    sanitize = re.sub("\|.*", "", sanitize)
     debug(f"sanitize_2: {sanitize}")
     sanitize = re.sub("@.*", "", sanitize)
     debug(f"sanitize_3: {sanitize}")

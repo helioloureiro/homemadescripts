@@ -1664,11 +1664,9 @@ def Ban(obj, session):
     # Falta implementar quem...
 
 def is_command(message):
-    try:
-        u_message_text = message.text
-    except Exception as e:
+    if not message.text:
         return False
-    return re.search("^/[A-Za-z].*", u_message_text)
+    return re.search("^/[A-Za-z].*", message.text)
 
 
 def GenericMessageHandler(obj, session):

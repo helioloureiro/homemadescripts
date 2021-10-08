@@ -54,6 +54,10 @@ func sed(old, new, text string) string {
 	return re.ReplaceAllString(text, new)
 }
 
+func revsort(palavras []string) {
+	sort.Sort(sort.Reverse(sort.StringSlice(palavras)))
+}
+
 func main() {
 	fmt.Println("random articles")
 	content := curl(SITE + SITE_PATH)
@@ -77,8 +81,8 @@ func main() {
 	getnew := make(chan string, 1)
 	requestnew := make(chan int, 1)
 
-	sort.Strings(listaPautas)
-	ultimaPauta := listaPautas[len(listaPautas)-1]
+	revsort(listaPautas)
+	ultimaPauta := listaPautas[0]
 	ultimaPauta = sed("/blob", "", ultimaPauta)
 	print("Ultima:" + ultimaPauta)
 

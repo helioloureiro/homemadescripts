@@ -333,7 +333,7 @@ def debug(*msg):
 def shell_curl(url : str) -> str:
     """Using shell to bypass the status code 103"""
     debug(f"shell_curl(): received {url}")
-    cmd = f"culr -s {url}"
+    cmd = f"curl -s {url}"
     # if re.search("theregister.com", url):
     #     agent = MYZILLA["user-agent"]
     #     cmd = f"curl -sL -A \"{agent}\" {url}"

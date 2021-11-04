@@ -1044,8 +1044,6 @@ def UnixLoadOn(obj, cmd):
             return "URL não tem http no início.  Ignorada."
         last_pauta = get_last_pauta()
         pauta_body = read_pauta(last_pauta)
-        if re.search(url, pauta_body):
-            return ("Link já adicionado anteriormente.")
 
         content = pauta_body.split("\n\n")
 
@@ -1061,7 +1059,7 @@ def UnixLoadOn(obj, cmd):
                 md_text = f"* [{title} - by {username}]({url})"
             else:
                 md_text = f"* [{title}]({url})"
-            content[3] += f"\n{md_text}"
+            content[0] += f"\n{md_text}"
         else:
             return "Falha lendo arquivo de pauta (corpo do html vazio)."
         body = "\n\n".join(content)
@@ -1691,15 +1689,10 @@ def DuckDuckGo(obj, cmd):
 
 def Mimimizer(obj, session):
     debug(session.text)
-    if session.reply_to_message:
-        text = session.reply_to_message.text
-    else:
-        text = session.text.split()
-    # if a reply_to
-    if len(text) <= 1:
-        obj.reply_to("não achei mensagem pra mimimizar")
+    param = session.text.split()
+    if len(param) <= 1:
         return
-    resp = " ".join(text[1:])
+    resp = " ".join(param[1:])
     resp = re.sub("a|e|o|u", "i", resp)
     resp = re.sub("A|E|O|U", "I", resp)
     resp = re.sub("á|é|ó|ú", "í", resp)
@@ -1930,7 +1923,7 @@ if __name__ == '__main__':
     def handler(command):
         PipocaGif(bot, command)
 
-    @bot.message_handler(commands=["reload", "restart"])
+    @bot.message_handler(commands=["reload"])
     def handler(command):
         Reload(bot, command)
 

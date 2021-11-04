@@ -33,3 +33,6 @@ stallmanbot.py
 
 generateHash.py
   A simple way to generate short hashes (10 characters at this moment.)
+
+install_vim_plugins
+  A script to install my favorit Vim plugins and make it awesome.

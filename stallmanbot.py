@@ -336,7 +336,8 @@ def shell_curl(url : str) -> str:
     cmd = f"culr -s {url}"
     if re.search("theregister.com", url):
         agent = MYZILLA["user-agent"]
-        cmd = f"curl -s -A \"{agent}\" {url}"
+        cmd = f"curl -sL -A \"{agent}\" {url}"
+    debug(f"shell_curl(): running: {cmd}")
     result = subprocess.check_output(cmd.split())
     response = result.decode("utf-8")
     debug(f"shell_curl(): response: {response}")

@@ -1022,7 +1022,7 @@ def UnixLoadOn(obj, cmd):
         content = pauta_body.split("\n\n")
 
         html = curl(url)
-
+        debug("add_pauta: page back from curl():", html)
         if re.search("^Erro", html):
             return html
 

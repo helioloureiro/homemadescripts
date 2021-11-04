@@ -24,7 +24,7 @@ import subprocess
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Fri Feb 28 13:43:12 CET 2020"
+__version__ = "Thu Nov  4 17:10:44 CET 2021"
 
 START_TIME = time.ctime()
 
@@ -72,7 +72,7 @@ corona - status do corona virus
 version - versão do bot
 """
 
-DEBUG = True
+DEBUG = False
 CONFIG = ".twitterc"
 HOME = os.environ.get('HOME')
 PIDFILE = f"{HOME}/.stallmanbot.pid"
@@ -332,25 +332,32 @@ def debug(*msg):
 
 def shell_curl(url : str) -> str:
     """Using shell to bypass the status code 103"""
+    debug(f"shell_curl(): received {url}")
     cmd = f"culr -s {url}"
     if re.search("theregister.com", url):
         agent = MYZILLA["user-agent"]
         cmd = f"curl -s -A \"{agent}\" {url}"
     result = subprocess.check_output(cmd.split())
-    return result.decode("utf-8")
+    response = result.decode("utf-8")
+    debug(f"shell_curl(): response: {response}")
+    return response
 
 
 def curl(url : str) -> str:
     """Wrapper for getting pages"""
+    debug(f"curl(): received {url}")
     # Just for TheRegister
     if re.search("theregister.com", url):
+        debug("curl(): using theregister.com case")
         req = requests.get(url, headers=MYZILLA)
     else:
         req = requests.get(url)
     if req.status_code == 103:
+        debug(f"curl(): detected 103 - calling shell_curl()")
         return shell_curl(url)
     elif req.status_code != 200:
         return f"Erro buscando página.  status code={req.status_code}"
+    debug(f"curl(): no errors, returning with: {req.text}")
     return req.text
 
 

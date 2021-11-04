@@ -17,6 +17,7 @@ import bs4
 import telebot
 from datetime import date, datetime
 import threading
+import subprocess
 
 # pyTelegramBotAPI
 # https://github.com/eternnoir/pyTelegramBotAPI
@@ -306,6 +307,8 @@ RESPONSES_TEXT[u"ultrafofos"] = RESPONSES_TEXT["ultrafofo"]
 
 LOGTAG = "StallNoMan"
 
+FIREFOX = { "user-agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu" }
+MYZILLA = { "user-agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36 Suck This You Bastards Blocking module requests" }
 
 # Refactoring
 # Applying the concepts from clean code (thanks uncle Bob)
@@ -326,6 +329,29 @@ def debug(*msg):
             syslog.syslog(syslog.LOG_DEBUG, allText)
         except Exception as e:
             print(f"{timestamp} DEBUG ERROR:", e)
+
+def shell_curl(url : str) -> str:
+    """Using shell to bypass the status code 103"""
+    cmd = f"culr -s {url}"
+    if re.search("theregister.com", url):
+        agent = MYZILLA["user-agent"]
+        cmd = f"curl -s -A \"{agent}\" {url}"
+    result = subprocess.check_output(cmd.split())
+    return result.decode("utf-8")
+
+
+def curl(url : str) -> str:
+    """Wrapper for getting pages"""
+    # Just for TheRegister
+    if re.search("theregister.com", url):
+        req = requests.get(url, headers=MYZILLA)
+    else:
+        req = requests.get(url)
+    if req.status_code == 103:
+        return shell_curl(url)
+    elif req.status_code != 200:
+        return f"Erro buscando página.  status code={req.status_code}"
+    return req.text
 
 
 def error(message):
@@ -403,14 +429,14 @@ def get_telegram_key(config_obj, parameter):
     return value
 
 
-def get_foodporn_json():
+def get_foodporn_json() -> str:
     """Retrieve json data from reddit"""
     debug("get_foodporn_json()")
-    request = requests.get(FOODPORNURL)
-    if request.status_code != 200:
+    response = curl(FOODPORNURL)
+    if re.search("^Erro", reponse) :
         text = get_foodporn_json()
     else:
-        text = requests.text
+        text = response
     return text
 
 
@@ -924,9 +950,7 @@ def UnixLoadOn(obj, cmd):
     curdir = os.curdir
     def get_what_is():
         url = "https://helioloureiro.github.io/canalunixloadon/"
-        www = requests.get(url)
-        msg = www.text
-        msg = msg.encode("utf-8")
+        msg = curl(url)
         debug(msg)
         soup = bs4.BeautifulSoup(msg, "html")
         msg = ""
@@ -997,17 +1021,10 @@ def UnixLoadOn(obj, cmd):
 
         content = pauta_body.split("\n\n")
 
-        h = { "user-agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu" }
-        # Just for TheRegister
-        if re.search("theregister.com", url):
-                h = { "user-agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36 Suck This You Bastards Blocking module requests" }
-        req = requests.get(url, headers=h)
-        html = None
-        if req.status_code == 200:
-            html = req.text
-        else:
-            return "Falha lendo arquivo de pauta " + \
-                f"(webserver retornou {req.status_code}: {req.text})."
+        html = curl(url)
+
+        if re.search("^Erro", html):
+            return html
 
         if html is not None:
             soup = bs4.BeautifulSoup(html, "html")
@@ -1199,20 +1216,19 @@ def GetContent(url):
     debug("GetContent() called")
     if not url:
         return
-    req = requests.get(url)
-    if req.status_code == 200:
-        text = req.text
-        proto, domain = url.split("://")
-        debug(f"GetContent: proto={proto}")
-        domain = re.sub("/.*", "", domain)
-        debug(f"GetContent: domain={domain}")
-        domain = f"{proto}://{domain}"
-        text = re.sub(" src=/", f" src={domain}/", text)
-        text = re.sub(" src=\"/", f" src=\"{domain}/", text)
-        return text
-    else:
-        debug(f" * return code error: {req.status_code}")
-    return ""
+    text = curl(url)
+    if re.search("^Erro", text):
+        debug(text)
+        return ""
+
+    proto, domain = url.split("://")
+    debug(f"GetContent: proto={proto}")
+    domain = re.sub("/.*", "", domain)
+    debug(f"GetContent: domain={domain}")
+    domain = f"{proto}://{domain}"
+    text = re.sub(" src=/", f" src={domain}/", text)
+    text = re.sub(" src=\"/", f" src=\"{domain}/", text)
+    return text
 
 
 def GetImgUrl(pattern, text, step=0):
@@ -1623,11 +1639,14 @@ def DuckDuckGo(obj, cmd):
     q = cmd.text.split()
     if len(q) == 1:
         return
+
     question = "+".join(q[1:])
     debug(f"Question={question}")
-    req = requests.get(f"https://duckduckgo.com/html/?q={question}")
-    answer = None
-    html = bp.BeautifulSoup(req.text)
+    resp = curl(f"https://duckduckgo.com/html/?q={question}")
+    if re.search("^Não consegui ler do site: ", resp):
+        return obj.reply_to(cmd, resp)
+
+    html = bp.BeautifulSoup(response)
     responses = html.findAll("div", id="zero_click_abstract")
     try:
         answer = responses[0].text
@@ -1635,8 +1654,7 @@ def DuckDuckGo(obj, cmd):
         print(e) # get internal
         pass
     if not answer:
-        obj.reply_to(cmd, "Não tenho a menor idéia.  Tem de perguntar no google.")
-        return
+        return obj.reply_to(cmd, "Não tenho a menor idéia.  Tem de perguntar no google.")
     try:
         obj.reply_to(cmd, answer)
     except Exception as e:
@@ -1807,13 +1825,13 @@ def fetchCoronaData():
             with open(OUTPUT) as dataJSON:
                 return json.loads(dataJSON.read())
 
-    req = requests.get(URL)
-    if req.status_code != 200:
-        raise Exception(f"Failed to fetch data from {URL} (status={req.status_code})")
+    text = curl(URL)
+    if re.search("^Erro", text):
+        raise Exception(f"Failed to fetch data from {URL} ({text})")
     with open(OUTPUT, 'w') as dataJSON:
-        dataJSON.write(req.text)
+        dataJSON.write(text)
         dataJSON.write("\n")
-    return json.loads(req.text)
+    return json.loads(text)
 
 
 def getAvailableCountries():

@@ -334,9 +334,9 @@ def shell_curl(url : str) -> str:
     """Using shell to bypass the status code 103"""
     debug(f"shell_curl(): received {url}")
     cmd = f"culr -s {url}"
-    if re.search("theregister.com", url):
-        agent = MYZILLA["user-agent"]
-        cmd = f"curl -sL -A \"{agent}\" {url}"
+    # if re.search("theregister.com", url):
+    #     agent = MYZILLA["user-agent"]
+    #     cmd = f"curl -sL -A \"{agent}\" {url}"
     debug(f"shell_curl(): running: {cmd}")
     result = subprocess.check_output(cmd.split())
     response = result.decode("utf-8")

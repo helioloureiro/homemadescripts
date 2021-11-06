@@ -18,6 +18,8 @@ import telebot
 from datetime import date, datetime
 import threading
 import subprocess
+import pycurl
+import BytesIO
 
 # pyTelegramBotAPI
 # https://github.com/eternnoir/pyTelegramBotAPI
@@ -334,15 +336,27 @@ def shell_curl(url : str) -> str:
     """Using shell to bypass the status code 103"""
     debug(f"shell_curl(): received {url}")
     cmd = f"curl -s {url}"
-    # if re.search("theregister.com", url):
-    #     agent = MYZILLA["user-agent"]
-    #     cmd = f"curl -sL -A \"{agent}\" {url}"
     debug(f"shell_curl(): running: {cmd}")
     result = subprocess.check_output(cmd.split())
     response = result.decode("utf-8")
     debug(f"shell_curl(): response: {response}")
     return response
 
+def realcurl(url : str) -> str:
+    """Calling pycurl to handle the http connection."""
+    crl = pycurl.Curl()
+    crl.setopt(crl.URL, url)
+    b_obj = BytesIO()
+    crl.setopt(crl.WRITEDATA, b_obj)
+    crl.setopt(crl.FOLLOWLOCATION, True)
+    crl.setopt(pycurl.USERAGENT, FIREFOX)
+    crl.perform()
+    clr.close()
+    response = b_obj.getvalue().decode('utf-8')
+    if re.search("erro", response):
+        # failed, so lets try the shell script format
+        return shell_curl(url)
+    return response
 
 def curl(url : str) -> str:
     """Wrapper for getting pages"""

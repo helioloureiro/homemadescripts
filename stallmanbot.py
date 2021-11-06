@@ -19,7 +19,7 @@ from datetime import date, datetime
 import threading
 import subprocess
 import pycurl
-import BytesIO
+from io import BytesIO
 
 # pyTelegramBotAPI
 # https://github.com/eternnoir/pyTelegramBotAPI

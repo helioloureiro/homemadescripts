@@ -351,7 +351,7 @@ def realcurl(url : str) -> str:
     crl.setopt(crl.FOLLOWLOCATION, True)
     crl.setopt(pycurl.USERAGENT, FIREFOX['user-agent'])
     crl.perform()
-    clr.close()
+    crl.close()
     response = b_obj.getvalue().decode('utf-8')
     if re.search("erro", response):
         # failed, so lets try the shell script format

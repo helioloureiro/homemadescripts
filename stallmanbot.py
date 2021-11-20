@@ -370,6 +370,9 @@ def curl(url : str) -> str:
     if req.status_code == 103:
         debug(f"curl(): detected 103 - calling shell_curl()")
         return shell_curl(url)
+    if req.status_code == 403:
+        debug("Site rejected probably headers, using curl w/ firefox instead")
+        return realcurl(url)
     elif req.status_code != 200:
         return f"Erro buscando página.  status code={req.status_code}"
     debug(f"curl(): no errors, returning with: {req.text}")

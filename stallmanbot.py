@@ -349,7 +349,7 @@ def realcurl(url : str) -> str:
     b_obj = BytesIO()
     crl.setopt(crl.WRITEDATA, b_obj)
     crl.setopt(crl.FOLLOWLOCATION, True)
-    crl.setopt(pycurl.USERAGENT, FIREFOX)
+    crl.setopt(pycurl.USERAGENT, FIREFOX['user-agent'])
     crl.perform()
     clr.close()
     response = b_obj.getvalue().decode('utf-8')

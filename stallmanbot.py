@@ -1044,6 +1044,8 @@ def UnixLoadOn(obj, cmd):
             return "URL não tem http no início.  Ignorada."
         last_pauta = get_last_pauta()
         pauta_body = read_pauta(last_pauta)
+        if re.search(url, pauta_body):
+            return ("Link já adicionado anteriormente.")
 
         content = pauta_body.split("\n\n")
 

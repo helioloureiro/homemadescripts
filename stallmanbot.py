@@ -366,7 +366,8 @@ def curl(url : str) -> str:
         debug("curl(): using theregister.com case")
         req = requests.get(url, headers=MYZILLA)
     else:
-        req = requests.get(url)
+        # Using user-agent as Firefox for all attempts
+        req = requests.get(url, headers=FIREFOX)
     if req.status_code == 103:
         debug(f"curl(): detected 103 - calling shell_curl()")
         return shell_curl(url)

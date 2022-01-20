@@ -1929,7 +1929,7 @@ if __name__ == '__main__':
     def handler(command):
         PipocaGif(bot, command)
 
-    @bot.message_handler(commands=["reload"])
+    @bot.message_handler(commands=["reload", "restart"])
     def handler(command):
         Reload(bot, command)
 

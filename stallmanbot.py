@@ -1697,6 +1697,7 @@ def Mimimizer(obj, session):
         text = session.text.split()
     # if a reply_to
     if len(text) <= 1:
+        obj.reply_to("não achei mensagem pra mimimizar")
         return
     resp = " ".join(param[1:])
     resp = re.sub("a|e|o|u", "i", resp)

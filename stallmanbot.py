@@ -26,7 +26,7 @@ from io import BytesIO
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Thu Jan 20 07:47:45 PM CET 2022"
+__version__ = "Thu Jan 20 07:56:41 PM CET 2022"
 
 START_TIME = time.ctime()
 

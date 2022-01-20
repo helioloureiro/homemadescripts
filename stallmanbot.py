@@ -1691,8 +1691,12 @@ def DuckDuckGo(obj, cmd):
 
 def Mimimizer(obj, session):
     debug(session.text)
-    param = session.text.split()
-    if len(param) <= 1:
+    if session.reply_to_message:
+        text = session.reply_to_message.text
+    else:
+        text = session.text.split()
+    # if a reply_to
+    if len(text) <= 1:
         return
     resp = " ".join(param[1:])
     resp = re.sub("a|e|o|u", "i", resp)

@@ -24,13 +24,13 @@ die() {
 }
 
 debug() {
-    test -n $DEBUG || return
+    test -z $DEBUG && return
     echo "$@"
 }
 
 check_dep() {
     # skip on tests environment
-    test -n $TEST_ENV && return
+    test -z $TEST_ENV || return
 
     dep=$1
     opkg status $dep | grep -q Installed-Time
@@ -46,7 +46,7 @@ check_dep iptables-mod-filter
 ## Check bc or fail
 check_dep bc
 
-if [ ! -n $FAKE_TIME ]; then
+if [ -z $FAKE_TIME ]; then
     HOUR=$(date "+%H")
     MINUTE=$(date "+%M")
     WEEKDAY=$(date  "+%a")
@@ -78,7 +78,7 @@ run_cmd() {
     command="$@"
     debug "$command"
     # don't run on test
-    test -n $TEST_ENV && return
+    test -z $TEST_ENV || return
     eval $command
 }
 

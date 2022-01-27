@@ -102,14 +102,30 @@ enable_firewall() {
 disable_firewall() {
     echo "Disabling firewall"
     for chain in INPUT FORWARD OUTPUT
+        for line in $(iptables -L $chain -n --line-numbers)
         do
-        for proto in tcp udp
+            # check whether it starts with a number
+            echo $line | grep -q "^[0-9]"
+            if [ $? -ne 0 ]; then
+                # next firewall line
+                continue
+            fi
+            # check whether it has the term "STRING" on it
+            echo $line | grep -qi string
+            if [ $? -ne 0 ];then
+                # next firewall line
+                continue
+            fi
+
+            for blocked in $blocked_pattern
             do
-                for blocked in $blocked_pattern
-                    do
-                    cmd="iptables -D $chain -p $proto -m string --algo bm --string "$blocked" -j DROP"
-                    run_cmd $cmd
-                done
+                echo $line | grep -q $blocked
+                if [ $? -eq 0 ];then
+                    line_nr=$(echo $line | cut -d" " -f1 | sort -nr)
+                    run_cmd "iptables -D $chain  $line_nr"
+                    break
+                fi
+
         done
     done
 }

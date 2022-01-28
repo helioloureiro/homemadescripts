@@ -8,15 +8,15 @@
 #blocking times
 # HH:MM start, HH:MM stop, weekday
 rules="07:55,08:30,Mon"
-rules="$rules 12:00,18:30,Mon"
+rules="$rules 12:00,18:00,Mon"
 rules="$rules 07:55,08:30,Tue"
-rules="$rules 12:00,18:30,Tue"
-rules="$rules 07:55,08:30,Wed"
-rules="$rules 12:00,18:30,Wed"
-rules="$rules 07:55,08:30,Thu"
-rules="$rules 12:00,18:30,Thu"
+rules="$rules 12:00,18:00,Tue"
+rules="$rules 07:55,08:00,Wed"
+rules="$rules 12:00,18:00,Wed"
+rules="$rules 07:55,08:00,Thu"
+rules="$rules 12:00,18:00,Thu"
 rules="$rules 07:55,08:30,Fri"
-rules="$rules 12:00,18:30,Fri"
+rules="$rules 12:00,16:00,Fri"
 
 die() {
     echo "$@"
@@ -83,6 +83,13 @@ run_cmd() {
 }
 
 enable_firewall() {
+    status=$(cat status_file)
+    if [ "$status" = "manual_enabled" ]; then
+        return
+    fi
+    if [ "$status" = "timetable_enabled" ]; then
+        return
+    fi
     echo "Enabling firewall"
     for chain in INPUT FORWARD OUTPUT
         do
@@ -100,8 +107,17 @@ enable_firewall() {
 }
 
 disable_firewall() {
+    status=$(cat status_file)
+    if [ "$status" = "manual_disabled" ]; then
+        return
+    fi
+    if [ "$status" = "timetable_disabled" ]; then
+        return
+    fi
+
     echo "Disabling firewall"
     for chain in INPUT FORWARD OUTPUT
+    do
         for line in $(iptables -L $chain -n --line-numbers)
         do
             # check whether it starts with a number
@@ -125,7 +141,7 @@ disable_firewall() {
                     run_cmd "iptables -D $chain  $line_nr"
                     break
                 fi
-
+            done
         done
     done
 }

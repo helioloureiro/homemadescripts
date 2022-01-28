@@ -124,7 +124,7 @@ disable_firewall() {
     echo "Disabling firewall"
     for chain in INPUT FORWARD OUTPUT
     do
-        for line in $(read iptables -L $chain -n --line-numbers)
+        iptables -L $chain -n --line-numbers | while read line
         do
             # check whether it starts with a number
             echo $line | grep -q "^[0-9]"

@@ -85,9 +85,11 @@ run_cmd() {
 enable_firewall() {
     status=$(cat status_file)
     if [ "$status" = "manual_enabled" ]; then
+        debug("enable_firewall(): it is already enabled manually")
         return
     fi
     if [ "$status" = "timetable_enabled" ]; then
+        debug("enable_firewall(): it is already enabled by timetable")
         return
     fi
     echo "Enabling firewall"
@@ -99,6 +101,7 @@ enable_firewall() {
                 for blocked in $blocked_pattern
                     do
                     cmd="iptables -I $chain $count -p $proto -m string --algo bm --string \"$blocked\" -j DROP"
+                    debug("enable_firewall(): $cmd")
                     run_cmd $cmd
                     count=$(expr $count + 1)
                 done
@@ -109,16 +112,18 @@ enable_firewall() {
 disable_firewall() {
     status=$(cat status_file)
     if [ "$status" = "manual_disabled" ]; then
+        debug("disable_firewall(): it is already disabled manually")
         return
     fi
     if [ "$status" = "timetable_disabled" ]; then
+        debug("disable_firewall(): it is already disabled by timetable")
         return
     fi
 
     echo "Disabling firewall"
     for chain in INPUT FORWARD OUTPUT
     do
-        for line in $(iptables -L $chain -n --line-numbers)
+        for line in $(read iptables -L $chain -n --line-numbers)
         do
             # check whether it starts with a number
             echo $line | grep -q "^[0-9]"
@@ -138,7 +143,9 @@ disable_firewall() {
                 echo $line | grep -q $blocked
                 if [ $? -eq 0 ];then
                     line_nr=$(echo $line | cut -d" " -f1 | sort -nr)
-                    run_cmd "iptables -D $chain  $line_nr"
+                    cmd="iptables -D $chain  $line_nr"
+                    debug("disable_firewall(): $cmd")
+                    run_cmd $cmd
                     break
                 fi
             done

@@ -5,6 +5,8 @@
 # requires: iptables-mod-filter bc
 # to run as tests environment: env TEST_ENV=1 DEBUG=1 FAKE_TIME=20:00,Sun sh firewall.sh
 
+status_file=/tmp/firewall_status.lck
+
 #blocking times
 # HH:MM start, HH:MM stop, weekday
 rules="07:55,08:30,Mon"
@@ -59,7 +61,6 @@ fi
 echo "Current time: hour=$HOUR minute=$MINUTE (weekday=$WEEKDAY)"
 now=$( echo "$HOUR * 60 + $MINUTE" | bc)
 
-status_file=/tmp/firewall_status.lck
 
 blocked_pattern="youtubei.googleapis.com"
 blocked_pattern="$blocked_pattern googlevideo.com"
@@ -83,13 +84,13 @@ run_cmd() {
 }
 
 enable_firewall() {
-    status=$(cat status_file)
+    status=$(cat $status_file)
     if [ "$status" = "manual_enabled" ]; then
-        debug("enable_firewall(): it is already enabled manually")
+        debug "enable_firewall(): it is already enabled manually"
         return
     fi
     if [ "$status" = "timetable_enabled" ]; then
-        debug("enable_firewall(): it is already enabled by timetable")
+        debug "enable_firewall(): it is already enabled by timetable"
         return
     fi
     echo "Enabling firewall"
@@ -101,7 +102,7 @@ enable_firewall() {
                 for blocked in $blocked_pattern
                     do
                     cmd="iptables -I $chain $count -p $proto -m string --algo bm --string \"$blocked\" -j DROP"
-                    debug("enable_firewall(): $cmd")
+                    debug "enable_firewall(): $cmd"
                     run_cmd $cmd
                     count=$(expr $count + 1)
                 done
@@ -110,13 +111,13 @@ enable_firewall() {
 }
 
 disable_firewall() {
-    status=$(cat status_file)
+    status=$(cat $status_file)
     if [ "$status" = "manual_disabled" ]; then
-        debug("disable_firewall(): it is already disabled manually")
+        debug "disable_firewall(): it is already disabled manually"
         return
     fi
     if [ "$status" = "timetable_disabled" ]; then
-        debug("disable_firewall(): it is already disabled by timetable")
+        debug "disable_firewall(): it is already disabled by timetable"
         return
     fi
 
@@ -144,7 +145,7 @@ disable_firewall() {
                 if [ $? -eq 0 ];then
                     line_nr=$(echo $line | cut -d" " -f1 | sort -nr)
                     cmd="iptables -D $chain  $line_nr"
-                    debug("disable_firewall(): $cmd")
+                    debug "disable_firewall(): $cmd"
                     run_cmd $cmd
                     break
                 fi

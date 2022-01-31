@@ -144,7 +144,7 @@ disable_firewall() {
                 echo $line | grep -q $blocked
                 if [ $? -eq 0 ];then
                     line_nr=$(echo $line | cut -d" " -f1 | sort -nr)
-                    cmd="iptables -D $chain  $line_nr"
+                    cmd="iptables -I $chain -p $proto -m string --algo bm --string \"$blocked\" -j DROP"
                     debug "disable_firewall(): $cmd"
                     run_cmd $cmd
                     break

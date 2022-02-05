@@ -144,7 +144,10 @@ disable_firewall() {
             do
                 echo $line | grep -q $blocked
                 if [ $? -eq 0 ];then
-                    line_nr=$(echo $line | cut -d" " -f1 | sort -nr)
+                    line_split=$(echo $line | sed "s/  */ /g")
+                    # 24 DROP udp -- 0.0.0.0/0 0.0.0.0/0 STRING match "facebook.com" ALGO name bm TO 65535
+                    # 1  2    3   4  5                   6      7     8              9    10   11 12 13
+                    proto=$(echo $line_split | cut -d" " -f3)
                     cmd="iptables -D $chain -p $proto -m string --algo bm --string \"$blocked\" -j DROP"
                     debug "disable_firewall(): $cmd"
                     run_cmd $cmd

@@ -5,7 +5,7 @@
 # requires: iptables-mod-filter bc
 # to run as tests environment: env TEST_ENV=1 DEBUG=1 FAKE_TIME=20:00,Sun sh firewall.sh
 
-__version__="1.0.0-3"
+__version__="1.0.0-4"
 status_file=/tmp/firewall_status.lck
 
 #blocking times
@@ -293,7 +293,8 @@ upgrade_firewall() {
 }
 
 case $1 in
-    upgrade) upgrade_firewall ;;
+    upgrade) upgrade_firewall 
+        ;;
     start) enable_firewall
         echo -n "manual_enabled" > $status_file
            ;;
@@ -303,8 +304,10 @@ case $1 in
     restart) $0 stop
              $0 start
              ;;
-    status) get_status ;;
-    timetable) timetable ;;
+    status) get_status 
+        ;;
+    timetable) timetable 
+        ;;
     reset) $0 stop
         rm -f $status_file
         ;;

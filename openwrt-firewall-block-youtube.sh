@@ -5,7 +5,7 @@
 # requires: iptables-mod-filter bc
 # to run as tests environment: env TEST_ENV=1 DEBUG=1 FAKE_TIME=20:00,Sun sh firewall.sh
 
-__version__="1.0.0-503"
+__version__="1.0.0-504"
 status_file=/tmp/firewall_status.lck
 
 #blocking times
@@ -29,6 +29,12 @@ die() {
 debug() {
     test -z $DEBUG && return
     echo "$@"
+}
+
+get_status() {
+    if [ -f $status_file ]; then
+        cat $status_file
+    fi
 }
 
 check_dep() {
@@ -60,7 +66,7 @@ else
 fi
 
 echo "Current time: hour=$HOUR minute=$MINUTE (weekday=$WEEKDAY)"
-now=$( echo "$HOUR * 60 + $MINUTE" | bc)
+now=$(echo "$HOUR * 60 + $MINUTE" | bc)
 
 
 blocked_pattern="youtubei.googleapis.com"
@@ -85,7 +91,7 @@ run_cmd() {
 }
 
 enable_firewall() {
-    status=$(cat $status_file)
+    status=$(get_status)
     if [ "$status" = "manual_enabled" ]; then
         debug "enable_firewall(): it is already enabled manually"
         return
@@ -105,14 +111,14 @@ enable_firewall() {
                     cmd="iptables -I $chain $count -p $proto -m string --algo bm --string \"$blocked\" -j DROP"
                     debug "enable_firewall(): $cmd"
                     run_cmd $cmd
-                    count=$(expr $count + 1)
+                    count=$((count + 1))
                 done
         done
     done
 }
 
 disable_firewall() {
-    status=$(cat $status_file)
+    status=$(get_status)
     if [ "$status" = "manual_disabled" ]; then
         debug "disable_firewall(): it is already disabled manually"
         return
@@ -158,22 +164,10 @@ disable_firewall() {
     done
 }
 
-get_status() {
-    if [ ! -f $status_file ];then
-        echo "Not running at this time."
-        exit 0
-    fi
-    status=$(cat $status_file)
-    echo "status: $status"
-}
-
 
 is_running_manual_mode() {
-    if [ ! -f $status_file ];then 
-        echo "no"
-        return
-    fi
-    cat $status_file | grep -q "manual_"
+    status=$(get_status)
+    echo "x$status" | grep -q "manual_"
     if [ $? -eq 0 ]; then
         echo "yes"
         return
@@ -193,7 +187,7 @@ check_running_manual_mode() {
     status=$(is_running_manual_mode)
     case $status in
         yes) die "manual lock in place - use \"reset\" to remove it" ;;
-        no) ;;
+        no) echo "" ;;
         *) die "uknown error: $status"
     esac
 }
@@ -204,8 +198,7 @@ check_firewall() {
 
     check_running_manual_mode
 
-    status=""
-    test -f $status_file && status=$(cat $status_file)
+    status=$(get_status)
 
     if [ "$action" = "stop" ] && [ "$status" = "timetable_disabled" ]; then
         echo "already disabled - nothing to be done"

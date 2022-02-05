@@ -5,6 +5,7 @@
 # requires: iptables-mod-filter bc
 # to run as tests environment: env TEST_ENV=1 DEBUG=1 FAKE_TIME=20:00,Sun sh firewall.sh
 
+__version__="1.0.0-2"
 status_file=/tmp/firewall_status.lck
 
 #blocking times
@@ -144,7 +145,7 @@ disable_firewall() {
                 echo $line | grep -q $blocked
                 if [ $? -eq 0 ];then
                     line_nr=$(echo $line | cut -d" " -f1 | sort -nr)
-                    cmd="iptables -I $chain -p $proto -m string --algo bm --string \"$blocked\" -j DROP"
+                    cmd="iptables -D $chain -p $proto -m string --algo bm --string \"$blocked\" -j DROP"
                     debug "disable_firewall(): $cmd"
                     run_cmd $cmd
                     break
@@ -268,8 +269,28 @@ timetable() {
 
 }
 
+upgrade_firewall() {
+    echo "Self upgrade from web."
+    which curl > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "upgrade requires \"curl\" package"
+        exit 1
+    fi
+    program_name=$(basename $0)
+    temp_name="/tmp/$program_name.$$.upgrade"
+    curl https://raw.githubusercontent.com/helioloureiro/homemadescripts/master/openwrt-firewall-block-youtube.sh > $temp_name
+    current_version=$(cat $0 | sed -n '1,10p' | grep __version__ | cut -d= -f2)
+    new_version=$(cat $temp_name | sed -n '1,10p' | grep __version__ | cut -d= -f2)
+    if [ "$current_version" = "$new_version" ]; then
+        echo "it is already on version $current_version - no changes"
+        return
+    fi
+    cat $temp_name > $0 && rm $temp_name
+    echo "Upgraded to version: $new_version"
+}
 
 case $1 in
+    upgrade) upgrade_firewall ;;
     start) enable_firewall
         echo -n "manual_enabled" > $status_file
            ;;
@@ -284,6 +305,6 @@ case $1 in
     reset) $0 stop
         rm -f $status_file
         ;;
-    *) echo "Use: $0 [start|stop|status|restart|timetable|reset]"
+    *) echo "Use: $0 [start|stop|status|restart|timetable|reset|upgrade]"
 esac
 

@@ -5,7 +5,7 @@
 # requires: iptables-mod-filter bc
 # to run as tests environment: env TEST_ENV=1 DEBUG=1 FAKE_TIME=20:00,Sun sh firewall.sh
 
-__version__="1.0.0-2"
+__version__="1.0.0-3"
 status_file=/tmp/firewall_status.lck
 
 #blocking times

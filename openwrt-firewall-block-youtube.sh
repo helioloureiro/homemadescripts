@@ -286,10 +286,12 @@ upgrade_firewall() {
     new_version=$(cat $temp_name | sed -n '1,10p' | grep __version__ | cut -d= -f2)
     if [ "$current_version" = "$new_version" ]; then
         echo "it is already on version $current_version - no changes"
+        rm -f $temp_name
         return
     fi
     cat $temp_name > $0 && rm $temp_name
     echo "Upgraded to version: $new_version"
+    rm -f $temp_name
 }
 
 case $1 in

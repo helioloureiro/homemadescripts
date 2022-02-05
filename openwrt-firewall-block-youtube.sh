@@ -5,7 +5,7 @@
 # requires: iptables-mod-filter bc
 # to run as tests environment: env TEST_ENV=1 DEBUG=1 FAKE_TIME=20:00,Sun sh firewall.sh
 
-__version__="1.0.0-0-150"
+__version__="1.0.0-503"
 status_file=/tmp/firewall_status.lck
 
 #blocking times
@@ -282,8 +282,8 @@ upgrade_firewall() {
     program_name=$(basename $0)
     temp_name="/tmp/$program_name.$$.upgrade"
     curl https://raw.githubusercontent.com/helioloureiro/homemadescripts/master/openwrt-firewall-block-youtube.sh > $temp_name
-    current_version=$(cat $0 | sed -n '1,10p' | grep __version__ | cut -d= -f2)
-    new_version=$(cat $temp_name | sed -n '1,10p' | grep __version__ | cut -d= -f2)
+    current_version=$(cat $0 | sed -n '1,10p' | grep __version__ | cut -d= -f2 | sed "s/\"//g")
+    new_version=$(cat $temp_name | sed -n '1,10p' | grep __version__ | cut -d= -f2 | sed "s/\"//g")
     if [ "$current_version" = "$new_version" ]; then
         echo "it is already on version $current_version - no changes"
         rm -f $temp_name

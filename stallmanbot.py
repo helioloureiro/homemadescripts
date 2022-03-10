@@ -26,7 +26,7 @@ from io import BytesIO
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Thu Jan 20 08:04:29 PM CET 2022"
+__version__ = "Thu Mar 10 09:59:30 PM CET 2022"
 
 START_TIME = time.ctime()
 
@@ -1061,7 +1061,7 @@ def UnixLoadOn(obj, cmd):
                 md_text = f"* [{title} - by {username}]({url})"
             else:
                 md_text = f"* [{title}]({url})"
-            content[0] += f"\n{md_text}"
+            content[3] += f"\n{md_text}"
         else:
             return "Falha lendo arquivo de pauta (corpo do html vazio)."
         body = "\n\n".join(content)

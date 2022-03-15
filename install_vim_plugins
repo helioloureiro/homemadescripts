@@ -1,0 +1,48 @@
+#! /bin/sh
+
+if [ ! -d ~/.vim/pack/git-plugins/start ]; then
+    mkdir -p ~/.vim/pack/git-plugins/start
+fi
+
+cd ~/.vim/pack/git-plugins/start
+for repo in \
+    https://github.com/rafi/awesome-vim-colorschemes \
+    https://github.com/neoclide/coc.nvim \
+    https://github.com/sheerun/vim-polyglot \
+    https://github.com/dense-analysis/ale \
+    https://github.com/mattn/emmet-vim \
+    https://github.com/preservim/nerdcommenter \
+    https://github.com/ctrlpvim/ctrlp.vim \
+    https://github.com/vim-airline/vim-airline-themes \
+    https://github.com/vim-airline/vim-airline \
+    https://github.com/ryanoasis/vim-devicons \
+    https://github.com/preservim/nerdtree \
+    https://github.com/Yggdroot/indentLine \
+    https://github.com/tomasiser/vim-code-dark \
+    https://github.com/mhinz/vim-startify \
+    https://github.com/fatih/vim-go
+
+    do
+    reponame=$(basename $repo)
+    if [ -d $reponame ]; then
+        echo "Repository $repo already exists.  Just updating."
+        cd $reponame
+        git pull -f
+        cd -
+    else
+        git clone $repo
+    fi
+
+done
+
+cd ~/.vim
+if [ ! -f vimrc ]; then
+    curl -O https://raw.githubusercontent.com/fberbert/vimrc/master/vimrc
+    sed -i "33 s/2/4/g" vimrc
+fi
+if [ ! -f coc.vimrc ]; then
+    curl -O https://raw.githubusercontent.com/fberbert/vimrc/master/coc.vimrc
+fi
+if [ ! -f coc-settings.json ]; then
+    curl -O https://raw.githubusercontent.com/fberbert/vimrc/master/coc-settings.json
+fi

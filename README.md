@@ -36,3 +36,6 @@ generateHash.py
 
 install_vim_plugins
   A script to install my favorit Vim plugins and make it awesome.
+
+install_latest_go.sh
+  A script to automate Go installation.

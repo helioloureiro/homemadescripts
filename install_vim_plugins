@@ -1,5 +1,13 @@
 #! /bin/sh
 
+die() {
+    echo $@
+    exit 1
+}
+
+which git > /dev/null || die "It requires git"
+which yarn > /dev/null || die "Coc plugin requires yarn"
+
 if [ ! -d ~/.vim/pack/git-plugins/start ]; then
     mkdir -p ~/.vim/pack/git-plugins/start
 fi
@@ -49,3 +57,32 @@ fi
 if [ ! -f coc-settings.json ]; then
     curl -O https://raw.githubusercontent.com/fberbert/vimrc/master/coc-settings.json
 fi
+
+cat <<EOF > coc_vimrc.patch
+--- coc.vimrc.orig   2022-01-11 09:40:01.852404205 +0100
++++ coc.vimrc  2022-04-01 18:32:31.941971935 +0200
+@@ -27,11 +27,17 @@
+ " Use tab for trigger completion with characters ahead and navigate.
+ " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+ " other plugin before putting this into your config.
++"inoremap <silent><expr> <TAB>
++"       pumvisible() ? "<C-n>" :
++"       <SID>check_back_space() ? "<TAB>" :
++"       coc#refresh()
++"inoremap <expr><S-TAB> pumvisible() ? "<C-p>" : "<C-h>"
++
+ inoremap <silent><expr> <TAB>
+-       pumvisible() ? "<C-n>" :
+-       <SID>check_back_space() ? "<TAB>" :
+-       coc#refresh()
+-inoremap <expr><S-TAB> pumvisible() ? "<C-p>" : "<C-h>"
++      \ pumvisible() ? "\<C-n>" :
++      \ <SID>check_back_space() ? "\<TAB>" :
++      \ coc#refresh()
++inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+ 
+ function! s:check_back_space() abort
+   let col = col('.') - 1
+EOF
+patch -p0 < coc_vimrc.patch
+

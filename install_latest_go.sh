@@ -25,7 +25,7 @@ echo "Installing $go_release"
 cd $TEMPDIR
 
 curl -sLO "$SITE$latest"
-tar zvf "$go_release"
+tar zxvf "$go_release"
 
 version=$(echo $go_release | sed "s/linux.*//;s/^go//;s/\.\$//")
 

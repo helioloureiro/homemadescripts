@@ -39,3 +39,6 @@ install_vim_plugins
 
 install_latest_go.sh
   A script to automate Go installation.
+
+remove-container.pl
+  A script to remove several containers w/ same TAG.

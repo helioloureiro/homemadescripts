@@ -6,6 +6,6 @@
 
 # Get the random link and play
 link=$(curl -s "http://opml.radiotime.com/Tune.ashx?id=s10668" | shuf | head -1)
-echo "Starting Rock Klassiker stream (106.7 FM)"
+echo "Starting Rock Klassiker stream (FM 106.7Hz)"
 mplayer -really-quiet "$link"
 

@@ -6,6 +6,6 @@
 
 # Get the random link and play
 link="https://fm02-ice.stream.khz.se/fm02_mp3?platform=web"
-echo "Starting Rock Klassiker stream (106.7 FM)"
+echo "Starting Bandit Rock stream (FM 106.3Hz)"
 mplayer -quiet "$link"
 

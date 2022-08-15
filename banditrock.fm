@@ -1,0 +1,11 @@
+#! /bin/bash
+# src: https://github.com/kgbzen/tunein-cli
+# Local radios: http://opml.radiotime.com/Browse.ashx?c=local
+# Entry for rockklassiker:  
+# <outline type="audio" text="Rockklassiker 106.7 (Rock Music)" URL="http://opml.radiotime.com/Tune.ashx?id=s10668" bitrate="128" reliability="100" guide_id="s10668" subtext="Africa - Toto" genre_id="g19" formats="mp3" playing="Africa - Toto" item="station" image="http://cdn-profiles.tunein.com/s10668/images/logoq.png" now_playing_id="s10668" preset_id="s10668"/>
+
+# Get the random link and play
+link="https://fm02-ice.stream.khz.se/fm02_mp3?platform=web"
+echo "Starting Rock Klassiker stream (106.7 FM)"
+mplayer -quiet "$link"
+

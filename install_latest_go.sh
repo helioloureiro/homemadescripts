@@ -11,10 +11,27 @@ fi
 
 SITE="https://go.dev"
 TEMPDIR=$(mktemp -d)
+PLATFORM=""
+case $(uname -s) in
+    Darwin) PLATFORM="darwin" ;;
+    Linux) PLATFORM="linux";;
+    *) echo "Platform not supported"
+        exit 1
+esac
+
+case $(uname -p) in
+    # not sure what Apple Intel would answer here
+    i386) PLATFORM="$PLATFORM-arm64";;
+    x86_64) PLATFORM="$PLATFORM-amd64";;
+    arm*) PLATFORM="$PLATFORM-arm64";;
+    aarch64) PLATFORM="$PLATFORM-arm64";;
+    *) echo "Platform not supported"
+        exit 1
+esac
 
 
 latest=$(curl -sL $SITE/dl/ | \
-    grep linux-amd64.tar.gz | \
+    grep $PLATFORM.tar.gz | \
     head | \
     sed "s/.*href=\"//;s/\">.*//" | \
     grep "^/" | \
@@ -27,7 +44,7 @@ cd $TEMPDIR
 curl -sLO "$SITE$latest"
 tar zxvf "$go_release"
 
-version=$(echo $go_release | sed "s/linux.*//;s/^go//;s/\.\$//")
+version=$(echo $go_release | sed "s/$PLATFORM.*//;s/^go//;s/\.\$//")
 
 mv go go-$version
 #ls -al

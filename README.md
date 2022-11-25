@@ -42,3 +42,10 @@ install_latest_go.sh
 
 remove-container.pl
   A script to remove several containers w/ same TAG.
+
+mastodon-toot-thursday.py
+  A Mastodon version of Twitter's #FF (FollowFriday).
+
+mastodon-post-links.py
+  A Mastodon version of the links I post from my website every Sunday.
+  

@@ -154,8 +154,8 @@ class TootPostLink:
         self.mastodon.toot("AutomagicToots de auto-promoção, " + \
                   "sem a menor vergonha na cara...")
 
-        for article in self.articles:
-            title, link = article
+        while self.articles:
+            title, link = self.articles.pop()
             sleepMinutes(randomMinutes(10))
             print(f'Posting: {title}')
             self.mastodon.toot(f"#Lembra? {title}\n\n {link}")

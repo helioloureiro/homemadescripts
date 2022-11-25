@@ -19,7 +19,7 @@ case $(uname -s) in
         exit 1
 esac
 
-case $(uname -p) in
+case $(uname -m) in
     # not sure what Apple Intel would answer here
     i386) PLATFORM="$PLATFORM-arm64";;
     x86_64) PLATFORM="$PLATFORM-amd64";;
@@ -52,12 +52,15 @@ mv go go-$version
 GO_INSTALLED_FLAG=0
 which go >  /dev/null
 if [ $? -eq 0 ]; then
-    echo "Previous Go version:"$(go version)
     GO_INSTALLED_FLAG=1
+    GO_OLD_VERSION=$(go version | awk '{print $3}' | sed "s/go//")
+    echo "Previous Go version:"$GO_OLD_VERSION
 fi
 
 cd $DESTDIR
+test -d go && mv go go-$GO_OLD_VERSION
 rm -f go
+test -d go-$version && rm -rf go-$version
 tar cf - -C $TEMPDIR go-$version | tar xf -
 ln -s go-$version go
 echo "Latest Go version:"$(go version)

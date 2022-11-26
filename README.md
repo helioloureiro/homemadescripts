@@ -48,4 +48,10 @@ mastodon-toot-thursday.py
 
 mastodon-post-links.py
   A Mastodon version of the links I post from my website every Sunday.
+
+twitter-post-last.py
+  A twitter script to pust latest article from my website.
+
+mastodon-post-last.py
+  A mastodon version of twitter-post-last.py.
   

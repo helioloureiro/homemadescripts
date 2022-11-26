@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 from mastodon import Mastodon
-from sys import exit
+import sys
 import feedparser
 from random import randrange
 import requests
@@ -9,6 +9,8 @@ import configparser
 import os
 import time
 import random
+import argparse
+import json
 
 
 HOME = os.getenv('HOME')
@@ -70,29 +72,42 @@ def GetAPIKey():
     apikey = cfg.get("SHORTENER", "APIKEY")
     return apikey
 
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='It posts the last published article')
+    parser.add_argument("--userid", help="Your registered mastodon account at toot configuration")
+    args = parser.parse_args()
 
-print("Autenticating in Mastodon")
-with open(CONFIG) as tootConfig:
-    config = json.load(tootConfig)
+    if args.userid is None:
+        print('ERROR: missing --userid')
+        parser.print_help()
+        sys.exit(os.EX_NOINPUT)
 
-mastodon = Mastodon(
-    access_token = config['users'][userid]['access_token'], 
-    api_base_url = config['users'][userid]['instance']
-    )
-me = self.mastodon.me()
-print('Mastodon login completed')
+    userid = args.userid
 
-print("Reading site's RSS")
-site = "http://helio.loureiro.eng.br/index.php?format=feed&type=rss"
-feed = feedparser.parse(site)
+    print("Getting API key for shortener")
+    apikey = GetAPIKey()
 
-rss = feed['entries'][0]
-title = rss.title
-link = rss.link
+    print("Autenticating in Mastodon")
+    with open(CONFIG) as tootConfig:
+        config = json.load(tootConfig)
 
-print("Shortening ", link)
-shortlink = ShortMe(link)
-print("5 seconds before posting - in case to cancel")
-time.sleep(5)
-print(f"Publishing: {title} {shortlink}")
-mastodon.toot(f"Novo post: {title} {shortlink}")
+    mastodon = Mastodon(
+        access_token = config['users'][userid]['access_token'], 
+        api_base_url = config['users'][userid]['instance']
+        )
+    print('Mastodon login completed')
+
+    print("Reading site's RSS")
+    site = "http://helio.loureiro.eng.br/index.php?format=feed&type=rss"
+    feed = feedparser.parse(site)
+
+    rss = feed['entries'][0]
+    title = rss.title
+    link = rss.link
+
+    print("Shortening ", link)
+    shortlink = ShortMe(link, apikey)
+    print("5 seconds before posting - in case to cancel")
+    time.sleep(5)
+    print(f"Publishing: {title} {shortlink}")
+    mastodon.toot(f"Novo post: {title} {shortlink}")

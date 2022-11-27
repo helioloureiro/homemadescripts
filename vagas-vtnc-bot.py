@@ -29,6 +29,10 @@ def randomMinutes(limit):
     return random.randint(1, limit)
 
 
+def jsonPrettify(data):
+    jsonData = json.loads(data)
+    return json.dumps(jsonData, indent=4)
+
 class VagasVTNCBot:
     def __init__(self, userid):
         with open(CONFIG) as tootConfig:
@@ -106,6 +110,7 @@ class VagasVTNCBot:
             r_hash = self.getSHA256Sum(title + r.id)
             pictures = self.filterPictures(r.summary_detail.value)
             if not r_hash in self.dbdata:
+                print(f' * adding hash: {r_hash}')
                 self.posts.append({
                     "hash" : r_hash,
                     "message" : f"{message} \n\n {link}",
@@ -124,7 +129,7 @@ class VagasVTNCBot:
             for sf in savedFiles:
                 print(f' * sending media: {sf}')
                 result = self.mastodon.media_post(sf)
-                print(' * media_post on mastodon:', result)
+                print(' * media_post on mastodon:', jsonPrettify(result))
                 mediaData.append(result.id)
             tootText = post['message']
             self.mastodon.status_post(tootText, media_ids=mediaData)
@@ -134,13 +139,14 @@ class VagasVTNCBot:
             sleepMinutes(randomMinutes(5))
 
     def saveState(self):
+        print(' * Saving data into DB')
         self.saveData(self.dbdata)
 
     def getPictures(self, imagesList):
         locaFiles = []
         for img in imagesList:
             imgName = tempfile.mktemp(suffix='.jpg')
-            print(f'Fetching {img} and saving into {imgName}')
+            print(f' * Fetching {img} and saving into {imgName}')
             r = requests.get(img, stream=True)
             if r.status_code == 200:
                 with open(imgName, 'wb') as f:
@@ -151,7 +157,8 @@ class VagasVTNCBot:
 
     def cleanUpTempFiles(self, fileNames):
         for f in fileNames:
-            return os.unlink(f)
+            print(f' * Deleting: {f}')
+            os.unlink(f)
 
 
 if __name__ == '__main__':

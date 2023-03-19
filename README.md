@@ -54,4 +54,7 @@ twitter-post-last.py
 
 mastodon-post-last.py
   A mastodon version of twitter-post-last.py.
+
+restart_mouse.sh
+    A script to restart USB mouse without plugin off and on.
   

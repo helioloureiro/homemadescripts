@@ -26,7 +26,7 @@ from io import BytesIO
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Tue Mar 15 15:31:26 CET 2022"
+__version__ = "Sat Mar 25 02:51:58 PM CET 2023"
 
 START_TIME = time.ctime()
 
@@ -971,6 +971,9 @@ def Photo(obj, cmd):
 
 
 def UnixLoadOn(obj, cmd):
+    """
+    Unix load on handling here
+    """
     debug("Unix Load On")
     msg = None
     curdir = os.curdir
@@ -1036,14 +1039,31 @@ def UnixLoadOn(obj, cmd):
             return "git push falhou"
         return None
 
+    def isAlreadyRegistered(term, text):
+        """
+        It search whether url is already in place in markdown file.
+        """
+        for line in text.splitlines():
+            if re.search(term, line):
+                return True
+        return False
+
+    def getBlockHeader(blockText):
+        """
+        A block with several lines of text, it will return the first one.
+        """
+        return blockText.splitlines()[0]
 
     def add_pauta(text, username=None):
         debug("Adding to pauta")
         url = text.split()[-1]
         if not re.search("^http", url):
-            return "URL não tem http no início.  Ignorada."
+            return f"URL não tem http no início.  Ignorada. (achou: {url})"
         last_pauta = get_last_pauta()
         pauta_body = read_pauta(last_pauta)
+
+        if isAlreadyRegistered(url, pauta_body):
+            return "Link já registrado anteriormente."
 
         content = pauta_body.split("\n\n")
 
@@ -1059,7 +1079,9 @@ def UnixLoadOn(obj, cmd):
                 md_text = f"* [{title} - by {username}]({url})"
             else:
                 md_text = f"* [{title}]({url})"
-            content[0] += f"\n{md_text}"
+            for i in range(0, len(content) - 1):
+                if getBlockHeader(content[i]) == 'Que pode ir parar no próximo programa se não der tempo':
+                    content[i] += f"\n{md_text}"
         else:
             return "Falha lendo arquivo de pauta (corpo do html vazio)."
         body = "\n\n".join(content)

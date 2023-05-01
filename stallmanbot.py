@@ -1027,16 +1027,19 @@ def UnixLoadOn(obj, cmd):
         current_time = time.ctime()
         os.system(f"git add {pauta_name}")
         if message is None:
-            res = os.system(f"git commit -m \"Adding pauta  content at {current_time}\" {pauta_name}")
-            if res != 0:
-                return "git commit falhou"
+            #res = os.system(f"git commit -m \"Adding pauta  content at {current_time}\" {pauta_name}")
+            res = subprocess.run(["git", "commit", "-m", f"\"Adding pauta  content at {current_time}\"", pauta_name], capture_output=True)
+            if res.returncode != 0:
+                return "git commit falhou: " + res.stderr.decode('utf-8')
         else:
-            res = os.system(f"git commit -m \"{message}\" {pauta_name}")
-            if res != 0:
-                return "git commit falhou"
-        res = os.system("git push")
-        if res != 0:
-            return "git push falhou"
+            #res = os.system(f"git commit -m \"{message}\" {pauta_name}")
+            res = subprocess.run(["git", "commit", "-m", f"\"{message}\"",  pauta_name], capture_output=True)
+            if res.returncode != 0:
+                return "git commit falhou: " + res.stderr.decode('utf-8')
+        #res = os.system("git push")
+        res = subprocess.run(["git", "push"], capture_output=True)
+        if res.returncode != 0:
+            return "git push falhou: " + res.stderr.decode('utf-8')
         return None
 
     def isAlreadyRegistered(term, text):

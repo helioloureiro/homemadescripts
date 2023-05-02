@@ -1092,11 +1092,12 @@ def UnixLoadOn(obj, cmd):
             md_text = f"* [{title}]({url})"
 
         for i in range(0, len(content) - 1):
-            if getBlockHeader(content[i]) == 'Que pode ir parar no próximo programa se não der tempo':
-                debug("Block found: %s" % content[i])
+            header = getBlockHeader(content[i])
+            if header == 'Que pode ir parar no próximo programa se não der tempo':
+                debug("header found: %s" % header)
                 content[i] += f"\n{md_text}"
             else:
-                debug("Not wanted block: %s" % content[i])
+                debug("header not found: %s" % header)
         body = "\n\n".join(content)
 
         with open(last_pauta, 'w') as fd:

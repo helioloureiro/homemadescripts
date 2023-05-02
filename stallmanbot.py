@@ -1079,7 +1079,7 @@ def UnixLoadOn(obj, cmd):
 
         html = curl(url)
         html_lines = html.splitlines()
-        if len(html_lines > 30):
+        if len(html_lines) > 30:
             html_summary = "\n".join(html_lines[:-30])
         else:
             html_summary = html

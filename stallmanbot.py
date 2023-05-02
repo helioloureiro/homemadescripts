@@ -1066,6 +1066,7 @@ def UnixLoadOn(obj, cmd):
         if not re.search("^http", url):
             return f"URL não tem http no início.  Ignorada. (achou: {url})"
         last_pauta = get_last_pauta()
+        debug("last_pauta: %s" % last_pauta)
         pauta_body = read_pauta(last_pauta)
 
         if isAlreadyRegistered(url, pauta_body):
@@ -1074,22 +1075,28 @@ def UnixLoadOn(obj, cmd):
         content = pauta_body.split("\n\n")
 
         html = curl(url)
-        debug("add_pauta: page back from curl():", html)
+        debug("add_pauta: page back from curl(): %s" % html)
         if re.search("^Erro", html):
+            debug("Found error in HTML body for url=%s" % url)
             return html
 
-        if html is not None:
-            soup = bs4.BeautifulSoup(html, "html")
-            title = sanitize(soup.title.text)
-            if username is not None:
-                md_text = f"* [{title} - by {username}]({url})"
-            else:
-                md_text = f"* [{title}]({url})"
-            for i in range(0, len(content) - 1):
-                if getBlockHeader(content[i]) == 'Que pode ir parar no próximo programa se não der tempo':
-                    content[i] += f"\n{md_text}"
-        else:
+        if html is None:
             return "Falha lendo arquivo de pauta (corpo do html vazio)."
+
+        soup = bs4.BeautifulSoup(html, "html")
+        title = sanitize(soup.title.text)
+
+        if username is not None:
+            md_text = f"* [{title} - by {username}]({url})"
+        else:
+            md_text = f"* [{title}]({url})"
+
+        for i in range(0, len(content) - 1):
+            if getBlockHeader(content[i]) == 'Que pode ir parar no próximo programa se não der tempo':
+                debug("Block found: %s" % content[i])
+                content[i] += f"\n{md_text}"
+            else:
+                debug("Not wanted block: %s" % content[i])
         body = "\n\n".join(content)
 
         with open(last_pauta, 'w') as fd:

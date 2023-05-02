@@ -1078,8 +1078,12 @@ def UnixLoadOn(obj, cmd):
         content = pauta_body.split("\n\n")
 
         html = curl(url)
-        html_summary = "\n".join(html.splitlines()[-30])
-        debug("add_pauta: page back from curl(): %s" % html_summary)
+        html_lines = html.splitlines()
+        if len(html_lines > 30):
+            html_summary = "\n".join(html_lines[:-30])
+        else:
+            html_summary = html
+        debug("add_pauta: page back (summary) from curl(): %s" % html_summary)
         if re.search("^Erro", html):
             debug("Found error in HTML body for url=%s" % url)
             return html

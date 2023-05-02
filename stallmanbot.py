@@ -1058,7 +1058,10 @@ def UnixLoadOn(obj, cmd):
         """
         A block with several lines of text, it will return the first one.
         """
-        return blockText.splitlines()[0]
+        all_lines =  blockText.splitlines()
+        if len(all_lines[0]) > 2:
+            return all_lines[0]
+        return all_lines[1]
 
     def add_pauta(text, username=None):
         debug("Adding to pauta")

@@ -1075,7 +1075,8 @@ def UnixLoadOn(obj, cmd):
         content = pauta_body.split("\n\n")
 
         html = curl(url)
-        debug("add_pauta: page back from curl(): %s" % html)
+        html_summary = "\n".join(html.splitlines()[-30])
+        debug("add_pauta: page back from curl(): %s" % html_summary)
         if re.search("^Erro", html):
             debug("Found error in HTML body for url=%s" % url)
             return html
@@ -1090,6 +1091,8 @@ def UnixLoadOn(obj, cmd):
             md_text = f"* [{title} - by {username}]({url})"
         else:
             md_text = f"* [{title}]({url})"
+
+        debug("Entry to be added: %s" % md_text)
 
         for i in range(0, len(content) - 1):
             header = getBlockHeader(content[i])

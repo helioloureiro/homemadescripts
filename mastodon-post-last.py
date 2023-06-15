@@ -101,7 +101,11 @@ if __name__ == '__main__':
     site = "http://helio.loureiro.eng.br/index.php?format=feed&type=rss"
     feed = feedparser.parse(site)
 
-    rss = feed['entries'][0]
+    try:
+        rss = feed['entries'][0]
+    except IndexError:
+        print("No entries found in the rss feed")
+        sys.exit(0)
     title = rss.title
     link = rss.link
 

@@ -46,10 +46,10 @@ class TootThursday:
         self.followingList = awardedList
 
     def send(self):
-        text = '#TT '
+        text = '#TT \n'
         for username in self.followingList:
-            text += '@' + username + ' '
-        text += '\n\n#TootThursday'
+            text += '@' + username + '\n'
+        text += '\n#TootThursday'
 
         self.mastodon.toot(text)
 

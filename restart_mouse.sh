@@ -8,6 +8,28 @@ die() {
   exit 1
 }
 
+bind() {
+  device=$1
+  echo " * binding: $device"
+  echo "$device" > /sys/bus/usb/drivers/usb/bind > /dev/null
+  if [ $? -ne 0 ]; then
+    echo "Failed to bind, trying again"
+    sleep 0.5
+    bind $device
+  fi
+}
+
+unbind() {
+  device=$1
+  echo " * unbinding: $device"
+  echo "$device" > /sys/bus/usb/drivers/usb/unbind > /dev/null
+  if [ $? -ne 0 ]; then
+    echo "Failed to bind, trying again"
+    sleep 0.5
+    unbind $device
+  fi
+}
+
 if [ $(id -u) -ne 0 ]; then
   die "you must run this script as root"
 fi
@@ -39,11 +61,9 @@ done
 
 if [ -n "$hub_id" ]; then
   echo "Restarting $hub_id ($HUB_PRODUCT)"
-  echo " * unbinding"
-  echo "$hub_id" > /sys/bus/usb/drivers/usb/unbind
+  unbind "$hub_id"
   sleep 0.5
-  echo " * binding"
-  echo "$hub_id" > /sys/bus/usb/drivers/usb/bind
+  bind "$hub_id"
 fi
 
 sleep 0.5
@@ -53,10 +73,8 @@ if [ -z "$mouse_id" ]; then
 fi
 
 echo "Restarting $mouse_id ($MOUSE_PRODUCT)"
-echo " * unbinding"
-echo "$mouse_id" > /sys/bus/usb/drivers/usb/unbind
+unbind "$mouse_id"
 sleep 0.5
-echo " * binding"
-echo "$mouse_id" > /sys/bus/usb/drivers/usb/bind
+bind "$mouse_id"
 
 

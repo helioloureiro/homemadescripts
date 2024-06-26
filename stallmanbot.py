@@ -26,7 +26,7 @@ from io import BytesIO
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Wed Jun 26 08:07:22 PM CEST 2024"
+__version__ = "Wed Jun 26 08:40:30 PM CEST 2024"
 
 START_TIME = time.ctime()
 
@@ -74,7 +74,7 @@ corona - status do corona virus
 version - versão do bot
 """
 
-DEBUG = True
+DEBUG = False
 CONFIG = ".twitterc"
 HOME = os.environ.get('HOME')
 PIDFILE = f"{HOME}/.stallmanbot.pid"

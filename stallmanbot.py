@@ -74,7 +74,7 @@ corona - status do corona virus
 version - versão do bot
 """
 
-DEBUG = False
+DEBUG = True
 CONFIG = ".twitterc"
 HOME = os.environ.get('HOME')
 PIDFILE = f"{HOME}/.stallmanbot.pid"
@@ -1062,7 +1062,11 @@ def UnixLoadOn(obj, cmd):
         all_lines =  blockText.splitlines()
         if len(all_lines) < 2:
             debug("getBlockHeader(): no lines found, returning first line")
-            return all_lines[0]
+            try:
+                return all_lines[0]
+            except IndexError:
+                debug("getBlockHeader(): empty line got IndexError, so returning empty string")
+                return ""
         if len(all_lines[0]) > 2:
             return all_lines[0]
         return all_lines[1]
@@ -1114,16 +1118,18 @@ def UnixLoadOn(obj, cmd):
 
         debug("Entry to be added: %s" % md_text)
 
+        updated_content = []
         for c in content:
             header = getBlockHeader(c)
             if header == 'Que pode ir parar no próximo programa se não der tempo':
                 debug(f"header found: {header}")
                 c += f"\n{md_text}"
+                debug(f"add_pauta(): markdown text added to the string block: {md_text}")
             else:
                 debug(f"header not found: {header}")
-        debug("add_pauta(): updating body")
-        body = "\n\n".join(content)
-
+            updated_content.append(c)
+        debug("add_pauta(): loop finished - updating body")
+        body = "\n\n".join(updated_content)
 
         debug(f"add_pauta(): overwritting the latest pauta file {last_pauta}")
         with open(last_pauta, 'w') as fd:

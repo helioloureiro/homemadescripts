@@ -1,6 +1,7 @@
 #! /bin/bash
 
 MOUSE_PRODUCT="G203 Prodigy Gaming Mouse"
+MOUSE_PRODUCT="USB Optical Mouse"
 HUB_PRODUCT="USB2.0 Hub"
 
 die() {

@@ -26,7 +26,7 @@ from io import BytesIO
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Sat Mar 25 02:51:58 PM CET 2023"
+__version__ = "Wed Jun 26 08:07:22 PM CEST 2024"
 
 START_TIME = time.ctime()
 
@@ -792,19 +792,19 @@ def sanitize(message):
         debug(f"{i} ({ord(i)})")
     if message[0] == '/':
         message = message[1:]
-    sanitize = re.sub(";.*", "", message)
+    sanitize = re.sub(r";.*", "", message)
     debug(f"sanitize_1: {sanitize}")
-    sanitize = re.sub("\|.*", "", sanitize)
+    sanitize = re.sub(r"\|.*", "", sanitize)
     debug(f"sanitize_2: {sanitize}")
-    sanitize = re.sub("@.*", "", sanitize)
+    sanitize = re.sub(r"@.*", "", sanitize)
     debug(f"sanitize_3: {sanitize}")
-    sanitize = re.sub("&.*", "", sanitize)
+    sanitize = re.sub(r"&.*", "", sanitize)
     debug(f"sanitize_4: {sanitize}")
-    sanitize = re.sub("[^A-Za-z0-9./-]", " ", sanitize)
+    sanitize = re.sub(r"[^A-Za-z0-9./-]", " ", sanitize)
     debug(f"sanitize_5: {sanitize}")
-    sanitize = re.sub("sudo ", "", sanitize)
+    sanitize = re.sub(r"sudo ", "", sanitize)
     debug(f"sanitize_6: {sanitize}")
-    sanitize = re.sub("su ", "", sanitize)
+    sanitize = re.sub(r"su ", "", sanitize)
     debug(f"sanitize_7: {sanitize}")
     sanitize = re.sub(f"&{ord('s')};&{ord('u')}; ", "", sanitize)
     debug(f"sanitize_8: {sanitize}")
@@ -1010,13 +1010,13 @@ def UnixLoadOn(obj, cmd):
 
     def sanitize(text):
         REPLACEMENTS = {
-            "\(" : "&#40;",
-            "\)" : "&#41;",
-            "\*" : "&#42;",
-            "\<" : "&#60;",
-            "\>" : "&#62;",
-            "\[" : "&#91;",
-            "\]" : "&#93;"
+            r"\(" : "&#40;",
+            r"\)" : "&#41;",
+            r"\*" : "&#42;",
+            r"\<" : "&#60;",
+            r"\>" : "&#62;",
+            r"\[" : "&#91;",
+            r"\]" : "&#93;"
             }
         for pattern in list(REPLACEMENTS):
             text = re.sub(pattern, REPLACEMENTS[pattern], text)
@@ -1058,15 +1058,20 @@ def UnixLoadOn(obj, cmd):
         """
         A block with several lines of text, it will return the first one.
         """
+        debug("getBlockHeader() started")
         all_lines =  blockText.splitlines()
+        if len(all_lines) < 2:
+            debug("getBlockHeader(): no lines found, returning first line")
+            return all_lines[0]
         if len(all_lines[0]) > 2:
             return all_lines[0]
         return all_lines[1]
 
     def add_pauta(text, username=None):
-        debug("Adding to pauta")
+        debug("add_pauta(): called and starting")
         url = text.split()[-1]
         if not re.search("^http", url):
+            debug("add_pauta(): no url found")
             return f"URL não tem http no início.  Ignorada. (achou: {url})"
         last_pauta = get_last_pauta()
         debug("last_pauta: %s" % last_pauta)
@@ -1076,6 +1081,12 @@ def UnixLoadOn(obj, cmd):
             return "Link já registrado anteriormente."
 
         content = pauta_body.split("\n\n")
+        debug(f"content:\n{content}")
+
+        if len(content) < 5:
+              debug("add_pauta(): some error on the content")
+              debug(f"content:\n{content}")
+              return "Falhou em ler conteúdo da pauta atual (erro de espaços na formatação)."
 
         html = curl(url)
         html_lines = html.splitlines()
@@ -1091,8 +1102,10 @@ def UnixLoadOn(obj, cmd):
         if html is None:
             return "Falha lendo arquivo de pauta (corpo do html vazio)."
 
-        soup = bs4.BeautifulSoup(html, "html")
+        debug("add_pauta(): starting bs4 parsing")
+        soup = bs4.BeautifulSoup(html, features="html.parser")
         title = sanitize(soup.title.text)
+        debug(f"add_pauta(): title found: {title}")
 
         if username is not None:
             md_text = f"* [{title} - by {username}]({url})"
@@ -1101,17 +1114,21 @@ def UnixLoadOn(obj, cmd):
 
         debug("Entry to be added: %s" % md_text)
 
-        for i in range(0, len(content) - 1):
-            header = getBlockHeader(content[i])
+        for c in content:
+            header = getBlockHeader(c)
             if header == 'Que pode ir parar no próximo programa se não der tempo':
-                debug("header found: %s" % header)
-                content[i] += f"\n{md_text}"
+                debug(f"header found: {header}")
+                c += f"\n{md_text}"
             else:
-                debug("header not found: %s" % header)
+                debug(f"header not found: {header}")
+        debug("add_pauta(): updating body")
         body = "\n\n".join(content)
 
+
+        debug(f"add_pauta(): overwritting the latest pauta file {last_pauta}")
         with open(last_pauta, 'w') as fd:
             fd.write(body)
+        debug("add_pauta(): calling commit handler")
         msg = pauta_commit_push(last_pauta)
         return msg
 
@@ -1185,6 +1202,7 @@ def UnixLoadOn(obj, cmd):
             msg = read_pauta()
 
         elif re.search("^/addpauta", cmd.text):
+            debug("/addpauta called")
             if is_allowed(cmd.from_user.username):
                 if cmd.reply_to_message:
                     msg = add_pauta(f"addpauta {cmd.reply_to_message.text}",
@@ -1336,8 +1354,8 @@ def GetImgUrl(pattern, text, step=0):
                 # tmp_img = p.split("=")[-1]
                 tmp_img = re.sub("^src=", "", p)
                 tmp_img = re.sub("\"", "", tmp_img)
-                url = re.sub("^\/\/", "http://", tmp_img)
-                url = re.sub("^\/", "http://", url)
+                url = re.sub(r"^\/\/", "http://", tmp_img)
+                url = re.sub(r"^\/", "http://", url)
                 debug(f"GetImgUrl: final match: {url}")
                 break
     elif re.search("http", url_img):

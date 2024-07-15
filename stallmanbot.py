@@ -1205,9 +1205,9 @@ def UnixLoadOn(obj, cmd):
 
         elif re.search("^/pauta", cmd.text):
             debug("Lendo pautas")
-            msg = "O backlog de pautas está grande demais.\n" +
-            "Então aqui segue o link pra mesma pra evitar flood:\n" +
-            get_last_pauta()
+            msg = "O backlog de pautas está grande demais.\n" + \
+                "Então aqui segue o link pra mesma pra evitar flood:\n" + \
+                get_last_pauta()
 
         elif re.search("^/addpauta", cmd.text):
             debug("/addpauta called")

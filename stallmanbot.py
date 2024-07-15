@@ -26,7 +26,7 @@ from io import BytesIO
 # pip3 install pyTelegramBotAPI
 
 
-__version__ = "Wed Jun 26 08:40:30 PM CEST 2024"
+__version__ = "Mon Jul 15 01:05:26 PM CEST 2024"
 
 START_TIME = time.ctime()
 
@@ -79,6 +79,7 @@ CONFIG = ".twitterc"
 HOME = os.environ.get('HOME')
 PIDFILE = f"{HOME}/.stallmanbot.pid"
 PAUTAS = f"{HOME}/canalunixloadon/pautas"
+PAUTAS_URL = "https://github.com/helioloureiro/canalunixloadon/tree/master/pautas"
 IMGDIR = f"{HOME}/motivational"
 SCRIPTHOME = f"{HOME}/homemadescripts"
 FOFODB = f"{HOME}/fofondex.db"
@@ -1207,7 +1208,7 @@ def UnixLoadOn(obj, cmd):
             debug("Lendo pautas")
             msg = "O backlog de pautas está grande demais.\n" + \
                 "Então aqui segue o link pra mesma pra evitar flood:\n" + \
-                get_last_pauta()
+                PAUTAS_URL + "/" + get_last_pauta()
 
         elif re.search("^/addpauta", cmd.text):
             debug("/addpauta called")

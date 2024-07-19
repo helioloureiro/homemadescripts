@@ -27,7 +27,9 @@ class TootThursday:
     
 
     def getFollowing(self):
-        self.followingList = [ user.acct for user in self.mastodon.account_following(id=self.me.id)]
+        reference = self.mastodon.account_following(id=self.me.id)
+        following = self.mastodon.fetch_remaining(reference)
+        self.followingList = [ user.acct for user in  following]
         print(self.followingList)
 
     def doTheLottery(self):
@@ -47,10 +49,15 @@ class TootThursday:
 
     def send(self):
         text = '#TT \n'
+        footer = '\n#TootThursday'
+        size_limit = 500 # from mastodon page
         for username in self.followingList:
-            text += '@' + username + '\n'
-        text += '\n#TootThursday'
-
+            username = '@' + username + '\n'
+            ## check message limit at every entry
+            if len(text + username + footer) > size_limit:
+                break
+            text += username
+        text += footer
         self.mastodon.toot(text)
 
 

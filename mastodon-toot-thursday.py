@@ -52,8 +52,8 @@ class TootThursday:
         self.followingList = awardedList
 
     def send(self):
-        text = '#TT \n'
-        footer = '\n#TootThursday'
+        text = 'TootThursday: suggested profiles to be followed.\n'
+        footer = '\n#TT\n#TootThursday'
         size_limit = 500 # from mastodon page
         for username in self.followingList:
             username = '@' + username + '\n'

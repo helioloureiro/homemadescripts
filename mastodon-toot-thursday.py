@@ -5,8 +5,9 @@ import os
 import json
 import argparse
 import sys
-from mastodon import Mastodon
+import re
 import random
+from mastodon import Mastodon
 
 
 HOME = os.getenv('HOME')
@@ -40,10 +41,13 @@ class TootThursday:
 
         awardedList = []
         while tenPct > 0:
-            tenPct-=1
             winner = random.choice(self.followingList)
+            ## skip myself
+            if re.search("helioloureiro", winner):
+                continue
             awardedList.append(winner)
             self.followingList.remove(winner)
+            tenPct-=1
         print('Awarded:', awardedList)
         self.followingList = awardedList
 

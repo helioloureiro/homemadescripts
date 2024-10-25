@@ -50,6 +50,7 @@ cd ~/.vim
 if [ ! -f vimrc ]; then
     curl -O https://raw.githubusercontent.com/fberbert/vimrc/master/vimrc
     sed -i "33 s/2/4/g;s/coc.nvimrc/coc.vimrc/" vimrc
+    sed -i "/^colo / s/materialbox/space-vim-dark/" vimrc
 fi
 if [ ! -f coc.vimrc ]; then
     curl -O https://raw.githubusercontent.com/fberbert/vimrc/master/coc.vimrc

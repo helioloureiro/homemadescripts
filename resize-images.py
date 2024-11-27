@@ -14,13 +14,13 @@ default_size_x = 640
 default_size_y = 360
 
 parse = argparse.ArgumentParser(description="Script to resize pictures from a specific directory to the same size")
-parse.add_argument("--directory", mandatory=True, help="directory with images jpg")
+parse.add_argument("--directory", required=True, help="directory with images jpg")
 args = parse.parse_args()
 
 for filename in sorted(os.listdir(args.directory)):
     if not re.search("jpg", filename):
         continue
-    with Image.open("../" + filename) as image:
+    with Image.open(args.directory + "/" + filename) as image:
         width, height = image.size
         rate = float(width)/float(height)
         is_golden = rate == golden_rate

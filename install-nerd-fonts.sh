@@ -9,8 +9,8 @@
 #      rm -f $file
 #  end
 
-mkdir -p .local/share/fonts  
-cd .local/share/fonts
+mkdir -p $HOME/.local/share/fonts  
+cd $HOME/.local/share/fonts
 
 for zip in $(curl -s https://www.nerdfonts.com/font-downloads | grep zip | sed "s/.*href=\"//;s/\".*//" | sort -u)
 do

@@ -57,4 +57,6 @@ mastodon-post-last.py
 
 restart_mouse.sh
     A script to restart USB mouse without plugin off and on.
-  
+
+printbox.sh
+    A script to print a nice box around a text.

@@ -32,9 +32,14 @@ def ShortMe(link, apikey):
    while shortened is None:
        try:
            url = 'https://hl.eng.br/api.php?url=' + link
+           url_masked = url
            if apikey is not None:
                url += '&key=' + apikey
-           print("url=%s" % url)
+               url_masked += '&key='
+               for i in apikey:
+                   url_masked += "*"
+
+           print("url=%s" % url_masked)
            req = requests.get(url)
            if req.status_code == 200:
                reverse = ReverseLink(req.text)
@@ -114,4 +119,4 @@ if __name__ == '__main__':
     print("5 seconds before posting - in case to cancel")
     time.sleep(5)
     print(f"Publishing: {title} {shortlink}")
-    mastodon.toot(f"Novo post: {title} {shortlink}")
+    mastodon.toot(f"Novo post: {title}\n\nLink: {shortlink}")

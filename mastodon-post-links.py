@@ -158,7 +158,7 @@ class TootPostLink:
             title, link = self.articles.pop()
             sleepMinutes(randomMinutes(10))
             print(f'Posting: {title}')
-            self.mastodon.toot(f"#Lembra? {title}\n\n {link}")
+            self.mastodon.toot(f"#Lembra? {title}\n\nLink: {link}")
             if Lottery(70):
                 sleepMinutes(randomMinutes(10))
                 print('Posting fortune')

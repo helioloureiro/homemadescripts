@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# box characters: https://cloford.com/resources/charcodes/utf-8_box-drawing.htm
+
 sizeof() {
     local msg="$1"
     local size=$(echo $msg | wc -L)

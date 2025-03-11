@@ -572,6 +572,17 @@ def StartUp():
             python = sys.executable
             os.execl(python, python, *sys.argv)
 
+def InitializeRandom() -> None :
+    thisSeed = subprocess.check_output("openssl rand -base64 48".split())
+    random.seed(thisSeed.hex())
+
+def GetRandomInt(maximum: int) -> int:
+    InitializeRandom()
+    return  random.randint(0, maximum)
+
+def RandomSleep(maximumTime: int) -> None:
+    InitializeRandom()
+    time.sleep(GetRandomInt(maximumTime))
 
 def GetGif(theme):
     if theme not in GIFS:
@@ -579,9 +590,9 @@ def GetGif(theme):
     sizeof = len(GIFS[theme])
     if sizeof <= 1:
         return GIFS[theme][0]
-    get_id = random.randint(0, sizeof - 1)
+    InitializeRandom()
+    get_id = GetRandomInt(sizeof - 1)
     return GIFS[theme][get_id]
-
 
 def main():
     """Main settings"""
@@ -606,7 +617,7 @@ def get_random_link(links_array):
     """Return random line w/ link (expected array of links)"""
     debug("get_random_link()")
     size = len(links_array)
-    position = random.randint(0, size - 1)
+    position = GetRandomInt(size - 1)
     return links_array[position]
 
 
@@ -889,11 +900,11 @@ def AptCmds(obj, session):
     if re.search("apt-get", session.text):
         try:
             obj.reply_to(session, "Esse bot tem poderes de super vaca.")
-            counter = random.randint(0,10)
+            counter = GetRandomInt(10)
             while counter:
                 counter -= 1
-                time.sleep(random.randint(0,10))
-                moo = "moo" + random.randint(0,10) * "o"
+                RandomSleep(10)
+                moo = "moo" + GetRandomInt(10) * "o"
                 obj.send_message(session.chat.id, moo)
         except Exception as e:
             obj.reply_to(session, f"apt-get deu BSOD: {e}")
@@ -1473,9 +1484,10 @@ def Comics(obj, cmd):
             os.unlink(MANDAFOODSFILE)
             return
 
-        seed = random.seed(os.urandom(random.randint(0,1000)))
         # Shuffling the posts
-        post_number = random.randint(1, 25) # 0 is the pinned title post for the subreddit
+        post_number = GetRandomInt(25) # 0 is the pinned title post for the subreddit
+        if post_number == 0:
+                post_number += 1
         img_link = json_data["data"]["children"][post_number]["data"]["url"]
         obj.send_message(cmd.chat.id, "Nham nham! 🍔")
         debug(f"{cmd.text}: {img_link}")
@@ -1531,7 +1543,7 @@ def FofoMetrics(obj, cmd):
         if len(fofondex.keys()) > 0:
             return
         while simple_lock:
-            time.sleep(random.random())
+            RandomSleep(5)
         simple_lock = True
         try:
             fofondex = pickle.load(open(FOFODB, "rb"))
@@ -1552,7 +1564,7 @@ def FofoMetrics(obj, cmd):
         else:
             start_time = current_time
         while simple_lock:
-            time.sleep(random.random())
+            RandomSleep(5)
         simple_lock = True
         try:
             if not fofondex:
@@ -1576,7 +1588,7 @@ def FofoMetrics(obj, cmd):
         debug("RunTheDice")
         if n is not None and n >=0 and n <= 100:
             return n
-        random.seed(os.urandom(random.randint(0,1000)))
+        InitializeRandom()
         return random.randint(0,100)
 
     def TimeDelta(user_id):
@@ -1724,6 +1736,7 @@ def Motivational(obj, cmd):
     photos = os.listdir(MOTIVATIONALDIR)
     motivational = ""
     while not re.search("(jpg|png|gif)", motivational):
+        InitializeRandom()
         motivational = random.choice(photos)
         debug(f"Motivational picture: {motivational}")
     try:

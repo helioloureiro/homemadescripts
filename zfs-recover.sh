@@ -17,7 +17,9 @@ case $1 in
     cryptsetup close rpool-keystore
     zfs list
     zfs set mountpoint=/mnt rpool/ROOT/ubuntu_ni6nkv
+    zfs set mountpoint=/mnt/boot bpool/BOOT/ubuntu_ni6nkv
     zfs mount rpool/ROOT/ubuntu_ni6nkv
+    zfs mount bpool/BOOT/ubuntu_ni6nkv
     ls /mnt
     zpool import -N -R /mnt bpool
     zfs mount bpool/BOOT/ubuntu_ni6nkv

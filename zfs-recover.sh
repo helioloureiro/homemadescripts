@@ -28,7 +28,7 @@ case $1 in
     for i in proc dev sys dev/pts; do mount -v --bind /$i /mnt/$i; done
     ;;
   stop)
-    for i in proc sys dev/pts dev; do unmount -v /mnt/$i; done
+    for i in proc sys dev/pts dev; do umount -v /mnt/$i; done
     unmount /mnt/boot/efi
     zfs unmount bpool/BOOT/ubuntu_ni6nkv
     zfs unmount rpool

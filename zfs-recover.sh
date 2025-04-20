@@ -6,8 +6,8 @@
 
 case $1 in
   start)
-    pool import -f rpool
-    pool list
+    zpool import -f rpool
+    zpool list
     cryptsetup open /dev/zvol/rpool/keystore rpool-keystore
     mkdir /mnt-keystore
     mount /dev/mapper/rpool-keystore /mnt-keystore

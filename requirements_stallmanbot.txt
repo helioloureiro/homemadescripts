@@ -4,6 +4,6 @@ charset-normalizer==3.3.2
 idna==3.7
 pycurl==7.45.3
 pyTelegramBotAPI==4.20.0
-requests==2.32.3
+requests==2.32.4
 soupsieve==2.5
 urllib3==2.5.0

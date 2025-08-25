@@ -40,7 +40,7 @@ render_video() {
       ffmpeg -hwaccel cuda -i output_1920x1440.mp4 -c:v h264_nvenc -vf "crop=1920:1080:0:180" output_1080p.mp4 || \
         die "Failed to render output_1080p.mp4"
       rm -f output_1080p_8x.mp4
-      ffmpeg -itsscale 0.125 -i output_1080p.mp4  -c copy output_1080p_8x.mp4 || \
+      ffmpeg -hwaccel cuda -itsscale 0.125 -i output_1080p.mp4 -c copy output_1080p_8x.mp4 || \
         die "Failed to render 8x fast on output_1080p_8x.mp4"
       ;;
     Darwin) 

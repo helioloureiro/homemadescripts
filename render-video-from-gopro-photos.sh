@@ -1,26 +1,92 @@
 #! /usr/bin/env bash
 
-__version__="1.0.1"
+__version__="1.1.1"
 
 die() {
   echo "$1" >&2
   exit 1
 }
 
-generate_sequential_images() {
-  counter=0
-  for img in G[0-9]*.JPG
-  do
-    serial=$(printf "%06d" $counter)
-    new_name="G${serial}.JPG"
-    counter=$(expr $counter + 1)
-    if [ -f "$new_name" ]; then
-      echo "$new_name already exists"
-      continue
-    fi
-    echo "$img => $new_name"
-    mv $img $new_name
-  done
+## src: https://github.com/bahamas10/ysap/blob/main/code/2025-08-21-progress-bar/progress-bar
+BATCHSIZE=1
+BAR_CHAR='|'
+EMPTY_CHAR=' '
+
+shopt -s globstar nullglob checkwinsize
+
+progress-bar() {
+	local current=$1
+	local len=$2
+  local title=$3
+
+	local perc_done=$((current * 100 / len))
+
+	local suffix=" $current/$len ($perc_done%) $title"
+
+	local length=$((COLUMNS - ${#suffix} - 2))
+	local num_bars=$((perc_done * length / 100))
+
+	local i
+	local s='['
+	for ((i = 0; i < num_bars; i++)); do
+		s+=$BAR_CHAR
+	done
+	for ((i = num_bars; i < length; i++)); do
+		s+=$EMPTY_CHAR
+	done
+	s+=']'
+	s+=$suffix
+
+	printf '\e7' # save the cursor location
+	  printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
+	  printf '\e[0K' # clear the line
+	  printf '%s' "$s" # print the progress bar
+	printf '\e8' # restore the cursor location
+}
+
+init-term() {
+  shopt -s globstar nullglob checkwinsize
+  # this line is to ensure LINES and COLUMNS are set
+  (:)
+	printf '\n' # ensure we have space for the scrollbar
+	  printf '\e7' # save the cursor location
+	    printf '\e[%d;%dr' 0 "$((LINES - 1))" # set the scrollable region (margin)
+	  printf '\e8' # restore the cursor location
+	printf '\e[1A' # move cursor up
+}
+
+deinit-term() {
+  shopt -s globstar nullglob checkwinsize
+  # this line is to ensure LINES and COLUMNS are set
+  (:)
+	printf '\e7' # save the cursor location
+	  printf '\e[%d;%dr' 0 "$LINES" # reset the scrollable region (margin)
+	  printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
+	  printf '\e[0K' # clear the line
+	printf '\e8' # reset the cursor location
+}
+
+generate_sequential_images() { 
+  shopt -s globstar nullglob checkwinsize
+  # this line is to ensure LINES and COLUMNS are set
+  (:)
+  files=(*.JPG)
+  sizeof=${#files[@]}
+    for ((counter=0; counter < sizeof; counter += 1))
+    do
+      serial=$(printf "%06d" $counter)
+      new_name="G${serial}.JPG"
+      filename="${files[@]:counter:1}"
+      progress-bar "$((counter+1))" "$sizeof" "$filename => $new_name"
+      if [ -f "$new_name" ]; then
+        #echo "$new_name already exists"
+        continue
+      fi
+      #echo "$img => $new_name"
+      #mv $img $new_name
+    done
+    progress-bar $sizeof $sizeof
+    echo
 }
 
 render_video() {
@@ -53,18 +119,40 @@ render_video() {
   esac
 }
 
-case $1 in
-  "--help")
-  echo "Usage: $0 [--help|--skip-images|--version]"
-  exit 0
-  ;;
-"--version")
-  echo "version: $__version__"
-  exit 0
-  ;;
-"--skip-images") set_skip_image=1
-  ;;
-esac
+show_help() {
+  cat <<EOF
+Usage: $0 [--help] [--skip-images] [--version]
+ --help:        display this help
+ --skip-images: don't process images (probably because it was done before)
+ --version:     the current version
+EOF
+}
+
+trap deinit-term exit
+trap init-term winch
+init-term
+
+set_skip_image=0
+
+options=$(getopt -l "help,version,skip-images" --options "" --name $(basename $0) -- "$@")
+eval set -- $options
+
+while true; do
+  case $1 in
+    "--help")
+      show_help
+      exit 0
+      ;;
+    "--version")
+      echo "version: $__version__"
+      exit 0
+      ;;
+    "--skip-images") set_skip_image=1
+      shift
+      ;;
+    --) shift; break;;
+  esac
+done
 
 if [ $set_skip_image -ne 1 ]; then
   generate_sequential_images

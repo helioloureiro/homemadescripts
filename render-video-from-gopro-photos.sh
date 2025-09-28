@@ -83,7 +83,7 @@ generate_sequential_images() {
         continue
       fi
       #echo "$img => $new_name"
-      #mv $img $new_name
+      mv $filename $new_name
     done
     progress-bar $sizeof $sizeof
     echo

@@ -44,10 +44,13 @@ class UnPacker:
         for filename in files_available:
             self.unzip(filename)
 
-        files_available = self.get_directory_listing()
-        for filename in files_available:
-            os.chdir(self._directory)
-            self.convert_waves(filename)
+        for (path, _, filenames) in os.walk(self._directory):
+            print(f"Processing: {path}")
+            os.chdir(path)
+            for filename in filenames:
+                  self.convert_waves(filename)
+   
+
 
     def get_directory_listing(self, directory=None) -> list[str]:
         listing = list()
@@ -57,13 +60,14 @@ class UnPacker:
         return sorted(listing)
 
     def unzip(self, filename):
-        if not re.search("\.zip$", filename):
+        if not re.search(r"\.zip$", filename):
             return
         print(f"🗜️ uncompressing: {filename}")
         for line in shellExec(["unzip", filename]):
             print(line, end="")
 
     def convert_waves(self, filename):
+        print(f"Checking: {filename}")
         if os.path.isdir(filename):
             print(f"📂 getting into directory: {filename}")
             os.chdir(filename)
@@ -71,12 +75,14 @@ class UnPacker:
             for inner_filename in files_available:
                 self.convert_waves(inner_filename)
         else:
-            if not re.search("\.wav$", filename):
-                print(f"❎ skipping file: {filename}")
+            is_dir = os.path.isdir(filename)
+            cur_dir = os.path.abspath(os.curdir)
+            if not re.search(r"\.wav$", filename):
+                print(f"❎ skipping file: {filename} - is a dir? {is_dir} - current directory: {cur_dir}")
                 return
             print(f"♫ converting: {filename}")
             filename_root = os.path.basename(filename)
-            filename_root = re.sub("\.wav", "", filename_root)
+            filename_root = re.sub(r"\.wav", "", filename_root)
             if os.path.exists(f"{filename_root}.mp3"):
                 print(f"{filename_root}.mp3 was already generated")
                 return

@@ -1,7 +1,8 @@
-#! /usr/bin/python
+#! /usr/bin/env python3
 
-
-import os, re, sys
+import os 
+import re 
+import sys
 
 HOST = "http://myhost.get/"
 INTF = "wlan0"
@@ -18,12 +19,12 @@ def getmyip():
         ip = params[1]
         ip, net = ip.split("/")
         return ip
-    print "No IP found"
+    print("No IP found")
     sys.exit(0)
 
 
-ip = getmyip()
-cmd = "curl %s %s/?node=%s,%s" % \
-      (CURLOPTS, HOST, NODENAME, ip)
-print cmd
-os.system(cmd)
+if __name__ == '__main__':
+    ip = getmyip()
+    cmd = f"curl {CURLOPTS} {HOST}/?node={NODENAME},{ip}" 
+    print(cmd)
+    os.system(cmd)

@@ -9,8 +9,11 @@ die() {
 
 ## src: https://github.com/bahamas10/ysap/blob/main/code/2025-08-21-progress-bar/progress-bar
 BATCHSIZE=1
-BAR_CHAR='|'
+BAR_CHAR='▌'
 EMPTY_CHAR=' '
+
+NVIDIA_GPU=true
+SPEED_FRAMES=8
 
 shopt -s globstar nullglob checkwinsize
 
@@ -67,74 +70,112 @@ deinit-term() {
 }
 
 generate_sequential_images() { 
+  init-term
   shopt -s globstar nullglob checkwinsize
   # this line is to ensure LINES and COLUMNS are set
   (:)
   files=(*.JPG)
   sizeof=${#files[@]}
-    for ((counter=0; counter < sizeof; counter += 1))
-    do
-      serial=$(printf "%06d" $counter)
-      new_name="G${serial}.JPG"
-      filename="${files[@]:counter:1}"
-      progress-bar "$((counter+1))" "$sizeof" "$filename => $new_name"
-      if [ -f "$new_name" ]; then
-        #echo "$new_name already exists"
-        continue
-      fi
-      #echo "$img => $new_name"
+  for ((counter=0; counter < sizeof; counter += 1))
+  do
+    serial=$(printf "%06d" $counter)
+    new_name="G${serial}.JPG"
+    filename="${files[@]:counter:1}"
+    progress-bar "$((counter+1))" "$sizeof" "$filename => $new_name"
+    if [ -f "$new_name" ]; then
+      continue
+    fi
       mv $filename $new_name
-    done
-    progress-bar $sizeof $sizeof
-    echo
+  done
+  progress-bar $sizeof $sizeof
+  echo
+  deinit-term
 }
 
-render_video() {
+speed_rate() {
+  python3 -c "print(1./$SPEED_FRAMES)"
+}
 
-  case $(uname -s) in
-    Linux)
-      echo "Merging images into single video file: output.mp4"
-      rm -f output.mp4
-      ffmpeg -hwaccel cuda -hwaccel_output_format cuda -r 1 -i G%06d.JPG -c:v h264_nvenc -b:v 5M -pix_fmt cuda output.mp4 || \
-        die "Failed to render output.mp4"
-      echo "Resizing video to 1920x1440: output_1920x1440.mp4"
-      rm -f output_1920x1440.mp4
-      ffmpeg -hwaccel cuda -hwaccel_output_format cuda -i output.mp4 -c:v h264_nvenc -vf scale=1920:1440 -c:a copy output_1920x1440.mp4 || \
-        die "Failed to render output_1920x1440.mp4"
-      echo "Cropping file video as 1080p: output_1080p.mp4"
-      rm -f output_1080p.mp4
-      ffmpeg -hwaccel cuda -i output_1920x1440.mp4 -c:v h264_nvenc -vf "crop=1920:1080:0:180" output_1080p.mp4 || \
-        die "Failed to render output_1080p.mp4"
-      rm -f output_1080p_8x.mp4
-      ffmpeg -hwaccel cuda -itsscale 0.125 -i output_1080p.mp4 -c copy output_1080p_8x.mp4 || \
-        die "Failed to render 8x fast on output_1080p_8x.mp4"
-      ;;
-    Darwin) 
-      echo "Merging images into single video file: output.mp4"
-      die "Failed to render output.mp4"
-      echo "Resizing video to 1920x1440: output_1920x1440.mp4"
-      ffmpeg -hwaccel auto -i output.mp4 -c:v h264_videotoolbox -q:v 90 -vf scale=1920:1440 -c:a copy output_1920x1440.mp4
-      echo "Cropping file video as 1080p: output_1080p.mp4"
-      ffmpeg -hwaccel auto -i output_1920x1440.mp4 -c:v h264_videotoolbox -q:v 90 -vf "crop=1920:1080:0:180" output_1080p.mp4
-  esac
+render_video_nvidia() {
+  echo "Merging images into single video file: output.mp4"
+  rm -f output.mp4
+  ffmpeg -hwaccel cuda -hwaccel_output_format cuda -r 1 -i G%06d.JPG -c:v h264_nvenc -b:v 5M -pix_fmt cuda output.mp4 || \
+    render_video_cpu
+
+  echo "Resizing video to 1920x1440: output_1920x1440.mp4"
+  rm -f output_1920x1440.mp4
+  ffmpeg -hwaccel cuda -hwaccel_output_format cuda -i output.mp4 -c:v h264_nvenc -vf scale=1920:1440 -c:a copy output_1920x1440.mp4 || \
+    die "Failed to render output_1920x1440.mp4"
+
+  echo "Cropping file video as 1080p: output_1080p.mp4"
+  rm -f output_1080p.mp4
+  ffmpeg -hwaccel cuda -i output_1920x1440.mp4 -c:v h264_nvenc -vf "crop=1920:1080:0:180" output_1080p.mp4 || \
+    die "Failed to render output_1080p.mp4"
+
+  echo "Creating ${SPEED_FRAMES}x speed video: output_1080p_${SPEED_FRAMES}x.mp4"
+  rm -f output_1080p_${SPEED_FRAMES}x.mp4
+  ffmpeg -hwaccel cuda -itsscale $speed_rate -i output_1080p.mp4 -c copy output_1080p_${SPEED_FRAMES}x.mp4 || \
+    die "Failed to render ${SPEED_FRAMES}x fast on output_1080p_${SPEED_FRAMES}x.mp4"
+  }
+
+render_video_macos() {
+  echo "Merging images into single video file: output.mp4"
+  rm -f output.mp4
+  ffmpeg -hwaccel auto -r 1 -i G%06d.JPG -c:v h264_videotoolbox -b:v 5M output.mp4 || \
+    die "Failed to render output.mp4"
+
+  echo "Resizing video to 1920x1440: output_1920x1440.mp4"
+  rm -f output_1920x1440.mp4
+  ffmpeg -hwaccel auto -i output.mp4 -c:v h264_videotoolbox -q:v 90 -vf scale=1920:1440 -c:a copy output_1920x1440.mp4 || \
+    die "Failed to resized to 1920x1440"
+
+  echo "Cropping file video as 1080p: output_1080p.mp4"
+  rm -f output_1080p.mp4
+  ffmpeg -hwaccel auto -i output_1920x1440.mp4 -c:v h264_videotoolbox -q:v 90 -vf "crop=1920:1080:0:180" output_1080p.mp4 || \
+    die "Failed to crop video to 1080p"
+}
+
+
+render_video_cpu() {
+  echo "Merging images into single video file: output.mp4"
+  rm -f output.mp4
+  ffmpeg -r 1 -i G%06d.JPG -c:v h264 -b:v 5M output.mp4 || \
+    die "Failed to render output.mp4"
+
+  echo "Resizing video to 1920x1440: output_1920x1440.mp4"
+  rm -f output_1920x1440.mp4
+  ffmpeg -i output.mp4 -c:v h264 -vf scale=1920:1440 -c:a copy output_1920x1440.mp4 || \
+    die "Failed to render output_1920x1440.mp4"
+
+  echo "Cropping file video as 1080p: output_1080p.mp4"
+  rm -f output_1080p.mp4
+  ffmpeg -i output_1920x1440.mp4 -c:v h264 -vf "crop=1920:1080:0:180" output_1080p.mp4 || \
+    die "Failed to render output_1080p.mp4"
+
+  echo "Creating ${SPEED_FRAMES}x speed video: output_1080p_${SPEED_FRAMES}x.mp4"
+  rm -f output_1080p_${SPEED_FRAMES}x.mp4
+  ffmpeg -itsscale $speed_rate -i output_1080p.mp4 -c copy output_1080p_${SPEED_FRAMES}x.mp4 || \
+    die "Failed to render ${SPEED_FRAMES}x fast on output_1080p_${SPEED_FRAMES}x.mp4"
 }
 
 show_help() {
   cat <<EOF
-Usage: $0 [--help] [--skip-images] [--version]
- --help:        display this help
- --skip-images: don't process images (probably because it was done before)
- --version:     the current version
+Usage: $0 [--help] [--skip-images] [--version] [--enable-nvidia|--disable-nvidia] [--speed-frame]
+ --help:           display this help
+ --skip-images:    don't process images (probably because it was done before)
+ --version:        the current version
+ --enable-nvidia:  enable rendering on NVIDIA (default is on)
+ --disable-nvidia: disable rendering on NVIDIA and run on CPU instead
+ --speed-frames:   the nr of frames per second to be render at the end (default=$SPEED_FRAMES)
 EOF
 }
 
 trap deinit-term exit
 trap init-term winch
-init-term
 
 set_skip_image=0
 
-options=$(getopt -l "help,version,skip-images" --options "" --name $(basename $0) -- "$@")
+options=$(getopt -l "help,version,skip-images,disable-nvidia,enable-nvidia,speed-frames:" --options "" --name $(basename $0) -- "$@")
 eval set -- $options
 
 while true; do
@@ -150,6 +191,15 @@ while true; do
     "--skip-images") set_skip_image=1
       shift
       ;;
+    "--enable-nvidia") NVIDIA_GPU=true
+      shift
+      ;;
+    "--disable-nvidia") NVIDIA_GPU=false
+      shift
+      ;;
+    "--speed-frames") SPEED_FRAMES=$2
+      shift 2
+      ;;
     --) shift; break;;
   esac
 done
@@ -158,4 +208,16 @@ if [ $set_skip_image -ne 1 ]; then
   generate_sequential_images
 fi
 
-render_video
+case $(uname -s) in
+  Linux) 
+    if [ "$NVIDIA_GPU" == false ]; then
+      render_video_cpu
+    else
+      render_video_nvidia
+    fi
+    ;;
+  Darwin) render_video_macos;;
+  *) echo "Unsuported operating sistem"
+     exit 1
+     ;;
+ esac

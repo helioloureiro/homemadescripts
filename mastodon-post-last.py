@@ -1,10 +1,15 @@
-#! /usr/bin/env python3
+#! /usr/bin/env -S uv run --script
 
-from mastodon import Mastodon
+# /// script
+# dependencies = [
+#   "Mastodon.py",
+#   "requests",
+#   "feedparser"
+#  ]
+# ///
+
 import sys
-import feedparser
 from random import randrange
-import requests
 import configparser
 import os
 import time
@@ -12,6 +17,9 @@ import random
 import argparse
 import json
 
+import feedparser
+import requests
+from mastodon import Mastodon
 
 HOME = os.getenv('HOME')
 CONFIG = f"{HOME}/.config/toot/config.json"

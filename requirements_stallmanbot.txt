@@ -6,4 +6,4 @@ pycurl==7.45.3
 pyTelegramBotAPI==4.20.0
 requests==2.32.4
 soupsieve==2.5
-urllib3==2.5.0
+urllib3==2.6.0

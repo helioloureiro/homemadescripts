@@ -1,13 +1,13 @@
 blurhash==1.1.5
-certifi==2025.10.5
+certifi
 charset-normalizer==3.4.4
 decorator==5.2.1
-feedparser==6.0.10
+feedparser
 idna==3.11
 mastodon-py==2.1.4
 python-dateutil==2.9.0.post0
 python-magic==0.4.27
-requests==2.32.5
+requests
 sgmllib3k==1.0.0
 six==1.17.0
-urllib3==2.5.0
+urllib3

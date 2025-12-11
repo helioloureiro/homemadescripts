@@ -1,9 +1,9 @@
 beautifulsoup4==4.12.3
-certifi==2024.7.4
+certifi
 charset-normalizer==3.3.2
 idna==3.7
-pycurl==7.45.3
+pycurl
 pyTelegramBotAPI==4.20.0
-requests==2.32.4
+requests
 soupsieve==2.5
-urllib3==2.5.0
+urllib3

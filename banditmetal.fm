@@ -7,5 +7,5 @@
 # Get the random link and play
 link="https://wr03-ice.stream.khz.se/wr03_mp3"
 echo "Starting Bandit Metal stream" 
-mplayer -quiet -cache 2048 -cache-min 10 "$link"
+mplayer -quiet -cache 2048 -cache-min 15 "$link"
 

@@ -31,6 +31,9 @@ def ReverseLink(link):
     req = requests.get(link)
     if req.status_code != 200:
         print("Failed status code:", req.status_code)
+        if req.status_code == 404:
+            print('sleeping 5s')
+            time.sleep(5)
         return None
     return req.url
 

@@ -13,6 +13,7 @@ import argparse
 import sys
 import re
 import random
+import time
 
 
 from mastodon import Mastodon
@@ -20,6 +21,8 @@ from mastodon import Mastodon
 
 HOME = os.getenv("HOME")
 CONFIG = f"{HOME}/.config/toot/config.json"
+
+print(time.ctime())
 
 
 class TootThursday:

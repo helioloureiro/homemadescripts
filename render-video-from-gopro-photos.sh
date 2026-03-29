@@ -100,6 +100,7 @@ render_video_nvidia() {
   echo "Merging images into single video file: output.mp4"
   rm -f output.mp4
   ffmpeg -hwaccel cuda -hwaccel_output_format cuda -r 1 -i G%06d.JPG -c:v h264_nvenc -b:v 5M -pix_fmt cuda output.mp4 || \
+    ffmpeg -hwaccel cuda -hwaccel_output_format cuda -r 1 -i G%06d.JPG -c:v h264_nvenc -b:v 5M -pix_fmt nv21 output.mp4 || \
     render_video_cpu
 
   echo "Resizing video to 1920x1440: output_1920x1440.mp4"

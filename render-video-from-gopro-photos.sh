@@ -2,10 +2,10 @@
 
 __version__="1.1.1"
 
-die() {
-  echo "$1" >&2
-  exit 1
-}
+program=$(readlink -f $0)
+program_dir=$(dirname $program)
+
+source ${program_dir}/heliolib.sh
 
 ## src: https://github.com/bahamas10/ysap/blob/main/code/2025-08-21-progress-bar/progress-bar
 BATCHSIZE=1
@@ -97,60 +97,63 @@ speed_rate() {
 }
 
 render_video_nvidia() {
+  NVIDIA_OPTS="-hwaccel cuda"
   if [ "$VERBOSE" = true ]; then
-    loglevel=verbose
+    loglevel=""
   else
-    loglevel=quiet
+    loglevel="-loglevel quiet -hide_banner -stats"
   fi
-  echo "Merging images into single video file: output.mp4"
-  rm -f output.mp4
-  ffmpeg -loglevel $loglevel -hwaccel cuda -hwaccel_output_format cuda -r 1 -i G%06d.JPG -c:v h264_nvenc -b:v 5M -pix_fmt cuda output.mp4 -y || \
-    ffmpeg -loglevel $loglevel -hwaccel cuda -hwaccel_output_format cuda -r 1 -i G%06d.JPG -c:v h264_nvenc -b:v 5M -pix_fmt nv21 output.mp4 -y || \
-    render_video_cpu
+  NVIDIA_OPTS="$loglevel $NVIDIA_OPTS"
 
-  echo "Resizing video to 1920x1440: output_1920x1440.mp4"
+  printbox "Merging images into single video file: output.mp4"
+  rm -f output.mp4
+  ffmpeg $NVIDIA_OPTS -hwaccel_output_format cuda -r 1 -i G%06d.JPG -c:v h264_nvenc -b:v 5M -pix_fmt cuda output.mp4 -y || \
+    ffmpeg $NVIDIA_OPTS -hwaccel_output_format cuda -r 1 -i G%06d.JPG -c:v h264_nvenc -b:v 5M -pix_fmt nv21 output.mp4 -y || \
+    die "Failed to merge images into single video file"
+
+  printbox "Resizing video to 1920x1440: output_1920x1440.mp4"
   rm -f output_1920x1440.mp4
-  ffmpeg -loglevel $loglevel -hwaccel cuda -hwaccel_output_format cuda -i output.mp4 -c:v h264_nvenc -vf scale=1920:1440 -c:a copy output_1920x1440.mp4 -y || \
-  ffmpeg -loglevel $loglevel -hwaccel cuda  -i output.mp4 -c:v h264_nvenc -vf scale=1920:1440 -c:a copy output_1920x1440.mp4 -y || \
+  ffmpeg $NVIDIA_OPTS -hwaccel_output_format cuda -i output.mp4 -c:v h264_nvenc -vf scale=1920:1440 -c:a copy output_1920x1440.mp4 -y || \
+  ffmpeg $NVIDIA_OPTS  -i output.mp4 -c:v h264_nvenc -vf scale=1920:1440 -c:a copy output_1920x1440.mp4 -y || \
     die "Failed to render output_1920x1440.mp4"
 
-  echo "Cropping file video as 1080p: output_1080p.mp4"
+  printbox "Cropping file video as 1080p: output_1080p.mp4"
   rm -f output_1080p.mp4
-  ffmpeg -loglevel $loglevel -hwaccel cuda -i output_1920x1440.mp4 -c:v h264_nvenc -vf "crop=1920:1080:0:180" output_1080p.mp4 -y || \
+  ffmpeg $NVIDIA_OPTS -i output_1920x1440.mp4 -c:v h264_nvenc -vf "crop=1920:1080:0:180" output_1080p.mp4 -y || \
     die "Failed to render output_1080p.mp4"
 
-  echo "Creating ${SPEED_FRAMES}x speed video: output_1080p_${SPEED_FRAMES}x.mp4"
+  printbox "Creating ${SPEED_FRAMES}x speed video: output_1080p_${SPEED_FRAMES}x.mp4"
   rm -f output_1080p_${SPEED_FRAMES}x.mp4
-  ffmpeg -loglevel $loglevel -hwaccel cuda -itsscale $sp_rate -i output_1080p.mp4 -c copy output_1080p_${SPEED_FRAMES}x.mp4 -y || \
+  ffmpeg $NVIDIA_OPTS -itsscale $sp_rate -i output_1080p.mp4 -c copy output_1080p_${SPEED_FRAMES}x.mp4 -y || \
     die "Failed to render ${SPEED_FRAMES}x fast on output_1080p_${SPEED_FRAMES}x.mp4"
 
   # src: https://blog.pesky.moe/posts/2024-09-21-video-stabilise/
 
-  echo "Video detection to stablize"
-  ffmpeg -loglevel $loglevel -hwaccel cuda -i output_1080p_${SPEED_FRAMES}x.mp4 -vf vidstabdetect=shakiness=10:accuracy=15 -f null -|| \
+  printbox "Video detection to stablize"
+  ffmpeg $NVIDIA_OPTS -i output_1080p_${SPEED_FRAMES}x.mp4 -vf vidstabdetect=shakiness=10:accuracy=15 -f null -|| \
     die "Failed to detect shakiness - step 1"
 
-  echo "Video stabilize detect step 2"
-  ffmpeg -loglevel $loglevel -hwaccel cuda -i output_1080p_${SPEED_FRAMES}x.mp4 -vf vidstabdetect -f null - || \
+  printbox "Video stabilize detect step 2"
+  ffmpeg $NVIDIA_OPTS -i output_1080p_${SPEED_FRAMES}x.mp4 -vf vidstabdetect -f null - || \
     die "Failed to detect shakiness - step 2"
 
-  echo "Stabilizing video"
-  ffmpeg -loglevel $loglevel -hwaccel cuda -i output_1080p_${SPEED_FRAMES}x.mp4 -vf vidstabtransform output_1080p_${SPEED_FRAMES}x-stabilized.mp4 || \
+  printbox "Stabilizing video"
+  ffmpeg $NVIDIA_OPTS -i output_1080p_${SPEED_FRAMES}x.mp4 -vf vidstabtransform output_1080p_${SPEED_FRAMES}x-stabilized.mp4 || \
     die "Failed to stabilize video"
   }
 
 render_video_macos() {
-  echo "Merging images into single video file: output.mp4"
+  printbox "Merging images into single video file: output.mp4"
   rm -f output.mp4
   ffmpeg -hwaccel auto -r 1 -i G%06d.JPG -c:v h264_videotoolbox -b:v 5M output.mp4 || \
     die "Failed to render output.mp4"
 
-  echo "Resizing video to 1920x1440: output_1920x1440.mp4"
+  printbox "Resizing video to 1920x1440: output_1920x1440.mp4"
   rm -f output_1920x1440.mp4
   ffmpeg -hwaccel auto -i output.mp4 -c:v h264_videotoolbox -q:v 90 -vf scale=1920:1440 -c:a copy output_1920x1440.mp4 || \
     die "Failed to resized to 1920x1440"
 
-  echo "Cropping file video as 1080p: output_1080p.mp4"
+  printbox "Cropping file video as 1080p: output_1080p.mp4"
   rm -f output_1080p.mp4
   ffmpeg -hwaccel auto -i output_1920x1440.mp4 -c:v h264_videotoolbox -q:v 90 -vf "crop=1920:1080:0:180" output_1080p.mp4 || \
     die "Failed to crop video to 1080p"
@@ -158,25 +161,45 @@ render_video_macos() {
 
 
 render_video_cpu() {
-  echo "Merging images into single video file: output.mp4"
+  printbox "Merging images into single video file: output.mp4"
   rm -f output.mp4
   ffmpeg -r 1 -i G%06d.JPG -c:v h264 -b:v 5M output.mp4 || \
     die "Failed to render output.mp4"
 
-  echo "Resizing video to 1920x1440: output_1920x1440.mp4"
+  printbox "Resizing video to 1920x1440: output_1920x1440.mp4"
   rm -f output_1920x1440.mp4
   ffmpeg -i output.mp4 -c:v h264 -vf scale=1920:1440 -c:a copy output_1920x1440.mp4 || \
     die "Failed to render output_1920x1440.mp4"
 
-  echo "Cropping file video as 1080p: output_1080p.mp4"
+  printbox "Cropping file video as 1080p: output_1080p.mp4"
   rm -f output_1080p.mp4
   ffmpeg -i output_1920x1440.mp4 -c:v h264 -vf "crop=1920:1080:0:180" output_1080p.mp4 || \
     die "Failed to render output_1080p.mp4"
 
-  echo "Creating ${SPEED_FRAMES}x speed video: output_1080p_${SPEED_FRAMES}x.mp4"
+  printbox "Creating ${SPEED_FRAMES}x speed video: output_1080p_${SPEED_FRAMES}x.mp4"
   rm -f output_1080p_${SPEED_FRAMES}x.mp4
   ffmpeg -itsscale $sp_rate -i output_1080p.mp4 -c copy output_1080p_${SPEED_FRAMES}x.mp4 || \
     die "Failed to render ${SPEED_FRAMES}x fast on output_1080p_${SPEED_FRAMES}x.mp4"
+
+  printbox "Creating ${SPEED_FRAMES}x speed video: output_1080p_${SPEED_FRAMES}x.mp4"
+  rm -f output_1080p_${SPEED_FRAMES}x.mp4
+  ffmpeg -itsscale $sp_rate -i output_1080p.mp4 -c copy output_1080p_${SPEED_FRAMES}x.mp4 -y || \
+    die "Failed to render ${SPEED_FRAMES}x fast on output_1080p_${SPEED_FRAMES}x.mp4"
+
+  # src: https://blog.pesky.moe/posts/2024-09-21-video-stabilise/
+
+  printbox "Video detection to stablize"
+  ffmpeg -i output_1080p_${SPEED_FRAMES}x.mp4 -vf vidstabdetect=shakiness=10:accuracy=15 -f null -|| \
+    die "Failed to detect shakiness - step 1"
+
+  printbox "Video stabilize detect step 2"
+  ffmpeg -i output_1080p_${SPEED_FRAMES}x.mp4 -vf vidstabdetect -f null - || \
+    die "Failed to detect shakiness - step 2"
+
+  printbox "Stabilizing video"
+  ffmpeg -i output_1080p_${SPEED_FRAMES}x.mp4 -vf vidstabtransform output_1080p_${SPEED_FRAMES}x-stabilized.mp4 || \
+    die "Failed to stabilize video"
+
 }
 
 show_help() {
@@ -197,7 +220,7 @@ trap init-term winch
 
 set_skip_image=0
 
-options=$(getopt -l "help,version,skip-images,disable-nvidia,enable-nvidia,speed-frames:" --options "" --name $(basename $0) -- "$@")
+options=$(getopt -l "help,version,skip-images,disable-nvidia,enable-nvidia,speed-frames:,verbose" --options "" --name $(basename $0) -- "$@")
 eval set -- $options
 
 while true; do
@@ -230,7 +253,6 @@ while true; do
 done
 
 sp_rate=$(speed_rate $SPEED_FRAMES)
-echo "rate: $sp_rate"
 
 if [ -z "$sp_rate" ]; then
   die "Missing proper rate"

@@ -14,7 +14,7 @@ EMPTY_CHAR=' '
 
 NVIDIA_GPU=true
 SPEED_FRAMES=8
-
+VERBOSE=false
 shopt -s globstar nullglob checkwinsize
 
 progress-bar() {
@@ -97,26 +97,46 @@ speed_rate() {
 }
 
 render_video_nvidia() {
+  if [ "$VERBOSE" = true ]; then
+    loglevel=verbose
+  else
+    loglevel=quiet
+  fi
   echo "Merging images into single video file: output.mp4"
   rm -f output.mp4
-  ffmpeg -hwaccel cuda -hwaccel_output_format cuda -r 1 -i G%06d.JPG -c:v h264_nvenc -b:v 5M -pix_fmt cuda output.mp4 || \
-    ffmpeg -hwaccel cuda -hwaccel_output_format cuda -r 1 -i G%06d.JPG -c:v h264_nvenc -b:v 5M -pix_fmt nv21 output.mp4 || \
+  ffmpeg -loglevel $loglevel -hwaccel cuda -hwaccel_output_format cuda -r 1 -i G%06d.JPG -c:v h264_nvenc -b:v 5M -pix_fmt cuda output.mp4 -y || \
+    ffmpeg -loglevel $loglevel -hwaccel cuda -hwaccel_output_format cuda -r 1 -i G%06d.JPG -c:v h264_nvenc -b:v 5M -pix_fmt nv21 output.mp4 -y || \
     render_video_cpu
 
   echo "Resizing video to 1920x1440: output_1920x1440.mp4"
   rm -f output_1920x1440.mp4
-  ffmpeg -hwaccel cuda -hwaccel_output_format cuda -i output.mp4 -c:v h264_nvenc -vf scale=1920:1440 -c:a copy output_1920x1440.mp4 || \
+  ffmpeg -loglevel $loglevel -hwaccel cuda -hwaccel_output_format cuda -i output.mp4 -c:v h264_nvenc -vf scale=1920:1440 -c:a copy output_1920x1440.mp4 -y || \
+  ffmpeg -loglevel $loglevel -hwaccel cuda  -i output.mp4 -c:v h264_nvenc -vf scale=1920:1440 -c:a copy output_1920x1440.mp4 -y || \
     die "Failed to render output_1920x1440.mp4"
 
   echo "Cropping file video as 1080p: output_1080p.mp4"
   rm -f output_1080p.mp4
-  ffmpeg -hwaccel cuda -i output_1920x1440.mp4 -c:v h264_nvenc -vf "crop=1920:1080:0:180" output_1080p.mp4 || \
+  ffmpeg -loglevel $loglevel -hwaccel cuda -i output_1920x1440.mp4 -c:v h264_nvenc -vf "crop=1920:1080:0:180" output_1080p.mp4 -y || \
     die "Failed to render output_1080p.mp4"
 
   echo "Creating ${SPEED_FRAMES}x speed video: output_1080p_${SPEED_FRAMES}x.mp4"
   rm -f output_1080p_${SPEED_FRAMES}x.mp4
-  ffmpeg -hwaccel cuda -itsscale $speed_rate -i output_1080p.mp4 -c copy output_1080p_${SPEED_FRAMES}x.mp4 || \
+  ffmpeg -loglevel $loglevel -hwaccel cuda -itsscale $sp_rate -i output_1080p.mp4 -c copy output_1080p_${SPEED_FRAMES}x.mp4 -y || \
     die "Failed to render ${SPEED_FRAMES}x fast on output_1080p_${SPEED_FRAMES}x.mp4"
+
+  # src: https://blog.pesky.moe/posts/2024-09-21-video-stabilise/
+
+  echo "Video detection to stablize"
+  ffmpeg -loglevel $loglevel -hwaccel cuda -i output_1080p_${SPEED_FRAMES}x.mp4 -vf vidstabdetect=shakiness=10:accuracy=15 -f null -|| \
+    die "Failed to detect shakiness - step 1"
+
+  echo "Video stabilize detect step 2"
+  ffmpeg -loglevel $loglevel -hwaccel cuda -i output_1080p_${SPEED_FRAMES}x.mp4 -vf vidstabdetect -f null - || \
+    die "Failed to detect shakiness - step 2"
+
+  echo "Stabilizing video"
+  ffmpeg -loglevel $loglevel -hwaccel cuda -i output_1080p_${SPEED_FRAMES}x.mp4 -vf vidstabtransform output_1080p_${SPEED_FRAMES}x-stabilized.mp4 || \
+    die "Failed to stabilize video"
   }
 
 render_video_macos() {
@@ -155,7 +175,7 @@ render_video_cpu() {
 
   echo "Creating ${SPEED_FRAMES}x speed video: output_1080p_${SPEED_FRAMES}x.mp4"
   rm -f output_1080p_${SPEED_FRAMES}x.mp4
-  ffmpeg -itsscale $speed_rate -i output_1080p.mp4 -c copy output_1080p_${SPEED_FRAMES}x.mp4 || \
+  ffmpeg -itsscale $sp_rate -i output_1080p.mp4 -c copy output_1080p_${SPEED_FRAMES}x.mp4 || \
     die "Failed to render ${SPEED_FRAMES}x fast on output_1080p_${SPEED_FRAMES}x.mp4"
 }
 
@@ -168,6 +188,7 @@ Usage: $0 [--help] [--skip-images] [--version] [--enable-nvidia|--disable-nvidia
  --enable-nvidia:  enable rendering on NVIDIA (default is on)
  --disable-nvidia: disable rendering on NVIDIA and run on CPU instead
  --speed-frames:   the nr of frames per second to be render at the end (default=$SPEED_FRAMES)
+ --verbose:        verbose rendering
 EOF
 }
 
@@ -198,12 +219,22 @@ while true; do
     "--disable-nvidia") NVIDIA_GPU=false
       shift
       ;;
+    "--verbose") VERBOSE=true
+      shift
+      ;;
     "--speed-frames") SPEED_FRAMES=$2
       shift 2
       ;;
     --) shift; break;;
   esac
 done
+
+sp_rate=$(speed_rate $SPEED_FRAMES)
+echo "rate: $sp_rate"
+
+if [ -z "$sp_rate" ]; then
+  die "Missing proper rate"
+fi
 
 if [ $set_skip_image -ne 1 ]; then
   generate_sequential_images

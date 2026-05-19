@@ -1,7 +1,7 @@
 beautifulsoup4==4.12.3
 certifi
 charset-normalizer==3.3.2
-idna==3.7
+idna==3.15
 pycurl
 pyTelegramBotAPI==4.20.0
 requests

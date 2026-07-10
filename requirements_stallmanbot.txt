@@ -5,5 +5,5 @@ idna==3.7
 pycurl
 pyTelegramBotAPI==4.20.0
 requests
-soupsieve==2.5
+soupsieve==2.8.4
 urllib3
